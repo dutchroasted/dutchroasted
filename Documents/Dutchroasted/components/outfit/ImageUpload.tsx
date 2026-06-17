@@ -1,4 +1,5 @@
 import { MAX_OUTFIT_IMAGE_SIZE } from "@/lib/outfitTypes";
+import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 
 const acceptedTypes = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 const acceptedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
@@ -46,20 +47,21 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         }
 
         const data = (await response.json()) as { image: string };
-        onChange(data.image, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
+        const compressedImage = await compressImageToJpegDataUrl(data.image);
+        onChange(compressedImage, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
       } catch {
-        onError("Deze HEIC-foto kunnen we niet omzetten. Probeer een andere foto of exporteer als JPG.");
+        onError("Deze HEIC-foto kunnen we niet omzetten of comprimeren. Probeer een andere foto of exporteer als JPG.");
       }
       return;
     }
 
-    readFileAsDataUrl(file, file.name);
-  }
-
-  function readFileAsDataUrl(file: Blob, name: string) {
-    readBlobAsDataUrl(file)
-      .then((dataUrl) => onChange(dataUrl, name))
-      .catch(() => onError("Deze foto kunnen we niet lezen. Probeer een andere."));
+    try {
+      onError("");
+      const compressedImage = await compressImageToJpegDataUrl(file);
+      onChange(compressedImage, file.name.replace(/\.(jpg|jpeg|png|webp)$/i, ".jpg"));
+    } catch {
+      onError("Deze foto kunnen we niet comprimeren. Probeer een andere foto.");
+    }
   }
 
   function readBlobAsDataUrl(file: Blob) {

@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { convertHeicDataUrlToJpeg } from "@/lib/imageConversion";
 import {
   OUTFIT_INTENSITIES,
   OUTFIT_OCCASIONS,
@@ -55,7 +54,7 @@ function isValidIntensity(value: unknown): value is string {
 }
 
 function isValidImage(value: unknown): value is string {
-  return typeof value === "string" && /^data:image\/(jpeg|jpg|png|webp|heic|heif);base64,/.test(value);
+  return typeof value === "string" && /^data:image\/jpeg;base64,/.test(value);
 }
 
 function isOutfitResult(value: unknown): value is OutfitResultData {
@@ -103,9 +102,6 @@ export async function POST(request: Request) {
       console.error("OPENAI_API_KEY is missing. Add it to .env.local before using /api/outfit-check.");
       return Response.json({ error: "OpenAI API key missing" }, { status: 500 });
     }
-
-    // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
-    const image = await convertHeicDataUrlToJpeg(body.image);
 
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -156,7 +152,8 @@ Regels:
           role: "user",
           content: [
             { type: "text", text: userPrompt },
-            { type: "image_url", image_url: { url: image } },
+            // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
+            { type: "image_url", image_url: { url: body.image } },
           ],
         },
       ],
