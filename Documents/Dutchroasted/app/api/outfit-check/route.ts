@@ -34,6 +34,7 @@ Belangrijke grenzen:
 Output altijd als geldige JSON:
 {
   "roast": "string",
+  "shareQuote": "string",
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],
@@ -68,6 +69,7 @@ function isOutfitResult(value: unknown): value is OutfitResultData {
   const result = value as Partial<OutfitResultData>;
   return (
     typeof result.roast === "string" &&
+    typeof result.shareQuote === "string" &&
     Array.isArray(result.worksWell) &&
     result.worksWell.every((item) => typeof item === "string") &&
     Array.isArray(result.canImprove) &&
@@ -115,9 +117,15 @@ Gelegenheid: ${body.occasion}
 Feedbackstijl: ${body.intensity}
 
 Regels:
-- Schrijf altijd Nederlands
+- Schrijf alle uitgebreide feedback in het Nederlands. Alleen shareQuote mag bij feedbackstijl "roast" Engels zijn.
 - Score is 1 t/m 10
 - De roast is 2 tot 4 zinnen, grappig, beeldend en specifiek voor deze outfit
+- Genereer altijd een apart veld shareQuote.
+- shareQuote is een korte, harde one-liner voor het deelbeeld. Maximaal 12 woorden als dat lukt.
+- shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
+- Bij feedbackstijl "roast": shareQuote mag Engels of Nederlands zijn, savage maar shareable.
+- Bij feedbackstijl "rotterdams": shareQuote is Nederlands, direct, grappig en Rotterdams van toon.
+- shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - Bij feedbackstijl "roast": maak het flamboyant, modisch en theatraal.
 - Bij feedbackstijl "rotterdams": maak het directer, droger en volkser. Het mag voelen als een Rotterdamse steek, maar blijft behulpzaam en nooit kwetsend.
 - Analyse en stylingtips zijn direct, opinionated en fashion-focused.
@@ -137,6 +145,7 @@ Regels:
 - Output altijd als geldige JSON volgens exact dit format:
 {
   "roast": "string",
+  "shareQuote": "string",
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],

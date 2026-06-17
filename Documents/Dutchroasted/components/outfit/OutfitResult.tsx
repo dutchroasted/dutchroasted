@@ -152,8 +152,7 @@ function SharePreviewCard({
   originalImage: string;
   shareRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const verdict = getScoreVerdict(result.score);
-  const strongestPoints = getStrongestSharePoints(result);
+  const shareQuote = result.shareQuote || result.roast;
 
   return (
     <div
@@ -165,43 +164,40 @@ function SharePreviewCard({
         alt=""
         className="absolute inset-0 size-full object-cover opacity-95"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.04)_44%,rgba(0,0,0,0.82))]" />
-      <div className="relative flex h-full flex-col justify-between p-4 sm:p-6">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.02)_62%,rgba(0,0,0,0.8))]" />
+      <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-lg font-black leading-none text-white">
+            <p className="text-sm font-black leading-none text-white">
               Dutch<span className="text-orange-500">Roasted</span>
             </p>
-            <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-200">
+            <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-200">
               Outfit rating
             </p>
           </div>
-          <div className="rounded-3xl bg-orange-500 px-5 py-4 text-right text-black shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em]">Score</p>
-            <p className="text-6xl font-black leading-none">{result.score}</p>
-            <p className="text-sm font-black leading-none">/10</p>
+          <div className="rounded-2xl bg-orange-500 px-4 py-3 text-right text-black shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
+            <p className="text-[9px] font-black uppercase tracking-[0.18em]">Score</p>
+            <p className="text-4xl font-black leading-none">{result.score}</p>
+            <p className="text-xs font-black leading-none">/10</p>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/15 bg-black/70 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md sm:p-5">
-          <p className="inline-flex rounded-full bg-orange-500 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-black">
-            {verdict}
-          </p>
-          <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-orange-300">
-            Roast
-          </p>
-          <p className="mt-2 text-xl font-black leading-7 text-white sm:text-2xl sm:leading-8">
-            “{result.roast}”
-          </p>
-          <ul className="mt-4 space-y-1.5">
-            {strongestPoints.map((point) => (
-              <li key={point} className="flex gap-2 text-sm font-bold leading-5 text-zinc-100">
-                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-orange-500" />
-                <span>{point}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-zinc-300">
+        <div className="rounded-3xl border border-white/15 bg-black/72 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <div className="flex items-start gap-4">
+            <div className="min-w-16 rounded-2xl bg-orange-500 px-3 py-2 text-black">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
+              <p className="text-2xl font-black leading-none">{result.score}/10</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-orange-300">
+                Roast
+              </p>
+              <p className="mt-1 text-xl font-black leading-6 text-white sm:text-2xl sm:leading-7">
+                “{shareQuote}”
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-zinc-400">
             DutchRoasted.nl
           </p>
         </div>
@@ -274,25 +270,6 @@ function ResultBlock({ title, children, featured = false }: { title: string; chi
       {children}
     </article>
   );
-}
-
-function getStrongestSharePoints(result: OutfitResultData) {
-  const points = [
-    ...result.worksWell.slice(0, 1),
-    ...result.canImprove.slice(0, 1),
-    ...result.stylingTips.slice(0, 1),
-  ];
-
-  return points.map(shortenSharePoint).filter(Boolean).slice(0, 3);
-}
-
-function shortenSharePoint(point: string) {
-  const cleanedPoint = point.replace(/^[-•\s]+/, "").trim();
-  if (cleanedPoint.length <= 92) {
-    return cleanedPoint;
-  }
-
-  return `${cleanedPoint.slice(0, 89).trim()}...`;
 }
 
 function getScoreVerdict(score: number) {
