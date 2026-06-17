@@ -93,12 +93,12 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
         </div>
       ) : null}
 
-      <div className="relative">
+      <div className="space-y-3">
         <SharePreviewCard shareRef={shareCardRef} result={result} originalImage={originalImage} />
         <button
           type="button"
           onClick={handleShare}
-          className="absolute bottom-4 right-4 min-h-12 rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black shadow-[0_18px_60px_rgba(0,0,0,0.45)] transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)]"
+          className="ml-auto flex min-h-12 w-full items-center justify-center rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] sm:w-auto"
         >
           Deel dit beeld
         </button>
@@ -172,17 +172,18 @@ function SharePreviewCard({
               Dutch<span className="text-orange-500">Roasted</span>
             </p>
             <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-200">
-              Outfit rating
+              roast my outfit
             </p>
           </div>
         </div>
 
         <div className="rounded-3xl border border-white/15 bg-black/74 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md sm:p-4">
-          <div className="grid grid-cols-[4.75rem_1fr] items-center gap-3 sm:grid-cols-[5.25rem_1fr] sm:gap-4">
+          <div className="grid grid-cols-[5.9rem_1fr] items-center gap-3 sm:grid-cols-[6.6rem_1fr] sm:gap-4">
             <div className="rounded-2xl bg-orange-500 px-3 py-2 text-black">
               <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
-              <p className="text-2xl font-black leading-none sm:text-3xl">{result.score}</p>
-              <p className="text-[10px] font-black leading-none">/10</p>
+              <p className="mt-1 whitespace-nowrap text-2xl font-black leading-none sm:text-3xl">
+                {result.score}/10
+              </p>
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-orange-300">
