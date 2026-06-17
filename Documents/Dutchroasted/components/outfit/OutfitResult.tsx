@@ -175,18 +175,14 @@ function SharePreviewCard({
               Outfit rating
             </p>
           </div>
-          <div className="rounded-2xl bg-orange-500 px-4 py-3 text-right text-black shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
-            <p className="text-[9px] font-black uppercase tracking-[0.18em]">Score</p>
-            <p className="text-4xl font-black leading-none">{result.score}</p>
-            <p className="text-xs font-black leading-none">/10</p>
-          </div>
         </div>
 
-        <div className="rounded-3xl border border-white/15 bg-black/72 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md">
-          <div className="flex items-start gap-4">
-            <div className="min-w-16 rounded-2xl bg-orange-500 px-3 py-2 text-black">
+        <div className="rounded-3xl border border-white/15 bg-black/74 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md sm:p-4">
+          <div className="grid grid-cols-[4.75rem_1fr] items-center gap-3 sm:grid-cols-[5.25rem_1fr] sm:gap-4">
+            <div className="rounded-2xl bg-orange-500 px-3 py-2 text-black">
               <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
-              <p className="text-2xl font-black leading-none">{result.score}/10</p>
+              <p className="text-2xl font-black leading-none sm:text-3xl">{result.score}</p>
+              <p className="text-[10px] font-black leading-none">/10</p>
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-orange-300">
@@ -197,7 +193,7 @@ function SharePreviewCard({
               </p>
             </div>
           </div>
-          <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-zinc-400">
+          <p className="mt-2 text-[9px] font-black uppercase tracking-[0.16em] text-zinc-400">
             DutchRoasted.nl
           </p>
         </div>

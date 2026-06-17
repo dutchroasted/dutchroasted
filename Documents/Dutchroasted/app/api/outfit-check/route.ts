@@ -126,6 +126,8 @@ Regels:
 - Bij feedbackstijl "roast": shareQuote mag Engels of Nederlands zijn, savage maar shareable.
 - Bij feedbackstijl "rotterdams": shareQuote is Nederlands, direct, grappig en Rotterdams van toon.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
+- Voorbeelden shareQuote roast: "The fit is clean, but the energy is confused.", "One good piece. Three questionable decisions.", "This outfit has confidence. Sadly, not taste."
+- Voorbeelden shareQuote rotterdams: "Gozer, die broek heeft meer stress dan jij.", "Dit is geen fit, dit is file op de A20.", "Lekker geprobeerd, maar Rotterdam kijkt streng."
 - Bij feedbackstijl "roast": maak het flamboyant, modisch en theatraal.
 - Bij feedbackstijl "rotterdams": maak het directer, droger en volkser. Het mag voelen als een Rotterdamse steek, maar blijft behulpzaam en nooit kwetsend.
 - Analyse en stylingtips zijn direct, opinionated en fashion-focused.
