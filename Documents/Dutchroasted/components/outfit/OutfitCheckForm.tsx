@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import type { OutfitIntensity, OutfitOccasion, OutfitResultData } from "@/lib/outfitTypes";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
@@ -53,6 +54,7 @@ export function OutfitCheckForm() {
     setError("");
 
     try {
+      const compressedImage = await compressImageToJpegDataUrl(image);
       // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
       const response = await fetch("/api/outfit-check", {
         method: "POST",
@@ -60,7 +62,7 @@ export function OutfitCheckForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image,
+          image: compressedImage,
           occasion,
           intensity,
         }),
@@ -75,7 +77,7 @@ export function OutfitCheckForm() {
       setResultMeta({ occasion, intensity });
       setDailyLimit(incrementDailyLimit());
     } catch {
-      setError("Er ging iets mis. Probeer het opnieuw.");
+      setError("Er ging iets mis met comprimeren of checken. Probeer het opnieuw.");
     } finally {
       setIsLoading(false);
     }

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { MAX_OUTFIT_IMAGE_SIZE } from "@/lib/outfitTypes";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 
@@ -11,6 +14,8 @@ type ImageUploadProps = {
 };
 
 export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps) {
+  const [isConvertingHeic, setIsConvertingHeic] = useState(false);
+
   async function handleFile(file: File | undefined) {
     if (!file) {
       return;
@@ -33,6 +38,7 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
     if (isHeicFile(file)) {
       try {
         onError("");
+        setIsConvertingHeic(true);
         const heicDataUrl = await readBlobAsDataUrl(file);
         const response = await fetch("/api/convert-image", {
           method: "POST",
@@ -47,10 +53,11 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         }
 
         const data = (await response.json()) as { image: string };
-        const compressedImage = await compressImageToJpegDataUrl(data.image);
-        onChange(compressedImage, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
+        onChange(data.image, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
       } catch {
-        onError("Deze HEIC-foto kunnen we niet omzetten of comprimeren. Probeer een andere foto of exporteer als JPG.");
+        onError("Deze HEIC-foto kunnen we niet omzetten. Probeer een andere foto of exporteer als JPG.");
+      } finally {
+        setIsConvertingHeic(false);
       }
       return;
     }
@@ -86,7 +93,15 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         htmlFor="outfit-image"
         className="dr-card-hover group relative flex min-h-[23rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-orange-500/45 bg-[linear-gradient(145deg,rgba(255,106,0,0.12),rgba(255,255,255,0.035)_42%,rgba(0,0,0,0.72))] p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_28px_90px_rgba(0,0,0,0.35)] hover:border-orange-300 hover:shadow-[0_28px_90px_rgba(255,106,0,0.14)] sm:min-h-[30rem] sm:p-6"
       >
-        {previewUrl ? (
+        {isConvertingHeic ? (
+          <div className="max-w-lg">
+            <div className="mx-auto mb-6 size-12 animate-pulse rounded-2xl bg-orange-500 shadow-[0_18px_60px_rgba(255,106,0,0.28)]" />
+            <p className="text-3xl font-black text-white">Foto wordt omgezet...</p>
+            <p className="mt-3 leading-7 text-zinc-400">
+              HEIC wordt klaargemaakt voor preview en outfitcheck.
+            </p>
+          </div>
+        ) : previewUrl ? (
           <div className="relative w-full">
             <img
               src={previewUrl}
