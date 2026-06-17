@@ -1,0 +1,26 @@
+{
+  "name": "DutchRoasted",
+  "short_name": "DutchRoasted",
+  "description": "Upload je outfit. Krijg de waarheid.",
+  "start_url": "/outfit-check",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#ff6a00",
+  "background_color": "#050505",
+  "categories": ["fashion", "lifestyle", "photo"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
