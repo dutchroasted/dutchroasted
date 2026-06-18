@@ -6,8 +6,27 @@ import {
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
-const FALLBACK_ROAST =
-  "Deze outfit heeft een bruikbare basis, maar mist nog één duidelijke stijlkeuze die alles samenbrengt.";
+const FALLBACK_ROAST = [
+  "Je outfit heeft een plan, maar de kledingstukken hebben de vergadering gemist.",
+  "De basis staat, alleen de styling zoekt nog naar een duidelijke richting.",
+  "Met één sterke kleur of accessoire stopt deze look met twijfelen.",
+].join("\n");
+const ROAST_DETAIL_TERMS = [
+  "schoenen",
+  "sneakers",
+  "shirt",
+  "trui",
+  "jas",
+  "broek",
+  "jeans",
+  "kleur",
+  "pasvorm",
+  "silhouet",
+  "accessoire",
+  "outfit",
+  "look",
+  "stijl",
+];
 
 const currentFashionContext = `
 Actuele modecontext:
@@ -28,8 +47,18 @@ Belangrijke grenzen:
 - Geen seksuele opmerkingen, geen bodyshaming, geen discriminatie.
 - De roast mag scherp en grappig zijn, maar nooit gemeen of persoonlijk kwetsend.
 - Schrijf uitsluitend Nederlands. Gebruik geen Engelse zinnen en meng geen Nederlands met Engels.
-- Maak de roast vermakelijk: flamboyant, dramatisch, modebewust en citeerbaar, met een originele stem.
+- Schrijf de roast als exact 3 korte Nederlandse zinnen, elk op een eigen regel.
+- Iedere roastzin heeft een duidelijke clou en moet zelfstandig deelbaar zijn.
+- Klink als een scherpe Nederlandse vriend: direct, gevat en een tikje brutaal, maar vriendelijk.
+- Maak de roast vermakelijk, modebewust en citeerbaar, met een originele stem.
 - Maak de roast specifieker dan "dit is saai": verwijs naar kledingstukken, combinaties, kleuren of stylingkeuzes die je ziet.
+- Noem waar mogelijk zichtbare details zoals schoenen, shirt, broek, kleuren, pasvorm of uitstraling.
+- Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
+- Schrijf nooit een vierde roastzin of extra roastregel.
+- Voorbeelden zijn alleen stijlreferenties; neem ze niet letterlijk over:
+  "Die sneakers zijn klaar voor Basic-Fit, maar je shirt denkt dat jullie naar kantoor gaan."
+  "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
+  "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
@@ -88,7 +117,7 @@ function normalizeOutfitResult(
   source: Record<string, unknown>,
   roastText = FALLBACK_ROAST,
 ): OutfitResultData {
-  const roast = roastText.trim() || FALLBACK_ROAST;
+  const roast = normalizeRoast(roastText);
   const providedQuotes = toStringArray(source.alternativeQuotes);
   const shareQuote =
     toNonEmptyString(source.shareQuote) ??
@@ -119,6 +148,46 @@ function normalizeOutfitResult(
     shoppingSuggestions: normalizeShoppingSuggestions(source.shoppingSuggestions),
     score: normalizeScore(source.score ?? source.rating),
   };
+}
+
+function normalizeRoast(value: string) {
+  const candidates = extractRoastSentences(value);
+  const rankedCandidates = candidates
+    .map((sentence, index) => ({
+      sentence,
+      index,
+      score: getRoastSentenceScore(sentence),
+    }))
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .slice(0, 3)
+    .sort((left, right) => left.index - right.index)
+    .map(({ sentence }) => sentence);
+
+  const fallbackSentences = extractRoastSentences(FALLBACK_ROAST);
+  const uniqueSentences = [...rankedCandidates, ...fallbackSentences].filter(
+    (sentence, index, sentences) =>
+      sentences.findIndex(
+        (candidate) => candidate.toLowerCase() === sentence.toLowerCase(),
+      ) === index,
+  );
+
+  return uniqueSentences.slice(0, 3).join("\n");
+}
+
+function extractRoastSentences(value: string) {
+  const matches = value.match(/[^.!?\n]+(?:[.!?]+|$)/g) ?? [];
+  return matches
+    .map((sentence) => sentence.replace(/^[\s"'“”‘’•*-]+/, "").trim())
+    .filter(Boolean)
+    .map((sentence) => /[.!?…]$/.test(sentence) ? sentence : `${sentence}.`);
+}
+
+function getRoastSentenceScore(sentence: string) {
+  const normalized = sentence.toLowerCase();
+  const detailScore = ROAST_DETAIL_TERMS.filter((term) => normalized.includes(term)).length * 3;
+  const punchlineScore = /[,;:—-]/.test(sentence) ? 2 : 0;
+  const conciseScore = sentence.split(/\s+/).length <= 20 ? 1 : 0;
+  return detailScore + punchlineScore + conciseScore;
 }
 
 function toNonEmptyString(value: unknown) {
@@ -264,8 +333,17 @@ Regels:
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
 - Score is 1 t/m 10
-- De langere roast is 3 tot 5 korte regels of zinnen: grappig, beeldend, praktisch en specifiek voor deze outfit.
-- De langere roast heeft flamboyante, theatrale stylistenergie en bevat minstens één bruikbare stylingobservatie.
+- Het veld roast bevat exact 3 korte Nederlandse zinnen, elk op een eigen regel.
+- Iedere roastzin heeft een duidelijke clou en is scherp, grappig en zelfstandig deelbaar.
+- Klink als een scherpe Nederlandse vriend: direct, gevat en een tikje brutaal, maar niet gemeen.
+- Noem waar mogelijk zichtbare details zoals schoenen, shirt, broek, kleuren, pasvorm of uitstraling.
+- Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
+- Schrijf nooit 4 of meer roastzinnen of roastregels.
+- Roast uitsluitend kleding, styling en geschiktheid voor de gelegenheid; nooit lichaam, gezicht, leeftijd, gewicht, gender, afkomst of aantrekkelijkheid.
+- Gebruik deze voorbeelden alleen als stijlreferentie en neem ze niet letterlijk over:
+  "Die sneakers zijn klaar voor Basic-Fit, maar je shirt denkt dat jullie naar kantoor gaan."
+  "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
+  "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
 - Genereer altijd een apart veld shareQuote.
 - Genereer daarnaast exact 3 verschillende alternativeQuotes.
@@ -373,7 +451,7 @@ Regels:
         {
           role: "user",
           content:
-            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 3 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast 3 tot 5 korte, grappige en praktisch bruikbare Nederlandse zinnen. Controleer alle arrays en shopsuggesties.",
+            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 3 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Klink direct, gevat en een tikje brutaal, maar roast alleen kleding en styling. Schrijf nooit een vierde roastzin. Controleer alle arrays en shopsuggesties.",
         },
       ];
 
