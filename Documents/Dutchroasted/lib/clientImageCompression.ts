@@ -1,10 +1,24 @@
 const MAX_IMAGE_DIMENSION = 1200;
 const JPEG_QUALITY = 0.75;
+const CONVERSION_QUALITY = 0.92;
 
-export async function compressImageToJpegDataUrl(input: File | string) {
+type CompressionOptions = {
+  maxDimension?: number;
+  quality?: number;
+  onConverted?: (dataUrl: string) => void;
+};
+
+export async function compressImageToJpegDataUrl(
+  input: File | string,
+  options: CompressionOptions = {},
+) {
   const sourceDataUrl = typeof input === "string" ? input : await readFileAsDataUrl(input);
   const image = await loadImage(sourceDataUrl);
-  const { width, height } = getResizedDimensions(image.width, image.height);
+  const { width, height } = getResizedDimensions(
+    image.width,
+    image.height,
+    options.maxDimension ?? MAX_IMAGE_DIMENSION,
+  );
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
 
@@ -16,17 +30,20 @@ export async function compressImageToJpegDataUrl(input: File | string) {
   canvas.height = height;
   context.drawImage(image, 0, 0, width, height);
 
-  return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+  const convertedDataUrl = canvas.toDataURL("image/jpeg", CONVERSION_QUALITY);
+  options.onConverted?.(convertedDataUrl);
+
+  return canvas.toDataURL("image/jpeg", options.quality ?? JPEG_QUALITY);
 }
 
-function getResizedDimensions(width: number, height: number) {
+function getResizedDimensions(width: number, height: number, maxDimension: number) {
   const longestSide = Math.max(width, height);
 
-  if (longestSide <= MAX_IMAGE_DIMENSION) {
+  if (longestSide <= maxDimension) {
     return { width, height };
   }
 
-  const scale = MAX_IMAGE_DIMENSION / longestSide;
+  const scale = maxDimension / longestSide;
   return {
     width: Math.round(width * scale),
     height: Math.round(height * scale),

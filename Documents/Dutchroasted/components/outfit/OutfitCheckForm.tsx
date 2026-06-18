@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import type { OutfitIntensity, OutfitOccasion, OutfitResultData } from "@/lib/outfitTypes";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
@@ -13,6 +14,9 @@ import { OutfitResult } from "./OutfitResult";
 
 const FREE_CHECK_LIMIT = 1;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
+const API_TIMEOUT_MS = 45_000;
+const RETRY_DELAY_MS = 1_000;
+const RETRYABLE_API_STATUSES = new Set([429, 500, 502, 503, 504]);
 const LOADING_MESSAGES: readonly string[] = [
   "Even kijken of dit een fit is... of een kledingcrisis met zelfvertrouwen.",
   "Momentje, ik haal de modebril én de blusdeken erbij.",
@@ -32,7 +36,7 @@ type DailyLimitState = {
 };
 
 export function OutfitCheckForm() {
-  const [image, setImage] = useState("");
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [occasion, setOccasion] = useState<OutfitOccasion>("Casual");
   const [intensity, setIntensity] = useState<OutfitIntensity>("roast");
@@ -43,15 +47,18 @@ export function OutfitCheckForm() {
     intensity: OutfitIntensity;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadProcessing, setIsUploadProcessing] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>(LOADING_MESSAGES[0]);
   const [error, setError] = useState("");
   const [dailyLimit, setDailyLimit] = useState<DailyLimitState>(() => ({
     date: getTodayKey(),
     used: 0,
   }));
+  const submitLockRef = useRef(false);
 
   const isLimitReached = dailyLimit.used >= FREE_CHECK_LIMIT;
-  const canSubmit = Boolean(image) && !isLoading && !isLimitReached;
+  const isProcessing = isLoading || isUploadProcessing;
+  const canSubmit = Boolean(selectedPreviewImage) && !isProcessing && !isLimitReached;
 
   useEffect(() => {
     setDailyLimit(readDailyLimit());
@@ -59,47 +66,42 @@ export function OutfitCheckForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSubmit) {
+    if (!canSubmit || submitLockRef.current || isLoading) {
       return;
     }
 
+    submitLockRef.current = true;
     setIsLoading(true);
     setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
 
     try {
-      const processedImage = image;
-      // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
-      const response = await fetch("/api/outfit-check", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image: processedImage,
-          occasion,
-          intensity,
-        }),
-      });
+      const response = await runOutfitCheckWithRetry(selectedPreviewImage, occasion, intensity);
 
-      if (!response.ok) {
-        throw new Error("Outfit check failed");
+      let data: OutfitResultData;
+      try {
+        data = (await response.json()) as OutfitResultData;
+      } catch {
+        throw new Error("De outfitcheck gaf een onleesbaar antwoord terug. Probeer het opnieuw.");
       }
-
-      const data = (await response.json()) as OutfitResultData;
       setResult(data);
-      setResultImage(processedImage);
+      setResultImage(selectedPreviewImage);
       setResultMeta({ occasion, intensity });
       setDailyLimit(incrementDailyLimit());
-    } catch {
-      setError("Er ging iets mis met comprimeren of checken. Probeer het opnieuw.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "De outfitcheck is onverwacht mislukt. Probeer het opnieuw.",
+      );
     } finally {
+      submitLockRef.current = false;
       setIsLoading(false);
     }
   }
 
   function handleNewCheck() {
-    setImage("");
+    setSelectedPreviewImage("");
     setFileName("");
     setResult(null);
     setResultImage("");
@@ -127,9 +129,10 @@ export function OutfitCheckForm() {
         />
 
         <ImageUpload
-          previewUrl={image}
+          previewUrl={selectedPreviewImage}
+          disabled={isProcessing}
           onChange={(dataUrl, name) => {
-            setImage(dataUrl);
+            setSelectedPreviewImage(dataUrl);
             setFileName(name);
             setError("");
             setResult(null);
@@ -137,6 +140,7 @@ export function OutfitCheckForm() {
             setResultMeta(null);
           }}
           onError={setError}
+          onProcessingChange={setIsUploadProcessing}
         />
 
         {fileName ? (
@@ -190,6 +194,7 @@ export function OutfitCheckForm() {
             <OutfitResult
               result={result}
               originalImage={resultImage}
+              disabled={isProcessing}
               onNewCheck={handleNewCheck}
             />
             {resultMeta ? (
@@ -215,6 +220,118 @@ export function OutfitCheckForm() {
       </div>
     </div>
   );
+}
+
+async function runOutfitCheckWithRetry(
+  selectedPreviewImage: string,
+  occasion: OutfitOccasion,
+  intensity: OutfitIntensity,
+) {
+  let requestImage = selectedPreviewImage;
+  let didRetryAfter413 = false;
+  let didRetryTransientError = false;
+  let attempt = 1;
+
+  while (true) {
+    const response = await requestOutfitCheck(
+      requestImage,
+      occasion,
+      intensity,
+      `poging ${attempt}`,
+    );
+
+    if (response.status === 413 && !didRetryAfter413) {
+      try {
+        console.warn("[Outfit check] API returned 413; recompressing smaller for one retry.");
+        requestImage = await compressImageToJpegDataUrl(selectedPreviewImage, {
+          maxDimension: 700,
+          quality: 0.5,
+        });
+        console.info(
+          "[Outfit check] compressed data URL size after 413:",
+          formatDataUrlSize(requestImage),
+        );
+      } catch {
+        throw new Error("De foto was te groot voor de outfitcheck en kleiner maken is mislukt.");
+      }
+      didRetryAfter413 = true;
+      attempt += 1;
+      continue;
+    }
+
+    if (RETRYABLE_API_STATUSES.has(response.status) && !didRetryTransientError) {
+      console.warn(`[Outfit check] API returned ${response.status}; retrying once after 1 second.`);
+      await delay(RETRY_DELAY_MS);
+      didRetryTransientError = true;
+      attempt += 1;
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error(getApiErrorMessage(response.status));
+    }
+
+    return response;
+  }
+}
+
+async function requestOutfitCheck(
+  image: string,
+  occasion: OutfitOccasion,
+  intensity: OutfitIntensity,
+  attempt: string,
+) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  console.info(`[Outfit check] API request started (${attempt}).`);
+  try {
+    // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
+    const response = await fetch("/api/outfit-check", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ image, occasion, intensity }),
+      signal: controller.signal,
+    });
+    console.info(`[Outfit check] API response status (${attempt}):`, response.status);
+    return response;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("De outfitcheck duurde te lang en is afgebroken. Probeer het opnieuw.");
+    }
+    throw new Error("De outfitcheck kon de server niet bereiken. Controleer je verbinding en probeer opnieuw.");
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function getApiErrorMessage(status: number) {
+  if (status === 413) {
+    return "De foto is nog steeds te groot voor de outfitcheck. Kies een kleinere foto.";
+  }
+  if (status === 429) {
+    return "De outfitcheck is momenteel te druk. Wacht even en probeer opnieuw.";
+  }
+  if ([500, 502, 503, 504].includes(status)) {
+    return `De outfitcheck-server gaf een fout (${status}). Probeer het later opnieuw.`;
+  }
+  if (status === 400) {
+    return "De outfitcheck kon de foto of instellingen niet verwerken. Kies de foto opnieuw.";
+  }
+  return `De outfitcheck is mislukt bij de API (status ${status}). Probeer het opnieuw.`;
+}
+
+function formatDataUrlSize(dataUrl: string) {
+  const base64 = dataUrl.split(",", 2)[1] ?? "";
+  const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+  const bytes = Math.max(0, Math.floor((base64.length * 3) / 4) - padding);
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB (${bytes} bytes)`;
+}
+
+function delay(milliseconds: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
 function getTodayKey() {

@@ -8,12 +8,14 @@ import type { OutfitResultData } from "@/lib/outfitTypes";
 type OutfitResultProps = {
   result: OutfitResultData;
   originalImage: string;
+  disabled: boolean;
   onNewCheck: () => void;
 };
 
-export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResultProps) {
+export function OutfitResult({ result, originalImage, disabled, onNewCheck }: OutfitResultProps) {
   const [feedback, setFeedback] = useState("");
   const [selectedQuote, setSelectedQuote] = useState<string>(result.shareQuote);
+  const [isSharing, setIsSharing] = useState(false);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
 
@@ -36,12 +38,13 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
   }
 
   async function handleShare() {
-    try {
-      if (!isProcessedOutfitImage(originalImage)) {
-        showFeedback("De outfitfoto ontbreekt. Upload de foto opnieuw voordat je deelt.");
-        return;
-      }
+    if (disabled || isSharing || !result || !isProcessedOutfitImage(originalImage)) {
+      showFeedback("De deelkaart is nog niet klaar. Wacht tot foto en analyse volledig geladen zijn.");
+      return;
+    }
 
+    setIsSharing(true);
+    try {
       const imageBlob = await createShareImage(
         originalImage,
         result.score,
@@ -73,6 +76,8 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
       }
     } catch {
       showFeedback("Delen lukt niet. Probeer opnieuw.");
+    } finally {
+      setIsSharing(false);
     }
   }
 
@@ -116,9 +121,10 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
         <button
           type="button"
           onClick={handleShare}
-          className="min-h-12 w-full rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] sm:w-auto"
+          disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
+          className="min-h-12 w-full rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none sm:w-auto"
         >
-          Deel deze roast
+          {isSharing ? "Deelkaart maken..." : "Deel deze roast"}
         </button>
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MAX_OUTFIT_IMAGE_SIZE } from "@/lib/outfitTypes";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 
@@ -9,17 +9,28 @@ const acceptedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
 
 type ImageUploadProps = {
   previewUrl: string;
+  disabled: boolean;
   onChange: (dataUrl: string, fileName: string) => void;
   onError: (message: string) => void;
+  onProcessingChange: (isProcessing: boolean) => void;
 };
 
-export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps) {
+export function ImageUpload({
+  previewUrl,
+  disabled,
+  onChange,
+  onError,
+  onProcessingChange,
+}: ImageUploadProps) {
   const [isConvertingHeic, setIsConvertingHeic] = useState(false);
+  const processingLockRef = useRef(false);
 
   async function handleFile(file: File | undefined) {
-    if (!file) {
+    if (!file || disabled || processingLockRef.current) {
       return;
     }
+
+    console.info("[Outfit upload] original file size:", formatByteSize(file.size));
 
     const lowerName = file.name.toLowerCase();
     const hasAcceptedType = acceptedTypes.includes(file.type);
@@ -36,9 +47,13 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
     }
 
     if (isHeicFile(file)) {
+      processingLockRef.current = true;
+      onProcessingChange(true);
+      setIsConvertingHeic(true);
+
+      let convertedImage: string;
       try {
         onError("");
-        setIsConvertingHeic(true);
         const heicDataUrl = await readBlobAsDataUrl(file);
         const response = await fetch("/api/convert-image", {
           method: "POST",
@@ -49,27 +64,77 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         });
 
         if (!response.ok) {
-          throw new Error("HEIC conversion failed");
+          throw new Error(`HEIC conversion failed with status ${response.status}`);
         }
 
         const data = (await response.json()) as { image: string };
-        const compressedImage = await compressImageToJpegDataUrl(data.image);
+        convertedImage = data.image;
+        console.info(
+          "[Outfit upload] converted JPEG data URL size:",
+          formatByteSize(getDataUrlByteSize(convertedImage)),
+        );
+      } catch {
+        onError("Het omzetten van de HEIC-foto naar JPEG is mislukt. Exporteer de foto als JPG en probeer opnieuw.");
+        processingLockRef.current = false;
+        setIsConvertingHeic(false);
+        onProcessingChange(false);
+        return;
+      }
+
+      try {
+        const compressedImage = await compressWithRetry(convertedImage);
         onChange(compressedImage, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
       } catch {
-        onError("Deze HEIC-foto kunnen we niet omzetten. Probeer een andere foto of exporteer als JPG.");
+        onError("De HEIC-foto is omgezet, maar comprimeren mislukte ook bij de tweede poging.");
       } finally {
+        processingLockRef.current = false;
         setIsConvertingHeic(false);
+        onProcessingChange(false);
       }
       return;
     }
 
     try {
       onError("");
-      const compressedImage = await compressImageToJpegDataUrl(file);
+      processingLockRef.current = true;
+      onProcessingChange(true);
+      const compressedImage = await compressWithRetry(file);
       onChange(compressedImage, file.name.replace(/\.(jpg|jpeg|png|webp)$/i, ".jpg"));
     } catch {
-      onError("Deze foto kunnen we niet comprimeren. Probeer een andere foto.");
+      onError("Het comprimeren van deze foto is mislukt, ook na een tweede poging. Probeer een andere foto.");
+    } finally {
+      processingLockRef.current = false;
+      onProcessingChange(false);
     }
+  }
+
+  async function compressWithRetry(input: File | string) {
+    try {
+      return await compressAndLog(input);
+    } catch (error) {
+      console.warn("[Outfit upload] compression failed; retrying at 900px / quality 0.65.", error);
+      return compressAndLog(input, { maxDimension: 900, quality: 0.65 });
+    }
+  }
+
+  async function compressAndLog(
+    input: File | string,
+    options?: { maxDimension: number; quality: number },
+  ) {
+    const compressedImage = await compressImageToJpegDataUrl(input, {
+      ...options,
+      onConverted: (convertedImage) => {
+        console.info(
+          "[Outfit upload] converted JPEG data URL size:",
+          formatByteSize(getDataUrlByteSize(convertedImage)),
+        );
+      },
+    });
+    console.info(
+      "[Outfit upload] compressed data URL size:",
+      formatByteSize(getDataUrlByteSize(compressedImage)),
+    );
+    return compressedImage;
   }
 
   function readBlobAsDataUrl(file: Blob) {
@@ -92,7 +157,12 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
     <div>
       <label
         htmlFor="outfit-image"
-        className="dr-card-hover group relative flex min-h-[23rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-orange-500/45 bg-[linear-gradient(145deg,rgba(255,106,0,0.12),rgba(255,255,255,0.035)_42%,rgba(0,0,0,0.72))] p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_28px_90px_rgba(0,0,0,0.35)] hover:border-orange-300 hover:shadow-[0_28px_90px_rgba(255,106,0,0.14)] sm:min-h-[30rem] sm:p-6"
+        aria-disabled={disabled || isConvertingHeic}
+        className={`dr-card-hover group relative flex min-h-[23rem] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-orange-500/45 bg-[linear-gradient(145deg,rgba(255,106,0,0.12),rgba(255,255,255,0.035)_42%,rgba(0,0,0,0.72))] p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_28px_90px_rgba(0,0,0,0.35)] sm:min-h-[30rem] sm:p-6 ${
+          disabled || isConvertingHeic
+            ? "cursor-not-allowed opacity-60"
+            : "cursor-pointer hover:border-orange-300 hover:shadow-[0_28px_90px_rgba(255,106,0,0.14)]"
+        }`}
       >
         {isConvertingHeic ? (
           <div className="max-w-lg">
@@ -135,6 +205,7 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         type="file"
         accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
         className="sr-only"
+        disabled={disabled || isConvertingHeic}
         onChange={(event) => handleFile(event.target.files?.[0])}
       />
       <p className="mt-3 text-sm leading-6 text-zinc-500">
@@ -153,4 +224,14 @@ function isHeicFile(file: File) {
     lowerName.endsWith(".heic") ||
     lowerName.endsWith(".heif")
   );
+}
+
+function getDataUrlByteSize(dataUrl: string) {
+  const base64 = dataUrl.split(",", 2)[1] ?? "";
+  const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+  return Math.max(0, Math.floor((base64.length * 3) / 4) - padding);
+}
+
+function formatByteSize(bytes: number) {
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB (${bytes} bytes)`;
 }
