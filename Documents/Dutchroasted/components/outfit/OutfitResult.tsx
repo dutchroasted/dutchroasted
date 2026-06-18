@@ -59,7 +59,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         result.score,
         selectedQuote,
       );
-      const file = new File([imageBlob], "outfit-roaster-share-card.png", {
+      const file = new File([imageBlob], "outfit-roaster-instagram-story.png", {
         type: "image/png",
       });
       const caption = formatShareCaption(selectedQuote, window.location.origin);
@@ -74,7 +74,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         return;
       }
 
-      downloadBlob(imageBlob, "outfit-roaster-share-card.png");
+      downloadBlob(imageBlob, "outfit-roaster-instagram-story.png");
       try {
         await navigator.clipboard.writeText(caption);
         showFeedback(
@@ -105,36 +105,45 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   }
 
   return (
-    <section className="dr-fade-in space-y-4">
-      <div>
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-200">
-          Outfit verdict
-        </p>
-        <h2 className="mt-3 text-3xl font-black leading-tight text-white sm:text-5xl">
-          Je stylingrapport.
-        </h2>
+    <section className="dr-fade-in space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="dr-kicker">AI styling verdict</p>
+          <h2 className="mt-3 text-4xl font-black leading-[0.95] tracking-[-0.04em] text-white sm:text-6xl">
+            Je fit. <span className="text-orange-400">Ongefilterd.</span>
+          </h2>
+        </div>
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-300/20 bg-orange-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-orange-100">
+          <span className="size-2 rounded-full bg-orange-400 shadow-[0_0_16px_rgba(251,146,60,0.9)]" />
+          Klaar om te delen
+        </div>
       </div>
 
       {feedback ? (
-        <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm font-bold text-orange-100">
+        <div className="rounded-2xl border border-orange-400/30 bg-orange-400/10 px-4 py-3 text-sm font-bold text-orange-100 backdrop-blur-xl">
           {feedback}
         </div>
       ) : null}
 
-      <div className="space-y-3">
+      <div className="dr-glass-card space-y-4 rounded-[2rem] p-3 sm:p-4">
         <SharePreviewCard
           score={result.score}
           quote={selectedQuote}
           originalImage={originalImage}
         />
-        <button
-          type="button"
-          onClick={handleShare}
-          disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
-          className="min-h-12 w-full rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none sm:w-auto"
-        >
-          {isSharing ? "Deelkaart maken..." : "Deel deze roast"}
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-6 text-zinc-400">
+            Export: 1080 × 1920 · veilig voor Reels en Stories
+          </p>
+          <button
+            type="button"
+            onClick={handleShare}
+            disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
+            className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm sm:w-auto"
+          >
+            {isSharing ? "Story maken..." : "Deel als Story ↗"}
+          </button>
+        </div>
       </div>
 
       <QuoteOptions
@@ -167,7 +176,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       <ResultList title="✨ Stylingtips" items={result.stylingTips} featured />
       <ShopSuggestions suggestions={result.shoppingSuggestions} />
 
-      <p className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-zinc-400">
+      <p className="dr-glass-card rounded-2xl p-4 text-sm leading-6 text-zinc-400">
         Outfit Roaster gebruikt AI voor stylingfeedback. De feedback is bedoeld als inspiratie en
         advies, niet als professioneel of definitief oordeel.
       </p>
@@ -176,21 +185,21 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         <button
           type="button"
           onClick={handleCopy}
-          className="min-h-12 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-black text-white transition hover:border-white/30 hover:bg-white/10"
+          className="dr-secondary-button min-h-12 px-4 py-3 text-sm"
         >
           Kopieer advies
         </button>
         <button
           type="button"
           onClick={handleDownloadPdf}
-          className="min-h-12 rounded-xl border border-orange-500/40 bg-orange-500/10 px-4 py-3 text-sm font-black text-orange-100 transition hover:bg-orange-500 hover:text-black"
+          className="dr-secondary-button min-h-12 px-4 py-3 text-sm"
         >
           Download PDF
         </button>
         <button
           type="button"
           onClick={onNewCheck}
-          className="min-h-12 rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black shadow-[0_16px_50px_rgba(255,106,0,0.18)] transition hover:bg-orange-400"
+          className="dr-primary-button min-h-12 px-4 py-3 text-sm"
         >
           Nieuwe check
         </button>
@@ -223,7 +232,7 @@ function SharePreviewCard({
 }) {
   return (
     <div
-      className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-white/10 bg-[#080808] shadow-2xl shadow-black/40"
+      className="relative aspect-[4/5] overflow-hidden rounded-[1.65rem] border border-white/10 bg-[#080808] shadow-[0_32px_100px_rgba(0,0,0,0.55)]"
     >
       <img
         src={originalImage}
@@ -231,7 +240,8 @@ function SharePreviewCard({
         data-share-photo="true"
         className="absolute inset-0 size-full object-cover opacity-95"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.02)_62%,rgba(0,0,0,0.8))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.36),rgba(0,0,0,0.02)_45%,rgba(0,0,0,0.92))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,rgba(255,106,0,0.22),transparent_30%)]" />
       <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -244,7 +254,7 @@ function SharePreviewCard({
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/15 bg-black/74 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-md sm:p-4">
+        <div className="rounded-3xl border border-white/15 bg-black/70 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:p-4">
           <div className="grid grid-cols-[5.9rem_1fr] items-center gap-3 sm:grid-cols-[6.6rem_1fr] sm:gap-4">
             <div className="rounded-2xl bg-orange-500 px-3 py-2 text-black">
               <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
@@ -280,8 +290,8 @@ function QuoteOptions({
   onSelect: (quote: string) => void;
 }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-zinc-950/70 p-5 sm:p-6">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
+    <section className="dr-glass-card rounded-[2rem] p-5 sm:p-6">
+      <p className="dr-kicker">
         Kies je favoriet
       </p>
       <h3 className="mt-2 text-2xl font-black text-white">Kies je roast</h3>
@@ -292,10 +302,10 @@ function QuoteOptions({
           return (
             <div
               key={quote}
-              className={`flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between ${
+              className={`flex flex-col gap-3 rounded-2xl border p-4 transition sm:flex-row sm:items-center sm:justify-between ${
                 isSelected
-                  ? "border-orange-500/60 bg-orange-500/10"
-                  : "border-white/10 bg-white/[0.035]"
+                  ? "border-orange-400/60 bg-orange-400/10 shadow-[0_14px_45px_rgba(255,106,0,0.1)]"
+                  : "border-white/10 bg-black/25 hover:border-white/20 hover:bg-white/[0.05]"
               }`}
             >
               <p className="font-bold leading-7 text-white">“{quote}”</p>
@@ -303,7 +313,7 @@ function QuoteOptions({
                 type="button"
                 onClick={() => onSelect(quote)}
                 disabled={isSelected}
-                className="min-h-10 shrink-0 rounded-xl border border-orange-500/40 px-4 py-2 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black disabled:cursor-default disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+                className="min-h-10 shrink-0 rounded-xl border border-orange-400/40 px-4 py-2 text-sm font-black text-orange-100 transition hover:bg-orange-400 hover:text-black disabled:cursor-default disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
               >
                 {isSelected ? "In gebruik" : "Gebruik deze"}
               </button>
@@ -317,18 +327,18 @@ function QuoteOptions({
 
 function ShopSuggestions({ suggestions }: { suggestions: OutfitResultData["shoppingSuggestions"] }) {
   return (
-    <ResultBlock title="🛍️ Shop suggesties">
+    <ResultBlock title="🛍️ Shop de upgrade">
       <div className="grid gap-3 sm:grid-cols-2">
         {suggestions.map((suggestion) => (
             <article
               key={`${suggestion.title}-${suggestion.productUrl}`}
-              className="dr-card-hover overflow-hidden rounded-2xl border border-white/10 bg-black/45 hover:border-orange-500/35 hover:bg-orange-500/[0.06]"
+              className="dr-card-hover group overflow-hidden rounded-3xl border border-white/10 bg-black/35 hover:border-orange-400/35 hover:bg-orange-400/[0.06]"
             >
               {suggestion.imageUrl ? (
                 <img
                   src={suggestion.imageUrl}
                   alt=""
-                  className="aspect-[4/3] w-full bg-zinc-900 object-cover"
+                  className="aspect-[4/3] w-full bg-zinc-900 object-cover transition duration-500 group-hover:scale-[1.03]"
                 />
               ) : null}
               <div className="p-5">
@@ -341,7 +351,7 @@ function ShopSuggestions({ suggestions }: { suggestions: OutfitResultData["shopp
                   href={suggestion.affiliateUrl}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_14px_45px_rgba(255,106,0,0.18)]"
+                  className="dr-primary-button mt-5 inline-flex min-h-11 items-center px-4 py-2 text-sm"
                 >
                   Bekijk bij Zalando
                 </a>
@@ -371,10 +381,10 @@ function ResultList({ title, items, featured = false }: { title: string; items: 
 function ResultBlock({ title, children, featured = false }: { title: string; children: React.ReactNode; featured?: boolean }) {
   return (
     <article
-      className={`dr-card-hover rounded-3xl border p-5 sm:p-6 ${
+      className={`dr-card-hover rounded-[2rem] border p-5 backdrop-blur-xl sm:p-6 ${
         featured
-          ? "border-orange-500/30 bg-orange-500/[0.08] shadow-[0_22px_80px_rgba(255,106,0,0.1)]"
-          : "border-white/10 bg-zinc-950/80 hover:border-white/20"
+          ? "border-orange-400/30 bg-[linear-gradient(145deg,rgba(255,106,0,0.12),rgba(255,255,255,0.035))] shadow-[0_22px_80px_rgba(255,106,0,0.1)]"
+          : "border-white/10 bg-zinc-950/65 hover:border-white/20"
       }`}
     >
       <h3 className="mb-4 text-xl font-black text-white">{title}</h3>
@@ -418,7 +428,7 @@ async function createShareImage(
   }
 
   const width = 1080;
-  const height = 1350;
+  const height = 1920;
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (!context) {
@@ -427,46 +437,56 @@ async function createShareImage(
 
   canvas.width = width;
   canvas.height = height;
+  context.fillStyle = "#050505";
+  context.fillRect(0, 0, width, height);
   drawImageCover(context, photo, width, height);
 
-  const topShade = context.createLinearGradient(0, 0, 0, 300);
-  topShade.addColorStop(0, "rgba(0,0,0,0.62)");
+  const topShade = context.createLinearGradient(0, 0, 0, 520);
+  topShade.addColorStop(0, "rgba(0,0,0,0.78)");
   topShade.addColorStop(1, "rgba(0,0,0,0)");
   context.fillStyle = topShade;
-  context.fillRect(0, 0, width, 300);
+  context.fillRect(0, 0, width, 520);
 
-  const bottomShade = context.createLinearGradient(0, 850, 0, height);
+  const bottomShade = context.createLinearGradient(0, 1050, 0, height);
   bottomShade.addColorStop(0, "rgba(0,0,0,0)");
-  bottomShade.addColorStop(0.38, "rgba(0,0,0,0.52)");
-  bottomShade.addColorStop(1, "rgba(0,0,0,0.96)");
+  bottomShade.addColorStop(0.35, "rgba(0,0,0,0.64)");
+  bottomShade.addColorStop(1, "rgba(0,0,0,0.98)");
   context.fillStyle = bottomShade;
-  context.fillRect(0, 800, width, height - 800);
+  context.fillRect(0, 1050, width, height - 1050);
 
+  // Instagram safe area: keep key content between y=250 and y=1670.
   context.fillStyle = "#ffffff";
-  context.font = "900 38px Arial, sans-serif";
-  context.fillText("Outfit", 64, 78);
+  context.font = "900 42px Arial, sans-serif";
+  context.fillText("Outfit", 72, 316);
   context.fillStyle = "#ff6a00";
-  context.fillText("Roaster", 178, 78);
+  context.fillText("Roaster", 198, 316);
   context.fillStyle = "rgba(255,255,255,0.78)";
-  context.font = "900 18px Arial, sans-serif";
-  context.fillText("ROAST MY OUTFIT", 64, 112);
+  context.font = "900 19px Arial, sans-serif";
+  context.fillText("AI FASHION VERDICT", 72, 354);
+
+  context.fillStyle = "rgba(8,8,8,0.82)";
+  roundRect(context, 56, 1280, 968, 360, 44);
+  context.fill();
+  context.strokeStyle = "rgba(255,255,255,0.18)";
+  context.lineWidth = 2;
+  context.stroke();
 
   context.fillStyle = "#ff6a00";
-  roundRect(context, 64, 1100, 220, 150, 28);
+  roundRect(context, 92, 1340, 218, 176, 30);
   context.fill();
   context.fillStyle = "#090909";
   context.font = "900 20px Arial, sans-serif";
-  context.fillText("SCORE", 92, 1142);
-  context.font = "900 58px Arial, sans-serif";
-  context.fillText(`${score}/10`, 92, 1212);
+  context.fillText("SCORE", 122, 1388);
+  context.font = "900 62px Arial, sans-serif";
+  context.fillText(`${score}/10`, 122, 1475);
 
   context.fillStyle = "#ffffff";
-  context.font = "900 44px Arial, sans-serif";
-  drawWrappedText(context, `“${selectedQuote}”`, 330, 1128, 680, 54, 3);
+  context.font = "900 46px Arial, sans-serif";
+  drawWrappedText(context, `“${selectedQuote}”`, 354, 1368, 610, 58, 4);
 
   context.fillStyle = "rgba(255,255,255,0.62)";
-  context.font = "900 18px Arial, sans-serif";
-  context.fillText("OUTFITROASTER.NL", 64, 1300);
+  context.font = "900 19px Arial, sans-serif";
+  context.fillText("OUTFITROASTER.NL", 92, 1588);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(

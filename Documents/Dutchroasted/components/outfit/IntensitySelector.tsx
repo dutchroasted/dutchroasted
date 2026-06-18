@@ -17,7 +17,7 @@ type IntensitySelectorProps = {
 export function IntensitySelector({ value, onChange }: IntensitySelectorProps) {
   return (
     <fieldset>
-      <legend className="text-sm font-black uppercase tracking-[0.16em] text-zinc-400">
+      <legend className="dr-kicker">
         Feedback stijl
       </legend>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -30,10 +30,10 @@ export function IntensitySelector({ value, onChange }: IntensitySelectorProps) {
               type="button"
               onClick={() => onChange(option.value)}
               aria-pressed={isSelected}
-              className={`dr-card-hover min-h-28 rounded-2xl border p-4 text-left transition ${
+              className={`dr-card-hover min-h-28 rounded-3xl border p-4 text-left transition ${
                 isSelected
-                  ? "border-orange-500 bg-orange-500 text-black shadow-[0_18px_50px_rgba(255,106,0,0.2)]"
-                  : "border-white/10 bg-white/[0.04] text-white hover:border-orange-500/50 hover:bg-white/[0.075]"
+                  ? "border-orange-300/70 bg-[linear-gradient(135deg,#ff9a4f,#ff6a00)] text-black shadow-[0_18px_50px_rgba(255,106,0,0.2)]"
+                  : "border-white/10 bg-black/25 text-white hover:border-orange-400/50 hover:bg-white/[0.075]"
               }`}
             >
               <span className="block text-base font-black leading-6">{option.label}</span>

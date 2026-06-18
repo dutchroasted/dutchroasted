@@ -8,9 +8,11 @@ export const metadata = {
 
 export default function OutfitCheckPage() {
   return (
-    <main className="min-h-screen overflow-hidden px-4 pb-16 pt-5 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-7">
-        <header className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/45 px-3 py-3 shadow-2xl shadow-black/30 backdrop-blur sm:px-4">
+    <main className="relative min-h-screen overflow-hidden px-4 pb-20 pt-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute left-[-12rem] top-24 size-[34rem] rounded-full bg-orange-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute right-[-16rem] top-[28rem] size-[38rem] rounded-full bg-fuchsia-500/[0.06] blur-[140px]" />
+      <div className="relative mx-auto flex w-full max-w-[90rem] flex-col gap-8">
+        <header className="dr-glass-card flex items-center justify-between gap-3 rounded-2xl px-3 py-3 sm:px-4">
           <a href="/" aria-label="Outfit Roaster home">
             <Logo />
           </a>
@@ -29,30 +31,37 @@ export default function OutfitCheckPage() {
 
           <a
             href="/pricing"
-            className="min-h-11 rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-center text-xs font-black text-white transition hover:border-orange-500/50 hover:bg-orange-500/10 sm:text-sm"
+            className="dr-secondary-button min-h-11 px-4 py-3 text-center text-xs sm:text-sm"
           >
             Premium
           </a>
         </header>
 
-        <section className="grid gap-6 py-4 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <section className="grid gap-8 py-4 sm:py-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-end">
           <div className="max-w-5xl">
-            <p className="inline-flex rounded-full border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-orange-300">
-              AI outfit checker
+            <p className="dr-kicker inline-flex rounded-full border border-orange-400/30 bg-orange-400/10 px-4 py-2">
+              AI fashion roast · 2026 edition
             </p>
-            <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white sm:text-6xl lg:text-8xl">
-              Upload je outfit. Krijg de waarheid.
+            <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.88] tracking-[-0.065em] text-white sm:text-7xl lg:text-[6.5rem]">
+              Je spiegel liegt. <span className="dr-gradient-text">Wij niet.</span>
             </h1>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-lg font-semibold leading-8 text-zinc-200">
-              Outfit Roaster checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt
-              iets aan hebt.
+            <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-zinc-400 sm:text-xl">
+              Upload je fit voor een scherpe Nederlandse roast, bruikbare styling-upgrades en
+              een Story die klaar is voor je groepsapp.
             </p>
-            <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-black uppercase tracking-[0.08em] text-zinc-400">
-              <span className="rounded-lg border border-white/10 bg-black/40 px-2 py-3">Roast</span>
-              <span className="rounded-lg border border-white/10 bg-black/40 px-2 py-3">Score</span>
-              <span className="rounded-lg border border-white/10 bg-black/40 px-2 py-3">Tips</span>
+          </div>
+          <div className="dr-glass-card rounded-[2rem] p-5 sm:p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-black uppercase tracking-[0.16em] text-white">Wat je krijgt</p>
+              <span className="rounded-full bg-orange-400 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-black">± 30 sec</span>
+            </div>
+            <p className="mt-5 text-lg font-semibold leading-8 text-zinc-200">
+              Geen brave AI-pap. Wel drie punchlines, een score en concrete fixes.
+            </p>
+            <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300">
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">3 roasts</span>
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">Fit score</span>
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">9:16 Story</span>
             </div>
           </div>
         </section>

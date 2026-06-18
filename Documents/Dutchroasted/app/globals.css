@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
+  --background: #040404;
   --foreground: #f7f7f2;
   --muted: #a8a8a1;
   --accent: #ff6a00;
@@ -18,8 +18,9 @@ html {
 body {
   min-height: 100vh;
   background:
-    linear-gradient(135deg, rgba(255, 106, 0, 0.12) 0 1px, transparent 1px 120px),
-    linear-gradient(180deg, #0a0a0a 0%, #030303 46%, #0e0a07 100%);
+    radial-gradient(circle at 20% 0%, rgba(255, 106, 0, 0.13), transparent 28rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 96px),
+    linear-gradient(180deg, #090909 0%, #020202 48%, #0b0705 100%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -38,6 +39,74 @@ body {
 
 .dr-card-hover:hover {
   transform: translateY(-3px);
+}
+
+.dr-glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
+    rgba(6, 6, 6, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 28px 90px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(24px);
+}
+
+.dr-kicker {
+  color: #fdba74;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.dr-gradient-text {
+  background: linear-gradient(100deg, #ffffff 0%, #fdba74 42%, #ff6a00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dr-primary-button,
+.dr-secondary-button {
+  border-radius: 1rem;
+  font-weight: 900;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dr-primary-button {
+  background: linear-gradient(135deg, #ff8a32, #ff5c00);
+  color: #090909;
+  box-shadow: 0 18px 55px rgba(255, 106, 0, 0.25);
+}
+
+.dr-primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 70px rgba(255, 106, 0, 0.34);
+}
+
+.dr-primary-button:disabled {
+  cursor: not-allowed;
+  background: #3f3f46;
+  color: #a1a1aa;
+  box-shadow: none;
+  transform: none;
+}
+
+.dr-secondary-button {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.055);
+  color: #ffffff;
+}
+
+.dr-secondary-button:hover {
+  border-color: rgba(251, 146, 60, 0.45);
+  background: rgba(255, 106, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 @keyframes dr-fade-in {

@@ -129,11 +129,23 @@ export function OutfitCheckForm() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+    <div className="grid gap-6 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
       <form
         onSubmit={handleSubmit}
-        className="rounded-3xl border border-white/10 bg-zinc-950/75 p-4 shadow-2xl shadow-black/40 backdrop-blur sm:p-6"
+        className="dr-glass-card relative rounded-[2rem] p-4 sm:p-6 xl:sticky xl:top-5"
       >
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div>
+            <p className="dr-kicker">Stap 1 · Upload & stijl</p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.03em] text-white">
+              Zet je fit in de spotlight.
+            </h2>
+          </div>
+          <span className="hidden rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.13em] text-emerald-200 sm:inline-flex">
+            Foto niet opgeslagen
+          </span>
+        </div>
+
         <FreeCheckLimitNotice
           used={Math.min(dailyLimit.used, FREE_CHECK_LIMIT)}
           limit={FREE_CHECK_LIMIT}
@@ -156,8 +168,9 @@ export function OutfitCheckForm() {
         />
 
         {fileName ? (
-          <p className="mt-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-zinc-300">
-            Gekozen: {fileName}
+          <p className="mt-3 flex items-center gap-2 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
+            <span className="size-2 rounded-full bg-emerald-400" />
+            Klaar voor de roast: {fileName}
           </p>
         ) : null}
 
@@ -176,7 +189,7 @@ export function OutfitCheckForm() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="mt-7 min-h-14 w-full rounded-2xl bg-orange-500 px-5 py-4 text-base font-black text-black shadow-[0_18px_60px_rgba(255,106,0,0.24)] transition hover:bg-orange-400 hover:shadow-[0_22px_70px_rgba(255,106,0,0.28)] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
+          className="dr-primary-button mt-7 min-h-16 w-full px-5 py-4 text-base"
         >
           {isLoading ? "Even kijken..." : isLimitReached ? "Gratis check gebruikt" : "Check mijn outfit"}
         </button>
@@ -200,7 +213,7 @@ export function OutfitCheckForm() {
         ) : null}
       </form>
 
-      <div className="min-h-[28rem] rounded-3xl border border-white/10 bg-black/35 p-4 shadow-2xl shadow-black/35 sm:p-6">
+      <div className="dr-glass-card min-h-[32rem] rounded-[2rem] p-4 sm:p-6">
         {isLoading ? <LoadingState message={loadingMessage} /> : null}
         {!isLoading && result ? (
           <div className="space-y-5">
@@ -220,13 +233,24 @@ export function OutfitCheckForm() {
           </div>
         ) : null}
         {!isLoading && !result ? (
-          <div className="flex min-h-[24rem] items-center justify-center rounded-3xl border border-dashed border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.045),rgba(255,106,0,0.035))] p-8 text-center">
+          <div className="relative flex min-h-[30rem] items-center justify-center overflow-hidden rounded-[1.6rem] border border-dashed border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,106,0,0.15),transparent_35%),linear-gradient(145deg,rgba(255,255,255,0.05),rgba(0,0,0,0.3))] p-8 text-center">
+            <div className="absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/10 blur-3xl" />
             <div>
-              <p className="text-3xl font-black leading-tight text-white">Je verdict verschijnt hier.</p>
-              <p className="mt-4 max-w-md leading-7 text-zinc-500">
-                Upload je outfitfoto. Outfit Roaster kijkt naar stijl, kleur, pasvorm, vibe en
-                of de gelegenheid je fit verdient.
+              <div className="relative mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] border border-orange-400/25 bg-orange-400/10 text-3xl shadow-[0_20px_70px_rgba(255,106,0,0.15)]">
+                ✦
+              </div>
+              <p className="relative text-3xl font-black leading-tight tracking-[-0.03em] text-white sm:text-4xl">
+                Hier landt je verdict.
               </p>
+              <p className="mt-4 max-w-md leading-7 text-zinc-500">
+                AI kijkt naar kleding, kleur, pasvorm en vibe. Jij krijgt drie scherpe punchlines,
+                concrete upgrades en een deelkaart voor je Story.
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center gap-2 text-[10px] font-black uppercase tracking-[0.13em] text-zinc-400">
+                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Roast</span>
+                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Score</span>
+                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Story card</span>
+              </div>
             </div>
           </div>
         ) : null}

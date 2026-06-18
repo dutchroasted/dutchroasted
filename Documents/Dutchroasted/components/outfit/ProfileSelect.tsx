@@ -8,7 +8,7 @@ type ProfileSelectProps = {
 export function ProfileSelect({ value, onChange }: ProfileSelectProps) {
   return (
     <fieldset>
-      <legend className="text-sm font-black uppercase tracking-[0.16em] text-zinc-400">
+      <legend className="dr-kicker">
         Profiel <span className="normal-case tracking-normal text-zinc-600">(optioneel)</span>
       </legend>
       <p className="mt-2 text-sm leading-6 text-zinc-500">
@@ -21,10 +21,10 @@ export function ProfileSelect({ value, onChange }: ProfileSelectProps) {
             type="button"
             onClick={() => onChange(profile)}
             aria-pressed={profile === value}
-            className={`dr-card-hover min-h-12 rounded-xl border px-3 py-3 text-sm font-black transition ${
+            className={`dr-card-hover min-h-12 rounded-2xl border px-3 py-3 text-sm font-black transition ${
               profile === value
-                ? "border-orange-500 bg-orange-500 text-black shadow-[0_18px_50px_rgba(255,106,0,0.2)]"
-                : "border-white/10 bg-white/[0.04] text-zinc-200 hover:border-orange-500/45 hover:bg-white/[0.075]"
+                ? "border-orange-300/70 bg-[linear-gradient(135deg,#ff9a4f,#ff6a00)] text-black shadow-[0_18px_50px_rgba(255,106,0,0.2)]"
+                : "border-white/10 bg-black/25 text-zinc-200 hover:border-orange-400/45 hover:bg-white/[0.075]"
             }`}
           >
             {profile}

@@ -158,10 +158,10 @@ export function ImageUpload({
       <label
         htmlFor="outfit-image"
         aria-disabled={disabled || isConvertingHeic}
-        className={`dr-card-hover group relative flex min-h-[23rem] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-orange-500/45 bg-[linear-gradient(145deg,rgba(255,106,0,0.12),rgba(255,255,255,0.035)_42%,rgba(0,0,0,0.72))] p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_28px_90px_rgba(0,0,0,0.35)] sm:min-h-[30rem] sm:p-6 ${
+        className={`dr-card-hover group relative flex min-h-[22rem] flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-orange-400/40 bg-[radial-gradient(circle_at_50%_20%,rgba(255,129,40,0.22),transparent_34%),linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,106,0,0.04)_45%,rgba(0,0,0,0.62))] p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_28px_90px_rgba(0,0,0,0.35)] sm:min-h-[28rem] sm:p-6 ${
           disabled || isConvertingHeic
             ? "cursor-not-allowed opacity-60"
-            : "cursor-pointer hover:border-orange-300 hover:shadow-[0_28px_90px_rgba(255,106,0,0.14)]"
+            : "cursor-pointer hover:border-orange-300 hover:shadow-[0_28px_90px_rgba(255,106,0,0.2)]"
         }`}
       >
         {isConvertingHeic ? (
@@ -177,7 +177,7 @@ export function ImageUpload({
             <img
               src={previewUrl}
               alt="Preview van je outfit"
-              className="max-h-[34rem] w-full rounded-xl border border-white/10 bg-black object-contain shadow-2xl shadow-black/50"
+              className="max-h-[32rem] w-full rounded-[1.25rem] border border-white/10 bg-black object-contain shadow-2xl shadow-black/50"
             />
             <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/70 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white backdrop-blur">
               Preview
@@ -185,14 +185,14 @@ export function ImageUpload({
           </div>
         ) : (
           <div className="max-w-lg">
-            <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-orange-500 text-3xl font-black text-black shadow-[0_18px_60px_rgba(255,106,0,0.28)]">
-              +
+            <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.6rem] border border-orange-200/40 bg-orange-400 text-4xl font-black text-black shadow-[0_18px_70px_rgba(255,106,0,0.35)] transition duration-300 group-hover:rotate-3 group-hover:scale-105">
+              ↑
             </div>
-            <p className="text-4xl font-black leading-none text-white sm:text-5xl">
-              Drop je fit.
+            <p className="text-4xl font-black leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl">
+              Drop. Roast. Deel.
             </p>
-            <p className="mt-4 text-lg font-semibold leading-8 text-zinc-300">
-              Sleep je foto hierheen of klik om je outfit op de digitale catwalk te zetten.
+            <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-7 text-zinc-300 sm:text-lg">
+              Sleep je outfitfoto hierheen of tik om je digitale catwalk te openen.
             </p>
             <p className="mt-6 inline-flex rounded-full border border-orange-500/35 bg-black/50 px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-orange-200">
               JPG, PNG, WEBP of HEIC · max 10 MB
@@ -208,7 +208,7 @@ export function ImageUpload({
         disabled={disabled || isConvertingHeic}
         onChange={(event) => handleFile(event.target.files?.[0])}
       />
-      <p className="mt-3 text-sm leading-6 text-zinc-500">
+      <p className="mt-3 px-1 text-xs leading-5 text-zinc-500 sm:text-sm sm:leading-6">
         Upload alleen foto’s van jezelf of van iemand die hier toestemming voor heeft gegeven.
         Je foto wordt alleen gebruikt voor deze outfitcheck en niet opgeslagen door Outfit Roaster.
       </p>
