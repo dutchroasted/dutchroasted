@@ -9,7 +9,7 @@ const occasionLabels: Record<OutfitOccasion, string> = {
   Casual: "Casual",
   Werk: "Werk",
   Date: "Date",
-  Feest: "Feest",
+  Sportschool: "Sportschool",
   Festival: "Festival",
   Bruiloft: "Bruiloft",
   Sollicitatie: "Sollicitatie",

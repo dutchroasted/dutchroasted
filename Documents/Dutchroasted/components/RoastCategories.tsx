@@ -2,7 +2,7 @@ const categories = [
   ["Casual", "Check of je dagelijkse outfit relaxed of vooral per ongeluk is."],
   ["Werk", "Professioneel zonder dat je eruitziet alsof je in een spreadsheet woont."],
   ["Date", "Eerlijk advies voor outfits met intentie, niet met paniek."],
-  ["Feest", "Van prima aanwezig naar binnenkomen met een punt."],
+  ["Sportschool", "Van trainingsset naar een sportlook met een duidelijk plan."],
   ["Festival", "Praktisch, uitgesproken en niet alsof je verdwaald bent bij de glitterkraam."],
   ["Bruiloft", "Netjes, feestelijk en zonder de bruid visueel te tackelen."],
   ["Sollicitatie", "Sterk, verzorgd en geloofwaardig voor de eerste indruk."],

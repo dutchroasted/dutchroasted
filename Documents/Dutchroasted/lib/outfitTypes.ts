@@ -4,7 +4,7 @@ export const OUTFIT_OCCASIONS = [
   "Casual",
   "Werk",
   "Date",
-  "Feest",
+  "Sportschool",
   "Festival",
   "Bruiloft",
   "Sollicitatie",

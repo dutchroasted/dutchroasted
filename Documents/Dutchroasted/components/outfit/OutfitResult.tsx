@@ -5,6 +5,12 @@ import { jsPDF } from "jspdf";
 import { getAffiliateUrl } from "@/lib/affiliate";
 import type { OutfitResultData } from "@/lib/outfitTypes";
 
+const FALLBACK_QUOTE_OPTIONS = [
+  "Je schoenen en kleding zitten duidelijk niet in dezelfde groepsapp.",
+  "De basis staat, maar de styling mist nog een eindredacteur.",
+  "Deze look heeft potentie, maar wacht nog op een duidelijke beslissing.",
+];
+
 type OutfitResultProps = {
   result: OutfitResultData;
   originalImage: string;
@@ -18,6 +24,10 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   const [isSharing, setIsSharing] = useState(false);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
+  const quoteOptions = useMemo(
+    () => getQuoteOptions(result.shareQuote, result.alternativeQuotes),
+    [result],
+  );
 
   useEffect(() => {
     setSelectedQuote(result.shareQuote);
@@ -129,7 +139,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       </div>
 
       <QuoteOptions
-        quotes={result.alternativeQuotes}
+        quotes={quoteOptions}
         selectedQuote={selectedQuote}
         onSelect={setSelectedQuote}
       />
@@ -188,6 +198,19 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       </div>
     </section>
   );
+}
+
+function getQuoteOptions(shareQuote: string, alternativeQuotes: string[]) {
+  return [shareQuote, ...alternativeQuotes, ...FALLBACK_QUOTE_OPTIONS]
+    .map((quote) => quote.trim())
+    .filter(
+      (quote, index, quotes) =>
+        quote &&
+        quotes.findIndex(
+          (candidate) => candidate.toLowerCase() === quote.toLowerCase(),
+        ) === index,
+    )
+    .slice(0, 3);
 }
 
 function SharePreviewCard({
@@ -262,7 +285,7 @@ function QuoteOptions({
       <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
         Kies je favoriet
       </p>
-      <h3 className="mt-2 text-2xl font-black text-white">Andere roasts</h3>
+      <h3 className="mt-2 text-2xl font-black text-white">Kies je roast</h3>
       <div className="mt-5 space-y-3">
         {quotes.map((quote) => {
           const isSelected = quote === selectedQuote;

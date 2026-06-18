@@ -6,6 +6,13 @@ import {
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
+const LEGACY_PARTY_OCCASION = "Feest";
+const FALLBACK_SHARE_QUOTE = "Deze outfit twijfelt harder dan nodig.";
+const FALLBACK_ALTERNATIVE_QUOTES = [
+  "Je schoenen en kleding zitten duidelijk niet in dezelfde groepsapp.",
+  "De basis staat, maar de styling mist nog een eindredacteur.",
+  "Deze look heeft potentie, maar wacht nog op een duidelijke beslissing.",
+];
 const FALLBACK_ROAST = [
   "Je outfit heeft een plan, maar de kledingstukken hebben de vergadering gemist.",
   "De basis staat, alleen de styling zoekt nog naar een duidelijke richting.",
@@ -59,6 +66,8 @@ Belangrijke grenzen:
   "Die sneakers zijn klaar voor Basic-Fit, maar je shirt denkt dat jullie naar kantoor gaan."
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
+- Geef precies 3 deelbare quotes totaal: 1 shareQuote en exact 2 unieke alternativeQuotes.
+- Alle quotes zijn Nederlands, maximaal 12 woorden en dupliceren elkaar niet.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
@@ -68,7 +77,7 @@ Output altijd als geldige JSON:
 {
   "roast": "string",
   "shareQuote": "string",
-  "alternativeQuotes": ["string", "string", "string"],
+  "alternativeQuotes": ["string", "string"],
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],
@@ -83,8 +92,14 @@ Output altijd als geldige JSON:
 }
 `;
 
-function isValidOccasion(value: unknown): value is string {
-  return typeof value === "string" && OUTFIT_OCCASIONS.includes(value as never);
+function normalizeOccasion(value: unknown) {
+  if (value === LEGACY_PARTY_OCCASION) {
+    return "Sportschool" as const;
+  }
+
+  return typeof value === "string" && OUTFIT_OCCASIONS.includes(value as never)
+    ? value
+    : null;
 }
 
 function isValidIntensity(value: unknown): value is string {
@@ -119,10 +134,12 @@ function normalizeOutfitResult(
 ): OutfitResultData {
   const roast = normalizeRoast(roastText);
   const providedQuotes = toStringArray(source.alternativeQuotes);
-  const shareQuote =
+  const shareQuote = normalizeQuote(
     toNonEmptyString(source.shareQuote) ??
-    toNonEmptyString(source.title) ??
-    makeShareQuote(roast);
+      toNonEmptyString(source.title) ??
+      makeShareQuote(roast),
+    FALLBACK_SHARE_QUOTE,
+  );
   const stylingTips = firstNonEmptyStringArray(
     source.stylingTips,
     source.tips,
@@ -268,21 +285,29 @@ function makeShareQuote(roast: string) {
 }
 
 function fillAlternativeQuotes(quotes: string[], shareQuote: string) {
-  const fallbacks = [
-    "Deze outfit heeft ambitie, maar mist nog een duidelijke richting.",
-    "De basis staat, nu de styling nog overtuigend afmaken.",
-    "Met scherpere keuzes krijgt deze outfit meteen meer karakter.",
-  ];
-  const uniqueQuotes = [...quotes, ...fallbacks].filter(
+  const normalizedQuotes = quotes.map((quote) => normalizeQuote(quote, ""));
+  const uniqueQuotes = [...normalizedQuotes, ...FALLBACK_ALTERNATIVE_QUOTES].filter(
     (quote, index, allQuotes) =>
+      quote.length > 0 &&
       quote.toLowerCase() !== shareQuote.toLowerCase() &&
       allQuotes.findIndex((item) => item.toLowerCase() === quote.toLowerCase()) === index,
   );
 
-  return uniqueQuotes.slice(0, 3);
+  return uniqueQuotes.slice(0, 2);
 }
 
-function containsLikelyEnglish(text: string) {
+function normalizeQuote(value: string, fallback: string) {
+  const firstSentence = value.split(/(?<=[.!?])\s+/)[0]?.trim() ?? "";
+  const words = firstSentence.split(/\s+/).filter(Boolean);
+  const shortened = words.slice(0, 12).join(" ");
+  const quote = words.length > 12
+    ? `${shortened.replace(/[.!?]+$/, "")}…`
+    : shortened;
+
+  return quote && !containsLikelyEnglish(quote, 1) ? quote : fallback;
+}
+
+function containsLikelyEnglish(text: string, minimumSignals = 2) {
   const normalized = ` ${text.toLowerCase().replace(/[^a-zà-ÿ]+/g, " ")} `;
   const englishSignals = [
     " the ",
@@ -300,7 +325,7 @@ function containsLikelyEnglish(text: string) {
     " you should ",
   ];
 
-  return englishSignals.filter((signal) => normalized.includes(signal)).length >= 2;
+  return englishSignals.filter((signal) => normalized.includes(signal)).length >= minimumSignals;
 }
 
 export async function POST(request: Request) {
@@ -310,8 +335,9 @@ export async function POST(request: Request) {
       occasion?: unknown;
       intensity?: unknown;
     };
+    const occasion = normalizeOccasion(body.occasion);
 
-    if (!isValidImage(body.image) || !isValidOccasion(body.occasion) || !isValidIntensity(body.intensity)) {
+    if (!isValidImage(body.image) || !occasion || !isValidIntensity(body.intensity)) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
     }
 
@@ -325,10 +351,12 @@ export async function POST(request: Request) {
     });
 
     const userPrompt = `
-Gelegenheid: ${body.occasion}
+Gelegenheid: ${occasion}
 Feedbackstijl: ${body.intensity}
 
 Regels:
+- Beoordeel de outfit specifiek voor de gekozen gelegenheid.
+- Bij Sportschool: herken sportkleding, trainingsschoenen, ademende materialen, bewegingsvrijheid en praktische laagjes. Beoordeel of de outfit logisch en stijlvol werkt voor trainen.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
@@ -346,13 +374,13 @@ Regels:
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
 - Genereer altijd een apart veld shareQuote.
-- Genereer daarnaast exact 3 verschillende alternativeQuotes.
+- Genereer daarnaast exact 2 verschillende alternativeQuotes.
 - Kies de sterkste en meest deelbare quote als shareQuote.
-- Alle vier quotes zijn uitsluitend Nederlands, maximaal 12 woorden en precies één zin.
+- De 3 quotes totaal zijn uitsluitend Nederlands, maximaal 12 woorden en precies één zin.
 - Gebruik geen Engelse woorden in de quotes.
 - Laat iedere quote waar mogelijk een zichtbaar kledingdetail noemen, zoals jas, broek, schoenen, kleur, pasvorm of silhouet.
 - Alle quotes zijn scherp, grappig, modieus en geschikt voor sociale media.
-- De vier quotes mogen niet hetzelfde idee of dezelfde formulering herhalen.
+- De 3 quotes mogen niet hetzelfde idee of dezelfde formulering herhalen.
 - shareQuote is een korte, harde one-liner voor het deelbeeld.
 - shareQuote is maximaal 12 woorden, precies 1 zin en bevat geen tweede zin.
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
@@ -381,7 +409,7 @@ Regels:
 {
   "roast": "string",
   "shareQuote": "string",
-  "alternativeQuotes": ["string", "string", "string"],
+  "alternativeQuotes": ["string", "string"],
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],
@@ -451,7 +479,7 @@ Regels:
         {
           role: "user",
           content:
-            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 3 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Klink direct, gevat en een tikje brutaal, maar roast alleen kleding en styling. Schrijf nooit een vierde roastzin. Controleer alle arrays en shopsuggesties.",
+            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. De 3 quotes totaal mogen elkaar niet dupliceren. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Klink direct, gevat en een tikje brutaal, maar roast alleen kleding en styling. Schrijf nooit een vierde roastzin. Controleer alle arrays en shopsuggesties.",
         },
       ];
 
