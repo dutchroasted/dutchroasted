@@ -18,7 +18,7 @@ import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
 import { ProfileSelect } from "./ProfileSelect";
 
-const FREE_CHECK_LIMIT = 1;
+const FREE_CHECK_LIMIT = 3;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
@@ -191,13 +191,13 @@ export function OutfitCheckForm() {
           disabled={!canSubmit}
           className="dr-primary-button mt-7 min-h-16 w-full px-5 py-4 text-base"
         >
-          {isLoading ? "Even kijken..." : isLimitReached ? "Gratis check gebruikt" : "Check mijn outfit"}
+          {isLoading ? "Even kijken..." : isLimitReached ? "3 gratis checks gebruikt" : "Check mijn outfit"}
         </button>
 
         {isLimitReached ? (
           <div className="mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
             <p className="text-sm font-bold leading-6 text-orange-100">
-              Je gratis outfit check voor vandaag is gebruikt. Premium komt eraan.
+              Je 3 gratis outfit checks voor vandaag zijn gebruikt. Premium komt eraan.
             </p>
             <button
               type="button"

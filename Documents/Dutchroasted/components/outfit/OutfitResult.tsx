@@ -131,17 +131,14 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           quote={selectedQuote}
           originalImage={originalImage}
         />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm leading-6 text-zinc-400">
-            Export: 1080 × 1920 · veilig voor Reels en Stories
-          </p>
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={handleShare}
             disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
             className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm sm:w-auto"
           >
-            {isSharing ? "Story maken..." : "Deel als Story ↗"}
+            {isSharing ? "Story maken..." : "Deel deze roast"}
           </button>
         </div>
       </div>

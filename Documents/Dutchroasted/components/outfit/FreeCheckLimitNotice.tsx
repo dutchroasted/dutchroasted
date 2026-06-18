@@ -14,11 +14,12 @@ export function FreeCheckLimitNotice({ used, limit, isLimitReached }: FreeCheckL
       </p>
       {isLimitReached ? (
         <p className="mt-2 text-sm font-bold leading-6 text-orange-100">
-          Je gratis outfit check voor vandaag is gebruikt. Premium komt eraan.
+          Je {limit} gratis outfit checks voor vandaag zijn gebruikt. Premium komt eraan.
         </p>
       ) : (
         <p className="mt-2 text-sm leading-6 text-zinc-400">
-          Gratis starten met een scherpe outfit check. Morgen staat de teller weer op nul.
+          Je hebt nog {limit - used} gratis {limit - used === 1 ? "check" : "checks"} over.
+          Morgen staat de teller weer op nul.
         </p>
       )}
       <p className="mt-3 text-xs leading-5 text-zinc-500">
