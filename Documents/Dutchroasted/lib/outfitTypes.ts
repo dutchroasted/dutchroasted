@@ -17,8 +17,12 @@ export type OutfitOccasion = (typeof OUTFIT_OCCASIONS)[number];
 export type OutfitIntensity = (typeof OUTFIT_INTENSITIES)[number];
 
 export type ShoppingSuggestion = {
-  label: string;
+  title: string;
   reason: string;
+  imageUrl: string;
+  productUrl: string;
+  affiliateUrl: string;
+  category: string;
   searchQuery: string;
 };
 

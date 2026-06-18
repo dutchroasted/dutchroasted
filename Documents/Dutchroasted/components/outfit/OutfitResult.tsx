@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
-import { getAffiliateUrl } from "@/lib/affiliate";
 import type { OutfitResultData } from "@/lib/outfitTypes";
 
 const FALLBACK_QUOTE_OPTIONS = [
@@ -320,33 +319,35 @@ function ShopSuggestions({ suggestions }: { suggestions: OutfitResultData["shopp
   return (
     <ResultBlock title="🛍️ Shop suggesties">
       <div className="grid gap-3 sm:grid-cols-2">
-        {suggestions.map((suggestion) => {
-          const affiliateUrl = getAffiliateUrl(suggestion.searchQuery);
-
-          return (
+        {suggestions.map((suggestion) => (
             <article
-              key={`${suggestion.label}-${suggestion.searchQuery}`}
-              className="dr-card-hover rounded-2xl border border-white/10 bg-black/45 p-5 hover:border-orange-500/35 hover:bg-orange-500/[0.06]"
+              key={`${suggestion.title}-${suggestion.productUrl}`}
+              className="dr-card-hover overflow-hidden rounded-2xl border border-white/10 bg-black/45 hover:border-orange-500/35 hover:bg-orange-500/[0.06]"
             >
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
-                Waarom dit helpt
-              </p>
-              <h4 className="mt-2 text-lg font-black leading-6 text-white">{suggestion.label}</h4>
-              <p className="mt-3 text-sm leading-6 text-zinc-400">{suggestion.reason}</p>
-              <a
-                href={affiliateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_14px_45px_rgba(255,106,0,0.18)]"
-              >
-                Zoek dit item
-              </a>
-              <p className="mt-3 text-xs leading-5 text-zinc-500">
-                Affiliate links komen later.
-              </p>
+              {suggestion.imageUrl ? (
+                <img
+                  src={suggestion.imageUrl}
+                  alt=""
+                  className="aspect-[4/3] w-full bg-zinc-900 object-cover"
+                />
+              ) : null}
+              <div className="p-5">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
+                  {suggestion.category}
+                </p>
+                <h4 className="mt-2 text-lg font-black leading-6 text-white">{suggestion.title}</h4>
+                <p className="mt-3 text-sm leading-6 text-zinc-400">{suggestion.reason}</p>
+                <a
+                  href={suggestion.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_14px_45px_rgba(255,106,0,0.18)]"
+                >
+                  Bekijk bij Zalando
+                </a>
+              </div>
             </article>
-          );
-        })}
+          ))}
       </div>
     </ResultBlock>
   );
@@ -601,7 +602,7 @@ function formatAdvice(result: OutfitResultData) {
     ...result.stylingTips.map((item) => `- ${item}`),
     "",
     "🛍️ Shop suggesties",
-    ...result.shoppingSuggestions.map((item) => `- ${item.label}: ${item.reason}`),
+    ...result.shoppingSuggestions.map((item) => `- ${item.title}: ${item.reason}`),
     "",
     "Gemaakt met OutfitRoaster.nl",
   ].join("\n");
@@ -669,7 +670,7 @@ function downloadResultPdf(result: OutfitResultData) {
   addSection("Wat kan beter", result.canImprove);
   addSection(
     "Shop suggesties",
-    result.shoppingSuggestions.map((item) => `${item.label}: ${item.reason}`),
+    result.shoppingSuggestions.map((item) => `${item.title}: ${item.reason}`),
   );
 
   y += 8;

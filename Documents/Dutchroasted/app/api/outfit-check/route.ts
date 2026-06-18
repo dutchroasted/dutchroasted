@@ -34,6 +34,15 @@ const ROAST_DETAIL_TERMS = [
   "look",
   "stijl",
 ];
+const SHOP_CATEGORY_CONFIG = {
+  schoenen: "schoenen",
+  broeken: "broeken",
+  tops: "tops",
+  jassen: "jassen",
+  accessoires: "accessoires",
+  sportkleding: "sportkleding",
+} as const;
+type ShopCategory = keyof typeof SHOP_CATEGORY_CONFIG;
 
 const currentFashionContext = `
 Actuele modecontext:
@@ -83,8 +92,9 @@ Output altijd als geldige JSON:
   "stylingTips": ["string"],
   "shoppingSuggestions": [
     {
-      "label": "string",
+      "title": "string",
       "reason": "string",
+      "category": "schoenen | broeken | tops | jassen | accessoires | sportkleding",
       "searchQuery": "string"
     }
   ],
@@ -262,19 +272,41 @@ function normalizeShoppingSuggestions(value: unknown): OutfitResultData["shoppin
     }
 
     const suggestion = item as Record<string, unknown>;
-    const label = toNonEmptyString(suggestion.label);
-    if (!label) {
+    const title =
+      toNonEmptyString(suggestion.title) ??
+      toNonEmptyString(suggestion.label);
+    if (!title) {
       return [];
     }
+    const category = normalizeShopCategory(suggestion.category);
+    const searchQuery =
+      toNonEmptyString(suggestion.searchQuery) ??
+      `${title} ${SHOP_CATEGORY_CONFIG[category]}`;
+    const productUrl = createControlledZalandoUrl(searchQuery);
 
     return [{
-      label,
+      title,
       reason:
         toNonEmptyString(suggestion.reason) ??
         "Dit item kan meer samenhang en richting aan de outfit geven.",
-      searchQuery: toNonEmptyString(suggestion.searchQuery) ?? label,
+      imageUrl: "",
+      productUrl,
+      // Later: append approved affiliate tracking parameters here.
+      affiliateUrl: productUrl,
+      category,
+      searchQuery,
     }];
   });
+}
+
+function normalizeShopCategory(value: unknown): ShopCategory {
+  return typeof value === "string" && value in SHOP_CATEGORY_CONFIG
+    ? value as ShopCategory
+    : "accessoires";
+}
+
+function createControlledZalandoUrl(searchQuery: string) {
+  return `https://www.zalando.nl/catalogus/?q=${encodeURIComponent(searchQuery)}`;
 }
 
 function makeShareQuote(roast: string) {
@@ -397,8 +429,9 @@ Regels:
 - Voorbeeld goed: "De broek breekt het silhouet. Een slankere pasvorm maakt het geheel direct scherper."
 - Gebruik actuele modecontext als dat helpt, maar verzin geen merken of exacte trends die je niet uit de foto kunt afleiden
 - Werkt goed, kan beter en stylingtips bevatten elk 3 tot 5 concrete punten
-- Shopping suggestions zijn algemeen, geen echte affiliate links
-- Shopping suggestions hebben label, reason en searchQuery
+- Shopping suggestions bevatten alleen title, reason, category en searchQuery.
+- Gebruik voor category uitsluitend: schoenen, broeken, tops, jassen, accessoires of sportkleding.
+- Genereer geen productUrl, affiliateUrl, imageUrl, domeinnaam of willekeurige Zalando-link; de server vult gecontroleerde Zalando-links in.
 - Geef 3 tot 5 shopping suggestions die passen bij de outfit, gelegenheid en actuele modecontext
 - Voorbeeld searchQuery: "minimalistische witte sneakers heren", "donkere rechte jeans", "overshirt in crème"
 - Geen seksuele opmerkingen
@@ -415,8 +448,9 @@ Regels:
   "stylingTips": ["string"],
   "shoppingSuggestions": [
     {
-      "label": "string",
+      "title": "string",
       "reason": "string",
+      "category": "schoenen | broeken | tops | jassen | accessoires | sportkleding",
       "searchQuery": "string"
     }
   ],
