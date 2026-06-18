@@ -6,6 +6,8 @@ import {
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
+const FALLBACK_ROAST =
+  "Deze outfit heeft een bruikbare basis, maar mist nog één duidelijke stijlkeuze die alles samenbrengt.";
 
 const currentFashionContext = `
 Actuele modecontext:
@@ -64,115 +66,172 @@ function isValidImage(value: unknown): value is string {
   return typeof value === "string" && /^data:image\/jpeg;base64,/.test(value);
 }
 
-function isOutfitResult(value: unknown): value is OutfitResultData {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-
-  const result = value as Partial<OutfitResultData>;
-  return (
-    typeof result.roast === "string" &&
-    typeof result.shareQuote === "string" &&
-    Array.isArray(result.alternativeQuotes) &&
-    result.alternativeQuotes.length === 3 &&
-    result.alternativeQuotes.every((item) => typeof item === "string") &&
-    Array.isArray(result.worksWell) &&
-    result.worksWell.every((item) => typeof item === "string") &&
-    Array.isArray(result.canImprove) &&
-    result.canImprove.every((item) => typeof item === "string") &&
-    Array.isArray(result.stylingTips) &&
-    result.stylingTips.every((item) => typeof item === "string") &&
-    Array.isArray(result.shoppingSuggestions) &&
-    result.shoppingSuggestions.every(
-      (item) =>
-        item &&
-        typeof item === "object" &&
-        typeof (item as { label?: unknown }).label === "string" &&
-        typeof (item as { reason?: unknown }).reason === "string" &&
-        typeof (item as { searchQuery?: unknown }).searchQuery === "string",
-    ) &&
-    typeof result.score === "number" &&
-    result.score >= 1 &&
-    result.score <= 10
-  );
+function hasValidRoast(value: unknown): value is { roast: string } {
+  const roast = getRoastText(value);
+  return typeof roast === "string" && roast.trim().length > 0;
 }
 
-function getAllText(result: OutfitResultData) {
-  return [
-    result.roast,
-    result.shareQuote,
-    ...result.alternativeQuotes,
-    ...result.worksWell,
-    ...result.canImprove,
-    ...result.stylingTips,
-    ...result.shoppingSuggestions.flatMap((item) => [
-      item.label,
-      item.reason,
-      item.searchQuery,
-    ]),
-  ].join(" ");
+function getResultObject(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+}
+
+function getRoastText(value: unknown) {
+  const source = getResultObject(value);
+  return source && typeof source.roast === "string"
+    ? source.roast.trim()
+    : null;
+}
+
+function normalizeOutfitResult(
+  source: Record<string, unknown>,
+  roastText = FALLBACK_ROAST,
+): OutfitResultData {
+  const roast = roastText.trim() || FALLBACK_ROAST;
+  const providedQuotes = toStringArray(source.alternativeQuotes);
+  const shareQuote =
+    toNonEmptyString(source.shareQuote) ??
+    toNonEmptyString(source.title) ??
+    makeShareQuote(roast);
+  const stylingTips = firstNonEmptyStringArray(
+    source.stylingTips,
+    source.tips,
+    source.advice,
+  );
+
+  return {
+    roast,
+    shareQuote,
+    alternativeQuotes: fillAlternativeQuotes(providedQuotes, shareQuote),
+    worksWell: withFallback(
+      toStringArray(source.worksWell),
+      "De outfit heeft een duidelijke basis waarop je verder kunt stylen.",
+    ),
+    canImprove: withFallback(
+      toStringArray(source.canImprove),
+      "Meer samenhang in kleur, pasvorm en accessoires maakt het geheel sterker.",
+    ),
+    stylingTips: withFallback(
+      stylingTips,
+      "Kies één duidelijke stijlrichting en laat kleuren en accessoires daarop aansluiten.",
+    ),
+    shoppingSuggestions: normalizeShoppingSuggestions(source.shoppingSuggestions),
+    score: normalizeScore(source.score ?? source.rating),
+  };
+}
+
+function toNonEmptyString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function toStringArray(value: unknown) {
+  if (typeof value === "string" && value.trim()) {
+    return [value.trim()];
+  }
+
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function firstNonEmptyStringArray(...values: unknown[]) {
+  for (const value of values) {
+    const items = toStringArray(value);
+    if (items.length > 0) {
+      return items;
+    }
+  }
+  return [];
+}
+
+function withFallback(items: string[], fallback: string) {
+  return items.length > 0 ? items : [fallback];
+}
+
+function normalizeScore(value: unknown) {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number.parseFloat(value.replace(",", "."))
+        : Number.NaN;
+
+  return Number.isFinite(parsed) ? Math.min(10, Math.max(1, Math.round(parsed))) : 5;
+}
+
+function normalizeShoppingSuggestions(value: unknown): OutfitResultData["shoppingSuggestions"] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") {
+      return [];
+    }
+
+    const suggestion = item as Record<string, unknown>;
+    const label = toNonEmptyString(suggestion.label);
+    if (!label) {
+      return [];
+    }
+
+    return [{
+      label,
+      reason:
+        toNonEmptyString(suggestion.reason) ??
+        "Dit item kan meer samenhang en richting aan de outfit geven.",
+      searchQuery: toNonEmptyString(suggestion.searchQuery) ?? label,
+    }];
+  });
+}
+
+function makeShareQuote(roast: string) {
+  const firstSentence = roast.split(/(?<=[.!?])\s+/)[0] ?? roast;
+  const words = firstSentence.trim().split(/\s+/).filter(Boolean);
+  const shortened = words.slice(0, 12).join(" ");
+  return words.length > 12 ? `${shortened.replace(/[.!?]+$/, "")}…` : shortened;
+}
+
+function fillAlternativeQuotes(quotes: string[], shareQuote: string) {
+  const fallbacks = [
+    "Deze outfit heeft ambitie, maar mist nog een duidelijke richting.",
+    "De basis staat, nu de styling nog overtuigend afmaken.",
+    "Met scherpere keuzes krijgt deze outfit meteen meer karakter.",
+  ];
+  const uniqueQuotes = [...quotes, ...fallbacks].filter(
+    (quote, index, allQuotes) =>
+      quote.toLowerCase() !== shareQuote.toLowerCase() &&
+      allQuotes.findIndex((item) => item.toLowerCase() === quote.toLowerCase()) === index,
+  );
+
+  return uniqueQuotes.slice(0, 3);
 }
 
 function containsLikelyEnglish(text: string) {
   const normalized = ` ${text.toLowerCase().replace(/[^a-zà-ÿ]+/g, " ")} `;
   const englishSignals = [
     " the ",
-    " this ",
-    " that ",
-    " your ",
-    " outfit is ",
+    " this outfit ",
+    " your outfit ",
     " shoes are ",
     " could be ",
-    " would ",
+    " would be ",
     " should ",
-    " looks ",
+    " looks like ",
     " with the ",
     " and the ",
     " good choice ",
-    " fit ",
-    " look ",
-    " clean ",
-    " modern ",
-    " premium ",
-    " runway ",
-    " fashion ",
-    " vibe ",
-    " statement ",
-    " jacket ",
-    " trousers ",
-    " pants ",
-    " shoes ",
-    " color ",
-    " colour ",
-    " stylish ",
-    " dress ",
-    " coat ",
-    " confidence ",
-    " taste ",
-    " energy ",
-    " trying ",
-    " choice ",
-    " choices ",
-    " rest ",
+    " you are ",
+    " you should ",
   ];
 
-  return englishSignals.some((signal) => normalized.includes(signal));
-}
-
-function isValidQuote(quote: string) {
-  const words = quote.trim().split(/\s+/).filter(Boolean);
-  const sentenceMarks = quote.match(/[.!?]/g) ?? [];
-  return words.length > 0 && words.length <= 12 && sentenceMarks.length <= 1;
-}
-
-function hasValidQuotes(result: OutfitResultData) {
-  const quotes = [result.shareQuote, ...result.alternativeQuotes];
-  return (
-    quotes.length === 4 &&
-    new Set(quotes.map((quote) => quote.trim().toLowerCase())).size === 4 &&
-    quotes.every(isValidQuote) &&
-    quotes.every((quote) => !containsLikelyEnglish(quote))
-  );
+  return englishSignals.filter((signal) => normalized.includes(signal)).length >= 2;
 }
 
 export async function POST(request: Request) {
@@ -301,10 +360,11 @@ Regels:
       parsed = null;
     }
 
+    let parsedObject = getResultObject(parsed);
+    let roastText = getRoastText(parsed);
     const needsDutchRewrite =
-      !isOutfitResult(parsed) ||
-      containsLikelyEnglish(getAllText(parsed)) ||
-      !hasValidQuotes(parsed);
+      !hasValidRoast(parsed) ||
+      (typeof roastText === "string" && containsLikelyEnglish(roastText));
 
     if (needsDutchRewrite) {
       const correctionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -326,18 +386,31 @@ Regels:
       } catch {
         parsed = null;
       }
+
+      parsedObject = getResultObject(parsed);
+      roastText = getRoastText(parsed);
     }
 
-    if (
-      !isOutfitResult(parsed) ||
-      containsLikelyEnglish(getAllText(parsed)) ||
-      !hasValidQuotes(parsed)
-    ) {
+    if (!parsedObject) {
       console.error("OpenAI returned an invalid or non-Dutch outfit response.", parsed);
       return Response.json({ error: "Invalid AI response" }, { status: 500 });
     }
 
-    return Response.json(parsed);
+    if (
+      hasValidRoast(parsed) &&
+      typeof roastText === "string" &&
+      !containsLikelyEnglish(roastText)
+    ) {
+      return Response.json(normalizeOutfitResult(parsedObject, roastText));
+    }
+
+    if (typeof roastText === "string" && containsLikelyEnglish(roastText)) {
+      console.error("OpenAI returned a likely English outfit response.", parsed);
+      return Response.json({ error: "Invalid AI response" }, { status: 500 });
+    }
+
+    console.warn("OpenAI response did not include a roast; using Dutch fallback.", parsed);
+    return Response.json(normalizeOutfitResult(parsedObject, FALLBACK_ROAST));
   } catch (error) {
     console.error("Outfit check API error:", error);
     return Response.json({ error: "Outfit check failed" }, { status: 500 });
