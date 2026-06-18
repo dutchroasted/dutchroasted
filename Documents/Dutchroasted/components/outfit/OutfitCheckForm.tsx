@@ -13,7 +13,7 @@ import { OutfitResult } from "./OutfitResult";
 
 const FREE_CHECK_LIMIT = 1;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
-const LOADING_MESSAGES = [
+const LOADING_MESSAGES: readonly string[] = [
   "Even kijken of dit een fit is... of een kledingcrisis met zelfvertrouwen.",
   "Momentje, ik haal de modebril én de blusdeken erbij.",
   "We checken of dit catwalk is... of retourbalie.",
@@ -24,7 +24,7 @@ const LOADING_MESSAGES = [
   "Even kijken of dit stijl is of gewoon haast met parfum.",
   "De schoenen zijn gehoord. Nu de rest nog.",
   "Modejury zit klaar. Geen zorgen, alleen je outfit wordt aangepakt.",
-] as const;
+];
 
 type DailyLimitState = {
   date: string;
@@ -43,7 +43,7 @@ export function OutfitCheckForm() {
     intensity: OutfitIntensity;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
+  const [loadingMessage, setLoadingMessage] = useState<string>(LOADING_MESSAGES[0]);
   const [error, setError] = useState("");
   const [dailyLimit, setDailyLimit] = useState<DailyLimitState>(() => ({
     date: getTodayKey(),
@@ -221,7 +221,7 @@ function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function getRandomLoadingMessage(currentMessage: string) {
+function getRandomLoadingMessage(currentMessage?: string): string {
   const alternatives = LOADING_MESSAGES.filter((message) => message !== currentMessage);
   return alternatives[Math.floor(Math.random() * alternatives.length)] ?? LOADING_MESSAGES[0];
 }
