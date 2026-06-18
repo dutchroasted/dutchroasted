@@ -36,7 +36,7 @@ export function FreeLimitNotice({
           )}
           <p className="mt-2 text-sm leading-6 text-zinc-500">
             {isAuthenticated
-              ? "Je gebruik wordt bijgehouden in je DutchRoasted profiel."
+              ? "Je gebruik wordt bijgehouden in je Outfit Roaster-profiel."
               : "Voor deze MVP wordt je gratis limiet tijdelijk in je browser opgeslagen."}
           </p>
           {!isAuthenticated ? (

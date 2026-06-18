@@ -33,7 +33,7 @@ const plans = [
   {
     name: "Pro",
     price: "€9,99 per maand",
-    description: "Voor wie DutchRoasted als persoonlijke stylist wil gebruiken.",
+    description: "Voor wie Outfit Roaster als persoonlijke stylist wil gebruiken.",
     features: [
       "Alles van Premium",
       "Capsule wardrobe advies",

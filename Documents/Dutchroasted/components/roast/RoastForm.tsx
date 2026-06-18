@@ -178,7 +178,7 @@ export function RoastForm() {
             <div>
               <p className="text-2xl font-black text-white">Nog niets geroast.</p>
               <p className="mt-3 max-w-md leading-7 text-zinc-500">
-                Vul links je tekst in. DutchRoasted maakt er daarna een scherpe, nuttige
+                Vul links je tekst in. Outfit Roaster maakt er daarna een scherpe, nuttige
                 reality check van.
               </p>
             </div>

@@ -67,7 +67,7 @@ export function RoastReport({ result }: RoastReportProps) {
         <p>{result.improvedVersion}</p>
       </ReportSection>
 
-      <footer className="report-footer">Gemaakt met DutchRoasted.nl</footer>
+      <footer className="report-footer">Gemaakt met OutfitRoaster.nl</footer>
     </article>
   );
 }

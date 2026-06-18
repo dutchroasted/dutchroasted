@@ -17,11 +17,10 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
   const shareCardRef = useRef<HTMLDivElement>(null);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
-  const shareText = useMemo(() => formatShareText(result), [result]);
 
   function showFeedback(message: string) {
     setFeedback(message);
-    window.setTimeout(() => setFeedback(""), 2200);
+    window.setTimeout(() => setFeedback(""), 4500);
   }
 
   async function handleCopy() {
@@ -36,29 +35,51 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
   async function handleShare() {
     try {
       const imageBlob = await createShareImage(shareCardRef.current);
-      const file = new File([imageBlob], "dutchroasted-outfit-verdict.png", {
+      const file = new File([imageBlob], "outfit-roaster-share-card.png", {
         type: "image/png",
       });
+      const caption = formatShareCaption(result, window.location.origin);
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          title: "Mijn DutchRoasted outfit verdict",
-          text: shareText,
+          title: "Mijn Outfit Roaster verdict",
+          text: caption,
           files: [file],
         });
-        showFeedback("Deelbeeld geopend");
+        showFeedback("Delen geopend");
         return;
       }
 
-      downloadBlob(imageBlob, "dutchroasted-outfit-verdict.png");
+      downloadBlob(imageBlob, "outfit-roaster-share-card.png");
       try {
-        await navigator.clipboard.writeText(shareText);
-        showFeedback("Deelbeeld gedownload en tekst gekopieerd.");
+        await navigator.clipboard.writeText(caption);
+        showFeedback(
+          "Afbeelding gedownload en tekst gekopieerd. Plaats hem nu in Instagram, WhatsApp of TikTok.",
+        );
       } catch {
-        showFeedback("Deelbeeld gedownload.");
+        showFeedback("Afbeelding gedownload. De caption kon niet worden gekopieerd.");
       }
     } catch {
       showFeedback("Delen lukt niet. Probeer opnieuw.");
+    }
+  }
+
+  async function handleDownloadShareCard() {
+    try {
+      const imageBlob = await createShareImage(shareCardRef.current);
+      downloadBlob(imageBlob, "outfit-roaster-share-card.png");
+      showFeedback("Share card gedownload");
+    } catch {
+      showFeedback("Downloaden lukt niet. Probeer opnieuw.");
+    }
+  }
+
+  async function handleCopyCaption() {
+    try {
+      await navigator.clipboard.writeText(formatShareCaption(result, window.location.origin));
+      showFeedback("Caption gekopieerd");
+    } catch {
+      showFeedback("Kopiëren lukt niet");
     }
   }
 
@@ -95,14 +116,47 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
 
       <div className="space-y-3">
         <SharePreviewCard shareRef={shareCardRef} result={result} originalImage={originalImage} />
-        <button
-          type="button"
-          onClick={handleShare}
-          className="ml-auto flex min-h-12 w-full items-center justify-center rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] sm:w-auto"
-        >
-          Deel dit beeld
-        </button>
+        <div className="grid gap-2 sm:grid-cols-3">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="min-h-12 rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)]"
+          >
+            Deel dit bericht
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadShareCard}
+            className="min-h-12 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-black text-white transition hover:border-orange-500/50 hover:bg-orange-500/10"
+          >
+            Download share card
+          </button>
+          <button
+            type="button"
+            onClick={handleCopyCaption}
+            className="min-h-12 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-black text-white transition hover:border-orange-500/50 hover:bg-orange-500/10"
+          >
+            Kopieer caption
+          </button>
+        </div>
       </div>
+
+      <ResultBlock title="🔥 De volledige roast" featured>
+        <p className="whitespace-pre-line text-lg font-bold leading-8 text-white">{result.roast}</p>
+        <div className="mt-5 border-t border-orange-400/20 pt-5">
+          <p className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-orange-300">
+            De snelste upgrades
+          </p>
+          <ul className="space-y-2 text-zinc-200">
+            {result.stylingTips.slice(0, 3).map((tip) => (
+              <li key={tip} className="flex gap-3 leading-7">
+                <span className="mt-3 size-1.5 shrink-0 rounded-full bg-orange-500" />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </ResultBlock>
 
       <div className="grid gap-4 md:grid-cols-2">
         <ResultList title="👀 Wat werkt goed" items={result.worksWell} />
@@ -112,7 +166,7 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
       <ShopSuggestions suggestions={result.shoppingSuggestions} />
 
       <p className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-zinc-400">
-        DutchRoasted gebruikt AI voor stylingfeedback. De feedback is bedoeld als inspiratie en
+        Outfit Roaster gebruikt AI voor stylingfeedback. De feedback is bedoeld als inspiratie en
         advies, niet als professioneel of definitief oordeel.
       </p>
 
@@ -169,7 +223,7 @@ function SharePreviewCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-black leading-none text-white">
-              Dutch<span className="text-orange-500">Roasted</span>
+              Outfit <span className="text-orange-500">Roaster</span>
             </p>
             <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-200">
               roast my outfit
@@ -195,7 +249,7 @@ function SharePreviewCard({
             </div>
           </div>
           <p className="mt-2 text-[9px] font-black uppercase tracking-[0.16em] text-zinc-400">
-            DutchRoasted.nl
+            OutfitRoaster.nl
           </p>
         </div>
       </div>
@@ -316,25 +370,17 @@ function downloadBlob(blob: Blob, fileName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
-function formatShareText(result: OutfitResultData) {
+function formatShareCaption(result: OutfitResultData, appUrl: string) {
   return [
-    "Ik liet mijn outfit checken door DutchRoasted 🔥",
-    "",
-    `Score: ${result.score}/10`,
-    "",
-    "🔥 Roast:",
-    result.roast,
-    "",
-    "✨ Stylingtip:",
-    result.stylingTips[0] || "Kijk naar kleur, pasvorm en één sterk accessoire.",
-    "",
-    "Check jouw outfit op DutchRoasted.nl",
+    "Mijn outfit is geroast door Outfit Roaster 🔥",
+    result.shareQuote,
+    `Probeer zelf: ${appUrl}`,
   ].join("\n");
 }
 
 function formatAdvice(result: OutfitResultData) {
   return [
-    "Mijn DutchRoasted outfit check:",
+    "Mijn Outfit Roaster outfitcheck:",
     "",
     `⭐ Outfit score: ${result.score}/10`,
     "",
@@ -353,7 +399,7 @@ function formatAdvice(result: OutfitResultData) {
     "🛍️ Shop suggesties",
     ...result.shoppingSuggestions.map((item) => `- ${item.label}: ${item.reason}`),
     "",
-    "Gemaakt met DutchRoasted.nl",
+    "Gemaakt met OutfitRoaster.nl",
   ].join("\n");
 }
 
@@ -399,10 +445,10 @@ function downloadResultPdf(result: OutfitResultData) {
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(24);
-  doc.text("DutchRoasted", margin, y);
+  doc.text("Outfit Roaster", margin, y);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.text("AI outfit checker - dutchroasted.nl", margin, y + 7);
+  doc.text("AI outfit checker - outfitroaster.nl", margin, y + 7);
 
   doc.setFillColor(255, 106, 0);
   doc.roundedRect(pageWidth - 48, 14, 32, 20, 2, 2, "F");
@@ -428,9 +474,9 @@ function downloadResultPdf(result: OutfitResultData) {
   y += 8;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.text("Gemaakt met DutchRoasted.nl", margin, y);
+  doc.text("Gemaakt met OutfitRoaster.nl", margin, y);
 
-  const fileName = `dutchroasted-outfit-check-${new Date().toISOString().slice(0, 10)}.pdf`;
+  const fileName = `outfit-roaster-check-${new Date().toISOString().slice(0, 10)}.pdf`;
   const pdfBlob = doc.output("blob");
   const pdfUrl = URL.createObjectURL(pdfBlob);
   const link = document.createElement("a");

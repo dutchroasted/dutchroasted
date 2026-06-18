@@ -3,17 +3,17 @@ import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  applicationName: "DutchRoasted",
-  title: "DutchRoasted | Upload je outfit. Krijg de waarheid.",
+  applicationName: "Outfit Roaster",
+  title: "Outfit Roaster | Upload je outfit. Krijg de waarheid.",
   description:
-    "DutchRoasted checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt iets aan hebt.",
+    "Outfit Roaster checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt iets aan hebt.",
   manifest: "/manifest.json",
   formatDetection: {
     telephone: false,
   },
   appleWebApp: {
     capable: true,
-    title: "DutchRoasted",
+    title: "Outfit Roaster",
     statusBarStyle: "black-translucent",
   },
   icons: {
@@ -25,16 +25,16 @@ export const metadata: Metadata = {
     apple: [
       {
         url: "/icons/apple-touch-icon.png",
-        sizes: "180x180",
+        sizes: "192x192",
         type: "image/png",
       },
     ],
   },
   openGraph: {
-    title: "DutchRoasted | Upload je outfit. Krijg de waarheid.",
+    title: "Outfit Roaster | Upload je outfit. Krijg de waarheid.",
     description:
       "Een AI-stylist met humor checkt je outfit op stijl, kleur, pasvorm en vibe.",
-    siteName: "DutchRoasted",
+    siteName: "Outfit Roaster",
     locale: "nl_NL",
     type: "website",
   },

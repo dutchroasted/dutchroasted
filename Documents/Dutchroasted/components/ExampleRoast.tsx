@@ -21,7 +21,7 @@ export function ExampleRoast() {
 
           <article className="dr-card-hover rounded-3xl border border-orange-500/35 bg-[linear-gradient(145deg,rgba(255,106,0,0.14),rgba(255,255,255,0.035))] p-6 shadow-[0_24px_90px_rgba(255,106,0,0.12)] sm:p-8">
             <div className="flex items-start justify-between gap-4">
-              <h3 className="text-xl font-black text-white">Wat DutchRoasted teruggeeft</h3>
+              <h3 className="text-xl font-black text-white">Wat Outfit Roaster teruggeeft</h3>
               <span className="rounded-full bg-orange-500 px-3 py-1 text-xs font-black text-black">
                 7/10
               </span>

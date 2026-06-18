@@ -2,8 +2,8 @@ import { PricingCards } from "@/components/pricing/PricingCards";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
-  title: "Pricing | DutchRoasted",
-  description: "Start gratis met DutchRoasted. Premium en Pro komen eraan.",
+  title: "Pricing | Outfit Roaster",
+  description: "Start gratis met Outfit Roaster. Premium en Pro komen eraan.",
 };
 
 export default function PricingPage() {
@@ -11,7 +11,7 @@ export default function PricingPage() {
     <main className="min-h-screen px-4 pb-16 pt-8 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12">
         <header className="flex items-center justify-between gap-4">
-          <a href="/" aria-label="DutchRoasted home">
+          <a href="/" aria-label="Outfit Roaster home">
             <Logo />
           </a>
 

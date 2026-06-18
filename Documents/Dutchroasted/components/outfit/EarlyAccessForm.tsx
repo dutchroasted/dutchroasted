@@ -10,7 +10,7 @@ type EarlyAccessFormProps = {
 };
 
 const CONSENT_TEXT =
-  "Ik wil updates ontvangen over DutchRoasted en geef toestemming om mij hierover te mailen.";
+  "Ik wil updates ontvangen over Outfit Roaster en geef toestemming om mij hierover te mailen.";
 
 export function EarlyAccessForm({ occasion, intensity, score }: EarlyAccessFormProps) {
   const [email, setEmail] = useState("");
@@ -112,7 +112,7 @@ export function EarlyAccessForm({ occasion, intensity, score }: EarlyAccessFormP
         </button>
       </form>
       <p className="mt-4 text-xs leading-5 text-zinc-500">
-        We gebruiken je e-mail alleen voor DutchRoasted updates. Geen spam. Afmelden kan altijd.
+        We gebruiken je e-mail alleen voor updates van Outfit Roaster. Geen spam. Afmelden kan altijd.
       </p>
     </article>
   );

@@ -11,7 +11,7 @@ export function WhyDutchRoasted() {
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.18em] text-orange-400">
-            Waarom DutchRoasted?
+            Waarom Outfit Roaster?
           </p>
           <h2 className="mt-3 text-3xl font-black text-white sm:text-5xl">
             Flamboyant genoeg om eerlijk te zijn. Slim genoeg om bruikbaar te blijven.

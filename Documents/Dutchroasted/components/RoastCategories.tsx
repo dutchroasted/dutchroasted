@@ -23,7 +23,7 @@ export function RoastCategories() {
             </h2>
           </div>
           <p className="max-w-xl text-base leading-7 text-zinc-400">
-            Van date tot sollicitatie. DutchRoasted kijkt naar kleding, styling, kleur,
+            Van date tot sollicitatie. Outfit Roaster kijkt naar kleding, styling, kleur,
             pasvorm, accessoires en de setting.
           </p>
         </div>

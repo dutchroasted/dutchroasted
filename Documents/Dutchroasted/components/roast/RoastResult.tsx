@@ -15,7 +15,7 @@ export function RoastResult({ result, onNewRoast }: RoastResultProps) {
 
   const resultText = useMemo(() => formatResultText(result), [result]);
   const shareText = useMemo(
-    () => ["Mijn DutchRoasted resultaat:", "", resultText, "", "Gemaakt met DutchRoasted.nl"].join("\n"),
+    () => ["Mijn Outfit Roaster-resultaat:", "", resultText, "", "Gemaakt met OutfitRoaster.nl"].join("\n"),
     [resultText],
   );
 
@@ -37,7 +37,7 @@ export function RoastResult({ result, onNewRoast }: RoastResultProps) {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Mijn DutchRoasted resultaat",
+          title: "Mijn Outfit Roaster-resultaat",
           text: shareText,
         });
         showFeedback("Delen gestart");

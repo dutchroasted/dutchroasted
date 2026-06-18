@@ -92,7 +92,7 @@ export function LeadCapture({ result }: LeadCaptureProps) {
               onChange={(event) => setWantsUpdates(event.target.checked)}
               className="mt-1 size-4 accent-orange-500"
             />
-            <span>Ik wil updates ontvangen over DutchRoasted.</span>
+            <span>Ik wil updates ontvangen over Outfit Roaster.</span>
           </label>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -109,7 +109,7 @@ export function LeadCapture({ result }: LeadCaptureProps) {
           </div>
 
           <p className="text-sm leading-6 text-zinc-500">
-            We gebruiken je e-mail alleen voor DutchRoasted updates. Geen spam.
+            We gebruiken je e-mail alleen voor updates van Outfit Roaster. Geen spam.
           </p>
         </form>
       )}

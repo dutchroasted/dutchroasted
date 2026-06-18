@@ -38,7 +38,7 @@ export function AccountDashboard() {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-orange-300">
           Account
         </p>
-        <h1 className="mt-3 text-4xl font-black text-white">Je DutchRoasted profiel</h1>
+        <h1 className="mt-3 text-4xl font-black text-white">Je Outfit Roaster-profiel</h1>
 
         <div className="mt-8 grid gap-4">
           <InfoRow label="E-mailadres" value={auth.profile?.email || auth.session?.user.email || "-"} />

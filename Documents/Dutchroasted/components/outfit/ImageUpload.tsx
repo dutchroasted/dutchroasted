@@ -138,7 +138,7 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
       />
       <p className="mt-3 text-sm leading-6 text-zinc-500">
         Upload alleen foto’s van jezelf of van iemand die hier toestemming voor heeft gegeven.
-        Je foto wordt alleen gebruikt voor deze outfitcheck en niet opgeslagen door DutchRoasted.
+        Je foto wordt alleen gebruikt voor deze outfitcheck en niet opgeslagen door Outfit Roaster.
       </p>
     </div>
   );

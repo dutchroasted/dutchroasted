@@ -2,8 +2,8 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 
 export const metadata = {
-  title: "Contact | DutchRoasted",
-  description: "Neem contact op met DutchRoasted.",
+  title: "Contact | Outfit Roaster",
+  description: "Neem contact op met Outfit Roaster.",
 };
 
 export default function ContactPage() {
@@ -20,8 +20,8 @@ export default function ContactPage() {
               Iets vragen? Roep maar.
             </h1>
             <p className="mt-6 text-lg font-semibold leading-8 text-zinc-300">
-              Heb je vragen over DutchRoasted of wil je dat je e-mailadres wordt verwijderd uit
-              onze early access lijst? Mail ons via info@dutchroasted.nl.
+              Heb je vragen over Outfit Roaster of wil je dat je e-mailadres wordt verwijderd uit
+              onze early access lijst? Mail ons via info@outfitroaster.nl.
             </p>
           </div>
 
@@ -29,8 +29,8 @@ export default function ContactPage() {
             <h2 className="text-2xl font-black text-white">Stuur een bericht</h2>
             <p className="mt-4 leading-7 text-zinc-300">
               Mail naar{" "}
-              <a href="mailto:info@dutchroasted.nl" className="font-black text-orange-300">
-                info@dutchroasted.nl
+              <a href="mailto:info@outfitroaster.nl" className="font-black text-orange-300">
+                info@outfitroaster.nl
               </a>
               .
             </p>

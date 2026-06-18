@@ -26,6 +26,7 @@ export function OutfitCheckForm() {
   const [occasion, setOccasion] = useState<OutfitOccasion>("Casual");
   const [intensity, setIntensity] = useState<OutfitIntensity>("roast");
   const [result, setResult] = useState<OutfitResultData | null>(null);
+  const [resultImage, setResultImage] = useState("");
   const [resultMeta, setResultMeta] = useState<{
     occasion: OutfitOccasion;
     intensity: OutfitIntensity;
@@ -74,6 +75,7 @@ export function OutfitCheckForm() {
 
       const data = (await response.json()) as OutfitResultData;
       setResult(data);
+      setResultImage(compressedImage);
       setResultMeta({ occasion, intensity });
       setDailyLimit(incrementDailyLimit());
     } catch {
@@ -87,6 +89,7 @@ export function OutfitCheckForm() {
     setImage("");
     setFileName("");
     setResult(null);
+    setResultImage("");
     setResultMeta(null);
     setError("");
   }
@@ -117,6 +120,7 @@ export function OutfitCheckForm() {
             setFileName(name);
             setError("");
             setResult(null);
+            setResultImage("");
             setResultMeta(null);
           }}
           onError={setError}
@@ -170,7 +174,11 @@ export function OutfitCheckForm() {
         {isLoading ? <LoadingState /> : null}
         {!isLoading && result ? (
           <div className="space-y-5">
-            <OutfitResult result={result} originalImage={image} onNewCheck={handleNewCheck} />
+            <OutfitResult
+              result={result}
+              originalImage={resultImage}
+              onNewCheck={handleNewCheck}
+            />
             {resultMeta ? (
               <EarlyAccessForm
                 occasion={resultMeta.occasion}
@@ -185,7 +193,7 @@ export function OutfitCheckForm() {
             <div>
               <p className="text-3xl font-black leading-tight text-white">Je verdict verschijnt hier.</p>
               <p className="mt-4 max-w-md leading-7 text-zinc-500">
-                Upload je outfitfoto. DutchRoasted kijkt naar stijl, kleur, pasvorm, vibe en
+                Upload je outfitfoto. Outfit Roaster kijkt naar stijl, kleur, pasvorm, vibe en
                 of de gelegenheid je fit verdient.
               </p>
             </div>

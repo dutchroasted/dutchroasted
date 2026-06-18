@@ -15,7 +15,7 @@ export default function OfflinePage() {
             Je outfit krijgt even geen bereik.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-white/70">
-            DutchRoasted heeft internet nodig om je outfit te checken. Zodra je
+            Outfit Roaster heeft internet nodig om je outfit te checken. Zodra je
             verbinding terug is, kun je gewoon weer verder.
           </p>
           <Link
@@ -26,7 +26,7 @@ export default function OfflinePage() {
           </Link>
         </section>
 
-        <p className="text-sm text-white/45">DutchRoasted.nl</p>
+        <p className="text-sm text-white/45">OutfitRoaster.nl</p>
       </div>
     </main>
   );

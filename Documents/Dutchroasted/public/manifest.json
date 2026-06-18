@@ -1,6 +1,6 @@
 {
-  "name": "DutchRoasted",
-  "short_name": "DutchRoasted",
+  "name": "Outfit Roaster",
+  "short_name": "Outfit Roaster",
   "description": "Upload je outfit. Krijg de waarheid.",
   "start_url": "/outfit-check",
   "scope": "/",

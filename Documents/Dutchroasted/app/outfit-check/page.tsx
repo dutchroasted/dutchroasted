@@ -2,7 +2,7 @@ import { OutfitCheckForm } from "@/components/outfit/OutfitCheckForm";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
-  title: "Outfit Checker | DutchRoasted",
+  title: "Outfit Checker | Outfit Roaster",
   description: "Upload je outfitfoto en krijg eerlijke Nederlandse AI-stylingfeedback.",
 };
 
@@ -11,7 +11,7 @@ export default function OutfitCheckPage() {
     <main className="min-h-screen overflow-hidden px-4 pb-16 pt-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-7">
         <header className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/45 px-3 py-3 shadow-2xl shadow-black/30 backdrop-blur sm:px-4">
-          <a href="/" aria-label="DutchRoasted home">
+          <a href="/" aria-label="Outfit Roaster home">
             <Logo />
           </a>
 
@@ -46,7 +46,7 @@ export default function OutfitCheckPage() {
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.04] p-5">
             <p className="text-lg font-semibold leading-8 text-zinc-200">
-              DutchRoasted checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt
+              Outfit Roaster checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt
               iets aan hebt.
             </p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-black uppercase tracking-[0.08em] text-zinc-400">
