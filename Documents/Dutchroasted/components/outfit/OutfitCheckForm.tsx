@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
+import { analytics } from "@/lib/analytics";
 import type {
   OutfitIntensity,
   OutfitOccasion,
@@ -81,6 +82,7 @@ export function OutfitCheckForm() {
     setIsLoading(true);
     setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
+    analytics.outfitCheckStarted(occasion, intensity, profile);
 
     try {
       const response = await runOutfitCheckWithRetry(
@@ -100,6 +102,7 @@ export function OutfitCheckForm() {
       setResultImage(selectedPreviewImage);
       setResultMeta({ occasion, intensity });
       setDailyLimit(incrementDailyLimit());
+      analytics.outfitCheckCompleted(occasion, intensity, data.score);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error

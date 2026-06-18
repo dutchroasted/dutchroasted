@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { MAX_OUTFIT_IMAGE_SIZE } from "@/lib/outfitTypes";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
+import { analytics } from "@/lib/analytics";
 
 const acceptedTypes = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 const acceptedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
@@ -83,6 +84,7 @@ export function ImageUpload({
 
       try {
         const compressedImage = await compressWithRetry(convertedImage);
+        analytics.outfitUpload(file.type || "image/heic", file.size);
         onChange(compressedImage, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
       } catch {
         onError("De HEIC-foto is omgezet, maar comprimeren mislukte ook bij de tweede poging.");
@@ -99,6 +101,7 @@ export function ImageUpload({
       processingLockRef.current = true;
       onProcessingChange(true);
       const compressedImage = await compressWithRetry(file);
+      analytics.outfitUpload(file.type, file.size);
       onChange(compressedImage, file.name.replace(/\.(jpg|jpeg|png|webp)$/i, ".jpg"));
     } catch {
       onError("Het comprimeren van deze foto is mislukt, ook na een tweede poging. Probeer een andere foto.");

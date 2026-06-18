@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
+import { analytics } from "@/lib/analytics";
 import type { OutfitResultData } from "@/lib/outfitTypes";
 
 const FALLBACK_QUOTE_OPTIONS = [
@@ -70,11 +71,13 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           text: caption,
           files: [file],
         });
+        analytics.shareCardShared(result.score);
         showFeedback("Delen geopend");
         return;
       }
 
       downloadBlob(imageBlob, "outfit-roaster-instagram-story.png");
+      analytics.shareCardDownloaded(result.score);
       try {
         await navigator.clipboard.writeText(caption);
         showFeedback(
@@ -146,7 +149,10 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       <QuoteOptions
         quotes={quoteOptions}
         selectedQuote={selectedQuote}
-        onSelect={setSelectedQuote}
+        onSelect={(quote) => {
+          setSelectedQuote(quote);
+          analytics.quoteChanged(quoteOptions.indexOf(quote));
+        }}
       />
 
       <ResultBlock title="🔥 De volledige roast" featured>
@@ -348,6 +354,9 @@ function ShopSuggestions({ suggestions }: { suggestions: OutfitResultData["shopp
                   href={suggestion.affiliateUrl}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
+                  onClick={() =>
+                    analytics.shopItemClicked(suggestion.category, suggestion.searchQuery)
+                  }
                   className="dr-primary-button mt-5 inline-flex min-h-11 items-center px-4 py-2 text-sm"
                 >
                   Bekijk bij Zalando

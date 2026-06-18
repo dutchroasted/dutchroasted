@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <LegalPage
       eyebrow="Privacy"
       title="Privacyverklaring Outfit Roaster"
-      intro="We bouwen Outfit Roaster privacy-first: geen login, geen betaling, geen analyticscookies en geen permanente opslag van outfitfoto’s."
+      intro="We bouwen Outfit Roaster privacy-first: geen permanente opslag van outfitfoto’s en alleen beperkte gebruiksmeting om de app te verbeteren."
       sections={[
         {
           title: "Wie zijn wij?",
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           title: "Met welke diensten werken we?",
           body: [
             "We gebruiken OpenAI voor AI-analyse, Supabase voor het bewaren van early access leads en Vercel voor hosting.",
-            "Op dit moment gebruikt Outfit Roaster geen trackingcookies of analyticscookies.",
+            "Outfit Roaster gebruikt Google Analytics 4 om paginaweergaven en productinteracties te meten, zoals uploads, outfitchecks, deelacties en klikken op shopsuggesties.",
           ],
         },
         {
