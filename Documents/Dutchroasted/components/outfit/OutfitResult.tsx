@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { toBlob } from "html-to-image";
+import { useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
 import { getAffiliateUrl } from "@/lib/affiliate";
 import type { OutfitResultData } from "@/lib/outfitTypes";
@@ -14,7 +13,6 @@ type OutfitResultProps = {
 
 export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResultProps) {
   const [feedback, setFeedback] = useState("");
-  const shareCardRef = useRef<HTMLDivElement>(null);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
 
@@ -34,7 +32,12 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
 
   async function handleShare() {
     try {
-      const imageBlob = await createShareImage(shareCardRef.current);
+      if (!isProcessedOutfitImage(originalImage)) {
+        showFeedback("De outfitfoto ontbreekt. Upload de foto opnieuw voordat je deelt.");
+        return;
+      }
+
+      const imageBlob = await createShareImage(originalImage, result);
       const file = new File([imageBlob], "outfit-roaster-share-card.png", {
         type: "image/png",
       });
@@ -61,25 +64,6 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
       }
     } catch {
       showFeedback("Delen lukt niet. Probeer opnieuw.");
-    }
-  }
-
-  async function handleDownloadShareCard() {
-    try {
-      const imageBlob = await createShareImage(shareCardRef.current);
-      downloadBlob(imageBlob, "outfit-roaster-share-card.png");
-      showFeedback("Share card gedownload");
-    } catch {
-      showFeedback("Downloaden lukt niet. Probeer opnieuw.");
-    }
-  }
-
-  async function handleCopyCaption() {
-    try {
-      await navigator.clipboard.writeText(formatShareCaption(result, window.location.origin));
-      showFeedback("Caption gekopieerd");
-    } catch {
-      showFeedback("Kopiëren lukt niet");
     }
   }
 
@@ -115,30 +99,14 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
       ) : null}
 
       <div className="space-y-3">
-        <SharePreviewCard shareRef={shareCardRef} result={result} originalImage={originalImage} />
-        <div className="grid gap-2 sm:grid-cols-3">
-          <button
-            type="button"
-            onClick={handleShare}
-            className="min-h-12 rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)]"
-          >
-            Deel dit bericht
-          </button>
-          <button
-            type="button"
-            onClick={handleDownloadShareCard}
-            className="min-h-12 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-black text-white transition hover:border-orange-500/50 hover:bg-orange-500/10"
-          >
-            Download share card
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyCaption}
-            className="min-h-12 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-black text-white transition hover:border-orange-500/50 hover:bg-orange-500/10"
-          >
-            Kopieer caption
-          </button>
-        </div>
+        <SharePreviewCard result={result} originalImage={originalImage} />
+        <button
+          type="button"
+          onClick={handleShare}
+          className="min-h-12 w-full rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] sm:w-auto"
+        >
+          Deel deze roast
+        </button>
       </div>
 
       <ResultBlock title="🔥 De volledige roast" featured>
@@ -200,22 +168,20 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
 function SharePreviewCard({
   result,
   originalImage,
-  shareRef,
 }: {
   result: OutfitResultData;
   originalImage: string;
-  shareRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const shareQuote = result.shareQuote || result.roast;
 
   return (
     <div
-      ref={shareRef}
       className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-white/10 bg-[#080808] shadow-2xl shadow-black/40"
     >
       <img
         src={originalImage}
-        alt=""
+        alt="Outfitfoto in de deelkaart"
+        data-share-photo="true"
         className="absolute inset-0 size-full object-cover opacity-95"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.02)_62%,rgba(0,0,0,0.8))]" />
@@ -339,22 +305,163 @@ function getScoreVerdict(score: number) {
   return "Catwalkwaardig";
 }
 
-async function createShareImage(element: HTMLElement | null) {
-  if (!element) {
-    throw new Error("Share card is not available");
+function isProcessedOutfitImage(image: string) {
+  return image.startsWith("data:image/jpeg;base64,") && image.length > 100;
+}
+
+async function createShareImage(originalImage: string, result: OutfitResultData) {
+  if (!isProcessedOutfitImage(originalImage)) {
+    throw new Error("Outfit photo is not available");
   }
 
-  const blob = await toBlob(element, {
-    cacheBust: true,
-    pixelRatio: 2,
-    backgroundColor: "#050505",
+  const photo = await loadShareImage(originalImage);
+  if (photo.naturalWidth === 0 || photo.naturalHeight === 0) {
+    throw new Error("Share card outfit photo could not be decoded");
+  }
+
+  const width = 1080;
+  const height = 1350;
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas is not available");
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  drawImageCover(context, photo, width, height);
+
+  const topShade = context.createLinearGradient(0, 0, 0, 300);
+  topShade.addColorStop(0, "rgba(0,0,0,0.62)");
+  topShade.addColorStop(1, "rgba(0,0,0,0)");
+  context.fillStyle = topShade;
+  context.fillRect(0, 0, width, 300);
+
+  const bottomShade = context.createLinearGradient(0, 850, 0, height);
+  bottomShade.addColorStop(0, "rgba(0,0,0,0)");
+  bottomShade.addColorStop(0.38, "rgba(0,0,0,0.52)");
+  bottomShade.addColorStop(1, "rgba(0,0,0,0.96)");
+  context.fillStyle = bottomShade;
+  context.fillRect(0, 800, width, height - 800);
+
+  context.fillStyle = "#ffffff";
+  context.font = "900 38px Arial, sans-serif";
+  context.fillText("Outfit", 64, 78);
+  context.fillStyle = "#ff6a00";
+  context.fillText("Roaster", 178, 78);
+  context.fillStyle = "rgba(255,255,255,0.78)";
+  context.font = "900 18px Arial, sans-serif";
+  context.fillText("ROAST MY OUTFIT", 64, 112);
+
+  context.fillStyle = "#ff6a00";
+  roundRect(context, 64, 1100, 220, 150, 28);
+  context.fill();
+  context.fillStyle = "#090909";
+  context.font = "900 20px Arial, sans-serif";
+  context.fillText("SCORE", 92, 1142);
+  context.font = "900 58px Arial, sans-serif";
+  context.fillText(`${result.score}/10`, 92, 1212);
+
+  context.fillStyle = "#ffffff";
+  context.font = "900 44px Arial, sans-serif";
+  drawWrappedText(context, `“${result.shareQuote}”`, 330, 1128, 680, 54, 3);
+
+  context.fillStyle = "rgba(255,255,255,0.62)";
+  context.font = "900 18px Arial, sans-serif";
+  context.fillText("OUTFITROASTER.NL", 64, 1300);
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+          return;
+        }
+        reject(new Error("Could not create share image"));
+      },
+      "image/png",
+      1,
+    );
+  });
+}
+
+function loadShareImage(source: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    const timeout = window.setTimeout(
+      () => reject(new Error("Outfit photo did not load in time")),
+      8000,
+    );
+
+    image.onload = () => {
+      window.clearTimeout(timeout);
+      resolve(image);
+    };
+    image.onerror = () => {
+      window.clearTimeout(timeout);
+      reject(new Error("Outfit photo could not be loaded"));
+    };
+    image.src = source;
+  });
+}
+
+function drawImageCover(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  const x = (width - drawWidth) / 2;
+  const y = (height - drawHeight) / 2;
+  context.drawImage(image, x, y, drawWidth, drawHeight);
+}
+
+function roundRect(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius);
+}
+
+function drawWrappedText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines: number,
+) {
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let line = "";
+
+  words.forEach((word) => {
+    const candidate = line ? `${line} ${word}` : word;
+    if (context.measureText(candidate).width <= maxWidth || !line) {
+      line = candidate;
+      return;
+    }
+
+    lines.push(line);
+    line = word;
   });
 
-  if (!blob) {
-    throw new Error("Could not create share image");
+  if (line) {
+    lines.push(line);
   }
 
-  return blob;
+  lines.slice(0, maxLines).forEach((visibleLine, index) => {
+    context.fillText(visibleLine, x, y + index * lineHeight);
+  });
 }
 
 function downloadBlob(blob: Blob, fileName: string) {

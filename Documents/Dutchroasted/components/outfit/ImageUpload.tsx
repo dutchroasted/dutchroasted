@@ -53,7 +53,8 @@ export function ImageUpload({ previewUrl, onChange, onError }: ImageUploadProps)
         }
 
         const data = (await response.json()) as { image: string };
-        onChange(data.image, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
+        const compressedImage = await compressImageToJpegDataUrl(data.image);
+        onChange(compressedImage, `${file.name.replace(/\.(heic|heif)$/i, "")}.jpg`);
       } catch {
         onError("Deze HEIC-foto kunnen we niet omzetten. Probeer een andere foto of exporteer als JPG.");
       } finally {

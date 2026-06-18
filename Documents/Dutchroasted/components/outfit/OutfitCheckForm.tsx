@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import type { OutfitIntensity, OutfitOccasion, OutfitResultData } from "@/lib/outfitTypes";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
@@ -14,6 +13,18 @@ import { OutfitResult } from "./OutfitResult";
 
 const FREE_CHECK_LIMIT = 1;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
+const LOADING_MESSAGES = [
+  "Even kijken of dit een fit is... of een kledingcrisis met zelfvertrouwen.",
+  "Momentje, ik haal de modebril én de blusdeken erbij.",
+  "We checken of dit catwalk is... of retourbalie.",
+  "Even zien of deze outfit complimenten krijgt of stilte.",
+  "De stof liegt niet, maar wij gaan het netjes zeggen.",
+  "Ik zoom even in op de keuzes waar je kapper niets aan kon doen.",
+  "Stylist-modus aan. Emoties uit. Spiegel eerlijk.",
+  "Even kijken of dit stijl is of gewoon haast met parfum.",
+  "De schoenen zijn gehoord. Nu de rest nog.",
+  "Modejury zit klaar. Geen zorgen, alleen je outfit wordt aangepakt.",
+] as const;
 
 type DailyLimitState = {
   date: string;
@@ -32,6 +43,7 @@ export function OutfitCheckForm() {
     intensity: OutfitIntensity;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
   const [error, setError] = useState("");
   const [dailyLimit, setDailyLimit] = useState<DailyLimitState>(() => ({
     date: getTodayKey(),
@@ -52,10 +64,11 @@ export function OutfitCheckForm() {
     }
 
     setIsLoading(true);
+    setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
 
     try {
-      const compressedImage = await compressImageToJpegDataUrl(image);
+      const processedImage = image;
       // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
       const response = await fetch("/api/outfit-check", {
         method: "POST",
@@ -63,7 +76,7 @@ export function OutfitCheckForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image: compressedImage,
+          image: processedImage,
           occasion,
           intensity,
         }),
@@ -75,7 +88,7 @@ export function OutfitCheckForm() {
 
       const data = (await response.json()) as OutfitResultData;
       setResult(data);
-      setResultImage(compressedImage);
+      setResultImage(processedImage);
       setResultMeta({ occasion, intensity });
       setDailyLimit(incrementDailyLimit());
     } catch {
@@ -171,7 +184,7 @@ export function OutfitCheckForm() {
       </form>
 
       <div className="min-h-[28rem] rounded-3xl border border-white/10 bg-black/35 p-4 shadow-2xl shadow-black/35 sm:p-6">
-        {isLoading ? <LoadingState /> : null}
+        {isLoading ? <LoadingState message={loadingMessage} /> : null}
         {!isLoading && result ? (
           <div className="space-y-5">
             <OutfitResult
@@ -206,6 +219,11 @@ export function OutfitCheckForm() {
 
 function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function getRandomLoadingMessage(currentMessage: string) {
+  const alternatives = LOADING_MESSAGES.filter((message) => message !== currentMessage);
+  return alternatives[Math.floor(Math.random() * alternatives.length)] ?? LOADING_MESSAGES[0];
 }
 
 function readDailyLimit() {
