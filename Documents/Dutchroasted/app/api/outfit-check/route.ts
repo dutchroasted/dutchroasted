@@ -10,9 +10,9 @@ const MODEL = "gpt-4o-mini";
 const currentFashionContext = `
 Actuele modecontext:
 - Gebruik trends van nu als referentiekader, maar alleen wanneer ze zichtbaar en relevant zijn voor de outfit.
-- Let op rustige luxe, minimalistische jaren-90 sandalen, rechte denim, zachte tailoring, tonal layering, sterke texturen, crochet/haakwerk als city-ready detail en literary/preppy styling met slimme basics.
+- Let op rustige luxe, minimalistische jaren-90 sandalen, rechte spijkerbroeken, zacht maatwerk, ton-sur-ton laagjes, sterke texturen, haakwerk als stedelijk detail en klassieke styling met slimme basics.
 - Maak advies draagbaar voor Nederlandse situaties: fietsbaar, weerbestendig, niet te overdreven tenzij de gelegenheid daarom vraagt.
-- Shop suggesties moeten concreet en algemeen zijn, bijvoorbeeld: "minimalistische leren sneaker", "rechte donkere jeans", "crochet overshirt", "slanke jaren-90 sandaal".
+- Shopsuggesties moeten concreet en algemeen zijn, bijvoorbeeld: "minimalistische leren sneaker", "rechte donkere spijkerbroek", "gehaakt overshirt", "slanke jaren-90 sandaal".
 `;
 
 const systemPrompt = `
@@ -30,13 +30,14 @@ Belangrijke grenzen:
 - Maak de roast specifieker dan "dit is saai": verwijs naar kledingstukken, combinaties, kleuren of stylingkeuzes die je ziet.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
-- Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en maakt het premium" of "De broek breekt het silhouet; een slankere fit tilt dit meteen op."
+- Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
 - Bij feedbackstijl "rotterdams": schrijf als een Rotterdamse steek: droog, direct, straatwijs en met een knipoog. Denk "niet lullen, stylen", maar zonder schelden op de persoon. Je mag woorden gebruiken als "maat", "gozer" of "schat" als dat natuurlijk voelt. Altijd kleding roasten, nooit het lichaam.
 
 Output altijd als geldige JSON:
 {
   "roast": "string",
   "shareQuote": "string",
+  "alternativeQuotes": ["string", "string", "string"],
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],
@@ -72,6 +73,9 @@ function isOutfitResult(value: unknown): value is OutfitResultData {
   return (
     typeof result.roast === "string" &&
     typeof result.shareQuote === "string" &&
+    Array.isArray(result.alternativeQuotes) &&
+    result.alternativeQuotes.length === 3 &&
+    result.alternativeQuotes.every((item) => typeof item === "string") &&
     Array.isArray(result.worksWell) &&
     result.worksWell.every((item) => typeof item === "string") &&
     Array.isArray(result.canImprove) &&
@@ -97,6 +101,7 @@ function getAllText(result: OutfitResultData) {
   return [
     result.roast,
     result.shareQuote,
+    ...result.alternativeQuotes,
     ...result.worksWell,
     ...result.canImprove,
     ...result.stylingTips,
@@ -124,15 +129,50 @@ function containsLikelyEnglish(text: string) {
     " with the ",
     " and the ",
     " good choice ",
+    " fit ",
+    " look ",
+    " clean ",
+    " modern ",
+    " premium ",
+    " runway ",
+    " fashion ",
+    " vibe ",
+    " statement ",
+    " jacket ",
+    " trousers ",
+    " pants ",
+    " shoes ",
+    " color ",
+    " colour ",
+    " stylish ",
+    " dress ",
+    " coat ",
+    " confidence ",
+    " taste ",
+    " energy ",
+    " trying ",
+    " choice ",
+    " choices ",
+    " rest ",
   ];
 
   return englishSignals.some((signal) => normalized.includes(signal));
 }
 
-function hasValidShareQuote(result: OutfitResultData) {
-  const words = result.shareQuote.trim().split(/\s+/).filter(Boolean);
-  const sentenceMarks = result.shareQuote.match(/[.!?]/g) ?? [];
+function isValidQuote(quote: string) {
+  const words = quote.trim().split(/\s+/).filter(Boolean);
+  const sentenceMarks = quote.match(/[.!?]/g) ?? [];
   return words.length > 0 && words.length <= 12 && sentenceMarks.length <= 1;
+}
+
+function hasValidQuotes(result: OutfitResultData) {
+  const quotes = [result.shareQuote, ...result.alternativeQuotes];
+  return (
+    quotes.length === 4 &&
+    new Set(quotes.map((quote) => quote.trim().toLowerCase())).size === 4 &&
+    quotes.every(isValidQuote) &&
+    quotes.every((quote) => !containsLikelyEnglish(quote))
+  );
 }
 
 export async function POST(request: Request) {
@@ -161,7 +201,7 @@ Gelegenheid: ${body.occasion}
 Feedbackstijl: ${body.intensity}
 
 Regels:
-- Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote.
+- Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
 - Score is 1 t/m 10
@@ -169,6 +209,13 @@ Regels:
 - De langere roast heeft flamboyante, theatrale stylistenergie en bevat minstens één bruikbare stylingobservatie.
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
 - Genereer altijd een apart veld shareQuote.
+- Genereer daarnaast exact 3 verschillende alternativeQuotes.
+- Kies de sterkste en meest deelbare quote als shareQuote.
+- Alle vier quotes zijn uitsluitend Nederlands, maximaal 12 woorden en precies één zin.
+- Gebruik geen Engelse woorden in de quotes.
+- Laat iedere quote waar mogelijk een zichtbaar kledingdetail noemen, zoals jas, broek, schoenen, kleur, pasvorm of silhouet.
+- Alle quotes zijn scherp, grappig, modieus en geschikt voor sociale media.
+- De vier quotes mogen niet hetzelfde idee of dezelfde formulering herhalen.
 - shareQuote is een korte, harde one-liner voor het deelbeeld.
 - shareQuote is maximaal 12 woorden, precies 1 zin en bevat geen tweede zin.
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
@@ -179,10 +226,10 @@ Regels:
 - Voorbeelden shareQuote rotterdams: "Gozer, zelfs de tram zou je voorbijrijden.", "Niet lelijk, maar ook niet bepaald Coolsingel-materiaal.", "Je outfit staat in de file op de A20.", "Je schoenen kwamen opdagen, de rest niet."
 - Bij feedbackstijl "roast": maak het flamboyant, modisch en theatraal.
 - Bij feedbackstijl "rotterdams": maak het directer, droger en volkser. Het mag voelen als een Rotterdamse steek, maar blijft behulpzaam en nooit kwetsend.
-- Analyse en stylingtips zijn direct, opinionated en fashion-focused.
+- Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
-- Voorbeeld goed: "De witte sneakers houden de outfit clean en modern. Sterke keuze."
-- Voorbeeld goed: "De broek breekt het silhouet. Een slankere fit maakt de look direct scherper."
+- Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
+- Voorbeeld goed: "De broek breekt het silhouet. Een slankere pasvorm maakt het geheel direct scherper."
 - Gebruik actuele modecontext als dat helpt, maar verzin geen merken of exacte trends die je niet uit de foto kunt afleiden
 - Werkt goed, kan beter en stylingtips bevatten elk 3 tot 5 concrete punten
 - Shopping suggestions zijn algemeen, geen echte affiliate links
@@ -197,6 +244,7 @@ Regels:
 {
   "roast": "string",
   "shareQuote": "string",
+  "alternativeQuotes": ["string", "string", "string"],
   "worksWell": ["string"],
   "canImprove": ["string"],
   "stylingTips": ["string"],
@@ -256,7 +304,7 @@ Regels:
     const needsDutchRewrite =
       !isOutfitResult(parsed) ||
       containsLikelyEnglish(getAllText(parsed)) ||
-      !hasValidShareQuote(parsed);
+      !hasValidQuotes(parsed);
 
     if (needsDutchRewrite) {
       const correctionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -265,7 +313,7 @@ Regels:
         {
           role: "user",
           content:
-            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote precies één scherpe Nederlandse zin van maximaal 12 woorden. Maak roast 3 tot 5 korte, grappige en praktisch bruikbare Nederlandse zinnen. Controleer alle arrays en shopsuggesties.",
+            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 3 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast 3 tot 5 korte, grappige en praktisch bruikbare Nederlandse zinnen. Controleer alle arrays en shopsuggesties.",
         },
       ];
 
@@ -283,7 +331,7 @@ Regels:
     if (
       !isOutfitResult(parsed) ||
       containsLikelyEnglish(getAllText(parsed)) ||
-      !hasValidShareQuote(parsed)
+      !hasValidQuotes(parsed)
     ) {
       console.error("OpenAI returned an invalid or non-Dutch outfit response.", parsed);
       return Response.json({ error: "Invalid AI response" }, { status: 500 });

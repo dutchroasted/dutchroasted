@@ -4,9 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   applicationName: "Outfit Roaster",
-  title: "Outfit Roaster | Upload je outfit. Krijg de waarheid.",
-  description:
-    "Outfit Roaster checkt je outfit met humor, eerlijkheid en stylingadvies waar je echt iets aan hebt.",
+  title: "Outfit Roaster",
+  description: "Laat je outfit roasten door een AI-stylist.",
   manifest: "/manifest.json",
   formatDetection: {
     telephone: false,
@@ -31,9 +30,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Outfit Roaster | Upload je outfit. Krijg de waarheid.",
-    description:
-      "Een AI-stylist met humor checkt je outfit op stijl, kleur, pasvorm en vibe.",
+    title: "Outfit Roaster",
+    description: "Laat je outfit roasten door een AI-stylist.",
     siteName: "Outfit Roaster",
     locale: "nl_NL",
     type: "website",

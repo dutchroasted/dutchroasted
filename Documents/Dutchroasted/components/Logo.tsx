@@ -15,7 +15,7 @@ export function Logo({ compact = false }: LogoProps) {
             Outfit <span className="text-orange-500">Roaster</span>
           </span>
           <span className="mt-1 hidden text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:block">
-            Roast your fit
+            Laat je outfit roasten
           </span>
         </span>
       ) : null}

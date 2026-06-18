@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
 import { getAffiliateUrl } from "@/lib/affiliate";
 import type { OutfitResultData } from "@/lib/outfitTypes";
@@ -13,8 +13,13 @@ type OutfitResultProps = {
 
 export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResultProps) {
   const [feedback, setFeedback] = useState("");
+  const [selectedQuote, setSelectedQuote] = useState<string>(result.shareQuote);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
+
+  useEffect(() => {
+    setSelectedQuote(result.shareQuote);
+  }, [result]);
 
   function showFeedback(message: string) {
     setFeedback(message);
@@ -37,11 +42,15 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
         return;
       }
 
-      const imageBlob = await createShareImage(originalImage, result);
+      const imageBlob = await createShareImage(
+        originalImage,
+        result.score,
+        selectedQuote,
+      );
       const file = new File([imageBlob], "outfit-roaster-share-card.png", {
         type: "image/png",
       });
-      const caption = formatShareCaption(result, window.location.origin);
+      const caption = formatShareCaption(selectedQuote, window.location.origin);
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
@@ -99,7 +108,11 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
       ) : null}
 
       <div className="space-y-3">
-        <SharePreviewCard result={result} originalImage={originalImage} />
+        <SharePreviewCard
+          score={result.score}
+          quote={selectedQuote}
+          originalImage={originalImage}
+        />
         <button
           type="button"
           onClick={handleShare}
@@ -108,6 +121,12 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
           Deel deze roast
         </button>
       </div>
+
+      <QuoteOptions
+        quotes={result.alternativeQuotes}
+        selectedQuote={selectedQuote}
+        onSelect={setSelectedQuote}
+      />
 
       <ResultBlock title="🔥 De volledige roast" featured>
         <p className="whitespace-pre-line text-lg font-bold leading-8 text-white">{result.roast}</p>
@@ -166,14 +185,14 @@ export function OutfitResult({ result, originalImage, onNewCheck }: OutfitResult
 }
 
 function SharePreviewCard({
-  result,
+  score,
+  quote,
   originalImage,
 }: {
-  result: OutfitResultData;
+  score: number;
+  quote: string;
   originalImage: string;
 }) {
-  const shareQuote = result.shareQuote || result.roast;
-
   return (
     <div
       className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-white/10 bg-[#080808] shadow-2xl shadow-black/40"
@@ -202,7 +221,7 @@ function SharePreviewCard({
             <div className="rounded-2xl bg-orange-500 px-3 py-2 text-black">
               <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
               <p className="mt-1 whitespace-nowrap text-2xl font-black leading-none sm:text-3xl">
-                {result.score}/10
+                {score}/10
               </p>
             </div>
             <div>
@@ -210,7 +229,7 @@ function SharePreviewCard({
                 Roast
               </p>
               <p className="mt-1 text-xl font-black leading-6 text-white sm:text-2xl sm:leading-7">
-                “{shareQuote}”
+                “{quote}”
               </p>
             </div>
           </div>
@@ -220,6 +239,51 @@ function SharePreviewCard({
         </div>
       </div>
     </div>
+  );
+}
+
+function QuoteOptions({
+  quotes,
+  selectedQuote,
+  onSelect,
+}: {
+  quotes: string[];
+  selectedQuote: string;
+  onSelect: (quote: string) => void;
+}) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-zinc-950/70 p-5 sm:p-6">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
+        Kies je favoriet
+      </p>
+      <h3 className="mt-2 text-2xl font-black text-white">Andere roasts</h3>
+      <div className="mt-5 space-y-3">
+        {quotes.map((quote) => {
+          const isSelected = quote === selectedQuote;
+
+          return (
+            <div
+              key={quote}
+              className={`flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between ${
+                isSelected
+                  ? "border-orange-500/60 bg-orange-500/10"
+                  : "border-white/10 bg-white/[0.035]"
+              }`}
+            >
+              <p className="font-bold leading-7 text-white">“{quote}”</p>
+              <button
+                type="button"
+                onClick={() => onSelect(quote)}
+                disabled={isSelected}
+                className="min-h-10 shrink-0 rounded-xl border border-orange-500/40 px-4 py-2 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black disabled:cursor-default disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+              >
+                {isSelected ? "In gebruik" : "Gebruik deze"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -309,7 +373,11 @@ function isProcessedOutfitImage(image: string) {
   return image.startsWith("data:image/jpeg;base64,") && image.length > 100;
 }
 
-async function createShareImage(originalImage: string, result: OutfitResultData) {
+async function createShareImage(
+  originalImage: string,
+  score: number,
+  selectedQuote: string,
+) {
   if (!isProcessedOutfitImage(originalImage)) {
     throw new Error("Outfit photo is not available");
   }
@@ -360,11 +428,11 @@ async function createShareImage(originalImage: string, result: OutfitResultData)
   context.font = "900 20px Arial, sans-serif";
   context.fillText("SCORE", 92, 1142);
   context.font = "900 58px Arial, sans-serif";
-  context.fillText(`${result.score}/10`, 92, 1212);
+  context.fillText(`${score}/10`, 92, 1212);
 
   context.fillStyle = "#ffffff";
   context.font = "900 44px Arial, sans-serif";
-  drawWrappedText(context, `“${result.shareQuote}”`, 330, 1128, 680, 54, 3);
+  drawWrappedText(context, `“${selectedQuote}”`, 330, 1128, 680, 54, 3);
 
   context.fillStyle = "rgba(255,255,255,0.62)";
   context.font = "900 18px Arial, sans-serif";
@@ -477,10 +545,10 @@ function downloadBlob(blob: Blob, fileName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
-function formatShareCaption(result: OutfitResultData, appUrl: string) {
+function formatShareCaption(selectedQuote: string, appUrl: string) {
   return [
     "Mijn outfit is geroast door Outfit Roaster 🔥",
-    result.shareQuote,
+    selectedQuote,
     `Probeer zelf: ${appUrl}`,
   ].join("\n");
 }

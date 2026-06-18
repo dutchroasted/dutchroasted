@@ -6,7 +6,7 @@ import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { PricingTeaser } from "@/components/PricingTeaser";
 import { RoastCategories } from "@/components/RoastCategories";
-import { WhyDutchRoasted } from "@/components/WhyDutchRoasted";
+import { WhyOutfitRoaster } from "@/components/WhyOutfitRoaster";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       <ExampleRoast />
       <RoastCategories />
       <HowItWorks />
-      <WhyDutchRoasted />
+      <WhyOutfitRoaster />
       <PricingTeaser />
       <CTASection />
       <Footer />

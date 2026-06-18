@@ -25,6 +25,7 @@ export type ShoppingSuggestion = {
 export type OutfitResultData = {
   roast: string;
   shareQuote: string;
+  alternativeQuotes: string[];
   worksWell: string[];
   canImprove: string[];
   stylingTips: string[];

@@ -1,4 +1,4 @@
-const CACHE_NAME = "outfit-roaster-pwa-v2";
+const CACHE_NAME = "outfit-roaster-pwa-v3";
 const OFFLINE_URL = "/offline";
 const PRECACHE_ASSETS = [
   OFFLINE_URL,

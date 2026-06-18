@@ -5,7 +5,7 @@ const reasons = [
   "Je krijgt algemene shop suggesties zonder affiliate gedoe",
 ];
 
-export function WhyDutchRoasted() {
+export function WhyOutfitRoaster() {
   return (
     <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">

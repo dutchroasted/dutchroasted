@@ -1,7 +1,7 @@
 {
   "name": "Outfit Roaster",
   "short_name": "Outfit Roaster",
-  "description": "Upload je outfit. Krijg de waarheid.",
+  "description": "Laat je outfit roasten door een AI-stylist.",
   "start_url": "/outfit-check",
   "scope": "/",
   "display": "standalone",
