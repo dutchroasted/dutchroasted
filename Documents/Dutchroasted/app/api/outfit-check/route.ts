@@ -2,6 +2,8 @@ import OpenAI from "openai";
 import {
   OUTFIT_INTENSITIES,
   OUTFIT_OCCASIONS,
+  OUTFIT_PROFILES,
+  type OutfitProfile,
   type OutfitResultData,
 } from "@/lib/outfitTypes";
 
@@ -60,6 +62,9 @@ ${currentFashionContext}
 Belangrijke grenzen:
 - Focus alleen op kleding, styling, kleuren, pasvorm van kleding, silhouet, accessoires en de gekozen gelegenheid.
 - Beoordeel nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst, gezondheid of seksuele uitstraling.
+- Leid gender nooit af uit de foto, kleding, lichaamsbouw, gezicht, haar of andere zichtbare kenmerken.
+- Gebruik alleen een expliciet meegegeven profiel voor mannelijke of vrouwelijke formuleringen.
+- Bij profiel "Verras me" gebruik je volledig neutrale Nederlandse formuleringen en noem je nergens gender.
 - Geen seksuele opmerkingen, geen bodyshaming, geen discriminatie.
 - De roast mag scherp en grappig zijn, maar nooit gemeen of persoonlijk kwetsend.
 - Schrijf uitsluitend Nederlands. Gebruik geen Engelse zinnen en meng geen Nederlands met Engels.
@@ -116,6 +121,12 @@ function isValidIntensity(value: unknown): value is string {
   return typeof value === "string" && OUTFIT_INTENSITIES.includes(value as never);
 }
 
+function normalizeProfile(value: unknown): OutfitProfile {
+  return typeof value === "string" && OUTFIT_PROFILES.includes(value as never)
+    ? value as OutfitProfile
+    : "Verras me";
+}
+
 function isValidImage(value: unknown): value is string {
   return typeof value === "string" && /^data:image\/jpeg;base64,/.test(value);
 }
@@ -141,6 +152,7 @@ function getRoastText(value: unknown) {
 function normalizeOutfitResult(
   source: Record<string, unknown>,
   roastText = FALLBACK_ROAST,
+  profile: OutfitProfile = "Verras me",
 ): OutfitResultData {
   const roast = normalizeRoast(roastText);
   const providedQuotes = toStringArray(source.alternativeQuotes);
@@ -156,7 +168,7 @@ function normalizeOutfitResult(
     source.advice,
   );
 
-  return {
+  const result: OutfitResultData = {
     roast,
     shareQuote,
     alternativeQuotes: fillAlternativeQuotes(providedQuotes, shareQuote),
@@ -174,6 +186,40 @@ function normalizeOutfitResult(
     ),
     shoppingSuggestions: normalizeShoppingSuggestions(source.shoppingSuggestions),
     score: normalizeScore(source.score ?? source.rating),
+  };
+
+  return profile === "Verras me" ? neutralizeOutfitResult(result) : result;
+}
+
+function neutralizeOutfitResult(result: OutfitResultData): OutfitResultData {
+  const neutralize = (text: string) =>
+    text
+      .replace(/\b(mannen|heren)\b/gi, "neutrale")
+      .replace(/\b(vrouwen|dames)\b/gi, "neutrale")
+      .replace(/\b(man|vrouw|jongen|meisje|meneer|mevrouw)\b/gi, "outfit")
+      .replace(/\b(hij|zij)\b/gi, "de outfit")
+      .replace(/\b(hem|haar)\b/gi, "de styling");
+
+  return {
+    ...result,
+    roast: neutralize(result.roast),
+    shareQuote: neutralize(result.shareQuote),
+    alternativeQuotes: result.alternativeQuotes.map(neutralize),
+    worksWell: result.worksWell.map(neutralize),
+    canImprove: result.canImprove.map(neutralize),
+    stylingTips: result.stylingTips.map(neutralize),
+    shoppingSuggestions: result.shoppingSuggestions.map((suggestion) => {
+      const searchQuery = neutralize(suggestion.searchQuery);
+      const productUrl = createControlledZalandoUrl(searchQuery);
+      return {
+        ...suggestion,
+        title: neutralize(suggestion.title),
+        reason: neutralize(suggestion.reason),
+        searchQuery,
+        productUrl,
+        affiliateUrl: productUrl,
+      };
+    }),
   };
 }
 
@@ -366,8 +412,10 @@ export async function POST(request: Request) {
       image?: unknown;
       occasion?: unknown;
       intensity?: unknown;
+      profile?: unknown;
     };
     const occasion = normalizeOccasion(body.occasion);
+    const profile = normalizeProfile(body.profile);
 
     if (!isValidImage(body.image) || !occasion || !isValidIntensity(body.intensity)) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
@@ -385,8 +433,14 @@ export async function POST(request: Request) {
     const userPrompt = `
 Gelegenheid: ${occasion}
 Feedbackstijl: ${body.intensity}
+Profielvoorkeur: ${profile}
 
 Regels:
+- Leid gender nooit af uit de foto. De profielvoorkeur hierboven is de enige toegestane bron.
+- Bij profiel "Man": gebruik in minstens één roastzin een natuurlijk mannelijk modewoord zoals herenstijl, herenkleding of herenpasvorm, zonder de persoon zelf te beoordelen.
+- Bij profiel "Vrouw": gebruik in minstens één roastzin een natuurlijk vrouwelijk modewoord zoals damesstijl, dameskleding of damespasvorm, zonder de persoon zelf te beoordelen.
+- Bij profiel "Verras me": schrijf volledig genderneutraal. Gebruik geen man, vrouw, jongen, meisje, meneer, mevrouw, hij, hem, zijn, zij of haar als persoonsverwijzing.
+- Roast altijd de outfit, kledingcombinatie en styling; nooit de persoon.
 - Beoordeel de outfit specifiek voor de gekozen gelegenheid.
 - Bij Sportschool: herken sportkleding, trainingsschoenen, ademende materialen, bewegingsvrijheid en praktische laagjes. Beoordeel of de outfit logisch en stijlvol werkt voor trainen.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
@@ -541,7 +595,7 @@ Regels:
       typeof roastText === "string" &&
       !containsLikelyEnglish(roastText)
     ) {
-      return Response.json(normalizeOutfitResult(parsedObject, roastText));
+      return Response.json(normalizeOutfitResult(parsedObject, roastText, profile));
     }
 
     if (typeof roastText === "string" && containsLikelyEnglish(roastText)) {
@@ -550,7 +604,7 @@ Regels:
     }
 
     console.warn("OpenAI response did not include a roast; using Dutch fallback.", parsed);
-    return Response.json(normalizeOutfitResult(parsedObject, FALLBACK_ROAST));
+    return Response.json(normalizeOutfitResult(parsedObject, FALLBACK_ROAST, profile));
   } catch (error) {
     console.error("Outfit check API error:", error);
     return Response.json({ error: "Outfit check failed" }, { status: 500 });

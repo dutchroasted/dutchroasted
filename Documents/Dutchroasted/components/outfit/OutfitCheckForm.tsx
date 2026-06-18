@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
-import type { OutfitIntensity, OutfitOccasion, OutfitResultData } from "@/lib/outfitTypes";
+import type {
+  OutfitIntensity,
+  OutfitOccasion,
+  OutfitProfile,
+  OutfitResultData,
+} from "@/lib/outfitTypes";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
 import { FreeCheckLimitNotice } from "./FreeCheckLimitNotice";
@@ -11,6 +16,7 @@ import { IntensitySelector } from "./IntensitySelector";
 import { LoadingState } from "./LoadingState";
 import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
+import { ProfileSelect } from "./ProfileSelect";
 
 const FREE_CHECK_LIMIT = 1;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
@@ -40,6 +46,7 @@ export function OutfitCheckForm() {
   const [fileName, setFileName] = useState("");
   const [occasion, setOccasion] = useState<OutfitOccasion>("Casual");
   const [intensity, setIntensity] = useState<OutfitIntensity>("roast");
+  const [profile, setProfile] = useState<OutfitProfile>("Verras me");
   const [result, setResult] = useState<OutfitResultData | null>(null);
   const [resultImage, setResultImage] = useState("");
   const [resultMeta, setResultMeta] = useState<{
@@ -76,7 +83,12 @@ export function OutfitCheckForm() {
     setError("");
 
     try {
-      const response = await runOutfitCheckWithRetry(selectedPreviewImage, occasion, intensity);
+      const response = await runOutfitCheckWithRetry(
+        selectedPreviewImage,
+        occasion,
+        intensity,
+        profile,
+      );
 
       let data: OutfitResultData;
       try {
@@ -151,6 +163,7 @@ export function OutfitCheckForm() {
 
         <div className="mt-6 grid gap-6">
           <OccasionSelect value={occasion} onChange={setOccasion} />
+          <ProfileSelect value={profile} onChange={setProfile} />
           <IntensitySelector value={intensity} onChange={setIntensity} />
         </div>
 
@@ -226,6 +239,7 @@ async function runOutfitCheckWithRetry(
   selectedPreviewImage: string,
   occasion: OutfitOccasion,
   intensity: OutfitIntensity,
+  profile: OutfitProfile,
 ) {
   let requestImage = selectedPreviewImage;
   let didRetryAfter413 = false;
@@ -237,6 +251,7 @@ async function runOutfitCheckWithRetry(
       requestImage,
       occasion,
       intensity,
+      profile,
       `poging ${attempt}`,
     );
 
@@ -279,6 +294,7 @@ async function requestOutfitCheck(
   image: string,
   occasion: OutfitOccasion,
   intensity: OutfitIntensity,
+  profile: OutfitProfile,
   attempt: string,
 ) {
   const controller = new AbortController();
@@ -292,7 +308,7 @@ async function requestOutfitCheck(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image, occasion, intensity }),
+      body: JSON.stringify({ image, occasion, intensity, profile }),
       signal: controller.signal,
     });
     console.info(`[Outfit check] API response status (${attempt}):`, response.status);
