@@ -1,12 +1,12 @@
 import { OUTFIT_ROAST_LEVELS, type OutfitRoastLevel } from "@/lib/outfitTypes";
 
 const levelDescriptions: Record<OutfitRoastLevel, string> = {
-  Complimenten: "Warm, positief en zelfvertrouwen gevend.",
+  Stijlcoach: "Sterke punten eerst, daarna praktisch stijladvies.",
   Pittig: "Scherp, grappig en direct.",
   Genadeloos: "Volle roastenergie, nooit hatelijk.",
 };
 const levelLabels: Record<OutfitRoastLevel, string> = {
-  Complimenten: "😇 Complimenten",
+  Stijlcoach: "✨ Stijlcoach",
   Pittig: "😏 Pittig",
   Genadeloos: "🔥 Genadeloos",
 };

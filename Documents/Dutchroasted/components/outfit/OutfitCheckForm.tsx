@@ -46,7 +46,7 @@ export function OutfitCheckForm() {
   const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [occasion, setOccasion] = useState<OutfitOccasion>("Date");
-  const [roastLevel, setRoastLevel] = useState<OutfitRoastLevel>("Pittig");
+  const [roastLevel, setRoastLevel] = useState<OutfitRoastLevel>("Genadeloos");
   const [profile, setProfile] = useState<OutfitProfile>("Zeg ik liever niet");
   const [result, setResult] = useState<OutfitResultData | null>(null);
   const [resultImage, setResultImage] = useState("");

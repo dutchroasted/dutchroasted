@@ -36,16 +36,16 @@ const ROAST_LEVEL_FALLBACKS: Record<
   OutfitRoastLevel,
   { roast: string; shareQuote: string; alternativeQuotes: string[] }
 > = {
-  Complimenten: {
+  Stijlcoach: {
     roast: [
-      "Deze outfit staat sterk en laat de styling overtuigend samenwerken.",
-      "De combinatie oogt verzorgd en heeft precies genoeg eigen karakter.",
-      "Eén klein stylingdetail kan deze sterke look nog scherper maken.",
+      "De basis staat sterk en geeft de outfit een duidelijke richting.",
+      "De styling werkt goed, al kan één detail meer samenhang brengen.",
+      "Met een praktische aanpassing wordt deze look direct overtuigender.",
     ].join("\n"),
-    shareQuote: "Deze outfit klopt en draagt het zelfvertrouwen moeiteloos mee.",
+    shareQuote: "Deze outfit staat sterk en weet precies wat werkt.",
     alternativeQuotes: [
-      "Deze look bewijst dat sterke styling geen uitleg nodig heeft.",
-      "De outfit oogt verzorgd, zelfverzekerd en klaar voor complimenten.",
+      "De styling heeft richting en ruimte voor één slimme upgrade.",
+      "Deze look combineert zelfvertrouwen met een helder stijlplan.",
     ],
   },
   Pittig: {
@@ -178,7 +178,7 @@ Actuele modecontext:
 `;
 
 const systemPrompt = `
-Je bent Outfit Roaster, een scherpe maar behulpzame Nederlandse AI-stylist. De gekozen gelegenheid bepaalt de context en het gekozen roastniveau bepaalt de toon: Complimenten, Pittig of Genadeloos. Je bent modisch, gevat en direct, zonder een echte persoon te imiteren of bestaande uitspraken over te nemen. Je geeft eerlijke outfitfeedback met humor. Je focust alleen op kleding, styling, kleuren, pasvorm van kleding, accessoires en de gekozen gelegenheid. Je beoordeelt nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst, beperking of gezondheid. Je maakt geen seksueel getinte opmerkingen. Je bent uitgesproken, maar niet kwetsend of discriminerend. Maak duidelijk dat feedback over de outfit gaat, niet over de persoon.
+Je bent Outfit Roaster, een scherpe maar behulpzame Nederlandse AI-stylist. De gekozen gelegenheid bepaalt de context en het gekozen roastniveau bepaalt de toon: Stijlcoach, Pittig of Genadeloos. Je bent modisch, gevat en direct, zonder een echte persoon te imiteren of bestaande uitspraken over te nemen. Je geeft eerlijke outfitfeedback met humor. Je focust alleen op kleding, styling, kleuren, pasvorm van kleding, accessoires en de gekozen gelegenheid. Je beoordeelt nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst, beperking of gezondheid. Je maakt geen seksueel getinte opmerkingen. Je bent uitgesproken, maar niet kwetsend of discriminerend. Maak duidelijk dat feedback over de outfit gaat, niet over de persoon.
 
 ${currentFashionContext}
 
@@ -191,9 +191,9 @@ Belangrijke grenzen:
 - De roast mag scherp en grappig zijn, maar nooit gemeen of persoonlijk kwetsend.
 - Schrijf uitsluitend Nederlands. Gebruik geen Engelse zinnen en meng geen Nederlands met Engels.
 - Schrijf het veld roast als exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
-- Bij Pittig en Genadeloos zijn dit roastregels; bij Complimenten zijn dit positieve feedbackregels.
+- Bij Pittig en Genadeloos zijn dit roastregels; bij Stijlcoach zijn dit eerlijke coachingsregels.
 - Iedere feedbackzin heeft een duidelijke clou en moet zelfstandig deelbaar zijn.
-- Pas de toon strikt aan het gekozen roastniveau aan; Complimenten blijft warm en positief.
+- Pas de toon strikt aan het gekozen roastniveau aan; Stijlcoach blijft positief, eerlijk en praktisch.
 - Maak de roast vermakelijk, modebewust en citeerbaar, met een originele stem.
 - Gebruik uitsluitend kledingstukken uit de vooraf aangeleverde kledinginventaris.
 - Noem nooit een specifiek kledingstuk dat niet in die inventaris staat.
@@ -256,15 +256,16 @@ function normalizeRoastLevel(
   }
 
   const legacyLevelMap: Record<string, OutfitRoastLevel> = {
-    Mild: "Complimenten",
+    Mild: "Stijlcoach",
+    Complimenten: "Stijlcoach",
     "🔥 Brutaal": "Pittig",
     "😏 Sarcastisch": "Pittig",
-    "🧠 Eerlijk": "Complimenten",
+    "🧠 Eerlijk": "Stijlcoach",
     roast: "Pittig",
     rotterdams: "Pittig",
     "🔥 Brutale Vriend": "Genadeloos",
-    "❤️ Date Coach": "Complimenten",
-    "💼 Recruiter": "Complimenten",
+    "❤️ Date Coach": "Stijlcoach",
+    "💼 Recruiter": "Stijlcoach",
   };
 
   if (typeof legacyFeedbackStyle === "string" && legacyFeedbackStyle in legacyLevelMap) {
@@ -273,7 +274,7 @@ function normalizeRoastLevel(
 
   return typeof legacyPersona === "string" && legacyPersona in legacyLevelMap
     ? legacyLevelMap[legacyPersona]
-    : "Pittig";
+    : "Genadeloos";
 }
 
 function normalizeProfile(value: unknown): OutfitProfile {
@@ -312,7 +313,7 @@ function normalizeOutfitResult(
   source: Record<string, unknown>,
   roastText = FALLBACK_ROAST,
   inventory: ClothingInventoryItem[] = [],
-  roastLevel: OutfitRoastLevel = "Pittig",
+  roastLevel: OutfitRoastLevel = "Genadeloos",
   profile: OutfitProfile = "Zeg ik liever niet",
 ): OutfitResultData {
   const levelFallback = ROAST_LEVEL_FALLBACKS[roastLevel];
@@ -358,7 +359,7 @@ function normalizeOutfitResult(
       source.shoppingSuggestions,
       inventory,
     ),
-    score: normalizeScore(source.score ?? source.rating, roastLevel),
+    score: normalizeScore(source.score ?? source.rating),
   };
 
   if (profile === "Vrouw") {
@@ -489,7 +490,7 @@ function withFallback(items: string[], fallback: string) {
   return items.length > 0 ? items : [fallback];
 }
 
-function normalizeScore(value: unknown, roastLevel: OutfitRoastLevel) {
+function normalizeScore(value: unknown) {
   const parsed =
     typeof value === "number"
       ? value
@@ -497,14 +498,7 @@ function normalizeScore(value: unknown, roastLevel: OutfitRoastLevel) {
         ? Number.parseFloat(value.replace(",", "."))
         : Number.NaN;
 
-  if (!Number.isFinite(parsed)) {
-    return roastLevel === "Complimenten" ? 7 : 5;
-  }
-
-  const normalized = Math.min(10, Math.max(1, Math.round(parsed)));
-  return roastLevel === "Complimenten" && normalized >= 6
-    ? Math.max(8, normalized)
-    : normalized;
+  return Number.isFinite(parsed) ? Math.min(10, Math.max(1, Math.round(parsed))) : 5;
 }
 
 function normalizeShoppingSuggestions(
@@ -825,15 +819,14 @@ Regels:
 
 function getRoastLevelInstructions(roastLevel: OutfitRoastLevel) {
   switch (roastLevel) {
-    case "Complimenten":
+    case "Stijlcoach":
       return `
-Roastniveau: 😇 Complimenten
-- Geef precies 3 positieve feedbackregels en noem ze geen roastregels.
-- Focus op wat zichtbaar goed werkt en bouw het zelfvertrouwen op.
-- Wees warm, positief en oprecht; schrijf geen gemene roast.
-- Geef bij een redelijk goede outfit een hoge, geloofwaardige score.
-- Voeg kleine, concrete stylingtips toe zonder de sterke punten te overschaduwen.
-- Maak shareQuote en alternativeQuotes flatterend, compleet en goed deelbaar.
+Roastniveau: ✨ Stijlcoach
+- Begin met de zichtbare sterke punten van de outfit.
+- Geef praktische, concrete stylingadviezen die direct toepasbaar zijn.
+- Wees positief maar eerlijk; verberg verbeterpunten niet.
+- Gebruik humor wanneer dat natuurlijk past, zonder gemeen te worden.
+- Maak shareQuote zelfverzekerd, compleet en goed deelbaar.
 `;
     case "Genadeloos":
       return `
@@ -849,7 +842,7 @@ Roastniveau: Pittig
 - Gebruik scherpe, grappige en directe Nederlandse humor.
 - Gebruik Nederlandse humor en plaag direct, maar nooit hatelijk.
 - Balanceer de roast met bruikbaar stijladvies.
-- Wees scherper dan Complimenten, maar minder extreem dan Genadeloos.
+- Wees scherper dan Stijlcoach, maar minder extreem dan Genadeloos.
 - Iedere regel heeft een duidelijke punchline.
 - Roast uitsluitend de outfit en nooit de persoon.
 `;
@@ -905,7 +898,7 @@ Regels:
 - Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm bovenlaag, schoenen, broek of accessoire.
 - Herclassificeer de kleding niet opnieuw tijdens het schrijven.
 - De gelegenheid bepaalt de context: Date, Werk, School, Gym, Party of Festival.
-- Het roastniveau bepaalt de toon: Complimenten, Pittig of Genadeloos.
+- Het roastniveau bepaalt de toon: Stijlcoach, Pittig of Genadeloos.
 - Houd gelegenheid en roastniveau strikt gescheiden; verzin geen extra rol of persona.
 - Leid gender nooit af uit de foto. De keuze bij "Voor wie" hierboven is de enige toegestane bron.
 - Bij "Man": gebruik waar nodig natuurlijke mannelijke Nederlandse bewoording. "Gast", "kerel" of "maat" mag spaarzaam, maar de roast blijft over de outfit gaan.
@@ -924,10 +917,10 @@ Regels:
 - Schrijf voor een Nederlands publiek.
 - Score is 1 t/m 10
 - Het veld roast bevat exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
-- Bij Complimenten zijn dit positieve feedbackregels; gebruik dan geen gemene roasttaal.
+- Bij Stijlcoach zijn dit positieve maar eerlijke coachingsregels met praktisch advies.
 - Bij Pittig en Genadeloos zijn roastregels toegestaan.
 - Iedere feedbackregel heeft een duidelijke clou en is zelfstandig deelbaar.
-- Pas de toon strikt aan het gekozen roastniveau aan. Complimenten is warm en positief; Pittig en Genadeloos zijn directer.
+- Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief en eerlijk; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit 4 of meer feedbackzinnen of regels.
@@ -952,7 +945,7 @@ Regels:
 - shareQuote is maximaal 12 woorden, precies 1 zin en bevat geen tweede zin.
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
 - shareQuote volgt duidelijk het gekozen roastniveau en is memorabel.
-- Bij Complimenten is shareQuote flatterend, positief en zelfvertrouwen gevend.
+- Bij Stijlcoach is shareQuote zelfverzekerd, positief en goed deelbaar.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - Voorbeelden shareQuote: "Je schoenen doen overuren om deze outfit te redden.", "Net niet fout, maar zeker niet goed.", "Dit oogt als haastwerk met ambitie."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
@@ -1048,7 +1041,7 @@ Regels:
 Gebruik uitsluitend deze kledinginventaris:
 ${formatClothingInventory(clothingInventory)}
 
-Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak het veld roast exact 3 korte feedbackzinnen, elk op een eigen regel en met een duidelijke clou. Bij Complimenten zijn alle drie regels positief en warm, zonder gemene roast. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
+Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak het veld roast exact 3 korte feedbackzinnen, elk op een eigen regel en met een duidelijke clou. Bij Stijlcoach beginnen de regels met sterke punten en geven ze praktisch, eerlijk stijladvies. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
         },
       ];
 
