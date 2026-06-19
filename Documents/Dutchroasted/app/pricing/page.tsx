@@ -43,8 +43,8 @@ export default function PricingPage() {
             Kies hoe uitgebreid je stylingrapport straks wordt.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-            Start gratis met 1 outfit check per dag. Upgrade straks voor onbeperkt checken,
-            style history en betere shop suggesties.
+            Start gratis met 5 Outfit Roasts per dag. Pro Analyse brengt straks diepere inzichten
+            in kleur, pasvorm, samenhang en trends.
           </p>
         </section>
 

@@ -7,7 +7,7 @@ export function PricingTeaser() {
             Pricing
           </p>
           <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-            Gratis starten met 1 outfit check per dag. Premium komt eraan.
+            Gratis starten met 5 Outfit Roasts per dag. Pro Analyse komt eraan.
           </h2>
         </div>
         <a

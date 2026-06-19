@@ -1,5 +1,5 @@
 export const MAX_ROAST_TEXT_LENGTH = 5000;
-export const FREE_DAILY_ROAST_LIMIT = 3;
+export const FREE_DAILY_ROAST_LIMIT = 5;
 
 export const ROAST_CATEGORIES = [
   "CV",

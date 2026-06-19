@@ -68,7 +68,7 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
 
   return (
     <article className="dr-card-hover rounded-3xl border border-orange-500/30 bg-[linear-gradient(145deg,rgba(255,106,0,0.13),rgba(255,255,255,0.035))] p-5 shadow-[0_22px_80px_rgba(255,106,0,0.09)] sm:p-6">
-      <h3 className="text-2xl font-black text-white">Wil je onbeperkt outfit checks?</h3>
+      <h3 className="text-2xl font-black text-white">Wil je als eerste Pro Analyse proberen?</h3>
       <p className="mt-3 leading-7 text-zinc-300">
         Laat je e-mail achter en krijg als eerste toegang tot Premium, style history en
         persoonlijke outfit tips.

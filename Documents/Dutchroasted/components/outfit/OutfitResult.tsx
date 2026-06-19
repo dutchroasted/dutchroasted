@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
 import { analytics } from "@/lib/analytics";
 import type { OutfitResultData } from "@/lib/outfitTypes";
+import { ProAnalysisTeaser } from "./ProAnalysisTeaser";
 
 const FALLBACK_QUOTE_OPTIONS = [
   "Je schoenen en kleding zitten duidelijk niet in dezelfde groepsapp.",
@@ -184,6 +185,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         <ResultList title="✨ Stylingtips" items={result.stylingTips} featured />
       ) : null}
       <ShopSuggestions suggestions={result.shoppingSuggestions} />
+      <ProAnalysisTeaser />
 
       <p className="dr-glass-card rounded-2xl p-4 text-sm leading-6 text-zinc-400">
         Outfit Roaster gebruikt AI voor stylingfeedback. De feedback is bedoeld als inspiratie en

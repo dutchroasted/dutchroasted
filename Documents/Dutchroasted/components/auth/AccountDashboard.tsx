@@ -30,7 +30,7 @@ export function AccountDashboard() {
 
   const plan = auth.profile?.plan ?? "free";
   const used = auth.usage?.used ?? 0;
-  const limit = auth.usage?.limit ?? 3;
+  const limit = auth.usage?.limit ?? 5;
 
   return (
     <section className="grid gap-5 lg:grid-cols-[1fr_0.8fr]">

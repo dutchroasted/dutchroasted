@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import { analytics } from "@/lib/analytics";
 import type {
+  OutfitCheckMode,
   OutfitOccasion,
   OutfitProfile,
   OutfitResultData,
@@ -14,12 +15,13 @@ import { ErrorMessage } from "./ErrorMessage";
 import { FreeCheckLimitNotice } from "./FreeCheckLimitNotice";
 import { ImageUpload } from "./ImageUpload";
 import { LoadingState } from "./LoadingState";
+import { ModeSelector } from "./ModeSelector";
 import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
 import { ProfileSelect } from "./ProfileSelect";
 import { RoastLevelSelect } from "./RoastLevelSelect";
 
-const FREE_CHECK_LIMIT = 3;
+const FREE_CHECK_LIMIT = 5;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
@@ -43,6 +45,7 @@ type DailyLimitState = {
 };
 
 export function OutfitCheckForm() {
+  const [mode, setMode] = useState<OutfitCheckMode>("roast");
   const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [occasion, setOccasion] = useState<OutfitOccasion>("Date");
@@ -154,6 +157,8 @@ export function OutfitCheckForm() {
           isLimitReached={isLimitReached}
         />
 
+        <ModeSelector value={mode} onChange={setMode} />
+
         <ImageUpload
           previewUrl={selectedPreviewImage}
           disabled={isProcessing}
@@ -193,13 +198,13 @@ export function OutfitCheckForm() {
           disabled={!canSubmit}
           className="dr-primary-button mt-7 min-h-16 w-full px-5 py-4 text-base"
         >
-          {isLoading ? "Even kijken..." : isLimitReached ? "3 gratis checks gebruikt" : "Roast mijn outfit"}
+          {isLoading ? "Even kijken..." : isLimitReached ? "5 gratis roasts gebruikt" : "Roast mijn outfit"}
         </button>
 
         {isLimitReached ? (
           <div className="mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
             <p className="text-sm font-bold leading-6 text-orange-100">
-              Je 3 gratis outfit checks voor vandaag zijn gebruikt. Premium komt eraan.
+              Je hebt vandaag nog 0 van de 5 gratis roasts over.
             </p>
             <button
               type="button"

@@ -32,7 +32,7 @@ export function RoastForm() {
     auth.isAuthenticated &&
     Boolean(authUsage) &&
     !authUsage?.unlimited &&
-    (authUsage?.used ?? 0) >= (authUsage?.limit ?? 3);
+    (authUsage?.used ?? 0) >= (authUsage?.limit ?? 5);
   const anonymousLimitReached = !auth.isAuthenticated && dailyLimit.isLimitReached;
   const isLimitReached = authenticatedLimitReached || anonymousLimitReached;
   const limitIsReady = auth.isReady && (auth.isAuthenticated ? Boolean(authUsage) : dailyLimit.isReady);

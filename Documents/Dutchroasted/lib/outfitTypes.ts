@@ -15,6 +15,7 @@ export const OUTFIT_PROFILES = ["Man", "Vrouw", "Zeg ik liever niet"] as const;
 export type OutfitOccasion = (typeof OUTFIT_OCCASIONS)[number];
 export type OutfitRoastLevel = (typeof OUTFIT_ROAST_LEVELS)[number];
 export type OutfitProfile = (typeof OUTFIT_PROFILES)[number];
+export type OutfitCheckMode = "roast" | "pro";
 
 export type ShoppingSuggestion = {
   title: string;
@@ -35,4 +36,32 @@ export type OutfitResultData = {
   stylingTips: string[];
   shoppingSuggestions: ShoppingSuggestion[];
   score: number;
+};
+
+export type ProAnalysisSection = {
+  score: number;
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+};
+
+export type ProAnalysisResult = {
+  overallScore: number;
+  styleIdentity: string;
+  colorAnalysis: ProAnalysisSection;
+  fitAnalysis: ProAnalysisSection;
+  cohesionAnalysis: ProAnalysisSection;
+  occasionFit: {
+    score: number;
+    summary: string;
+  };
+  trendScore: {
+    score: number;
+    summary: string;
+  };
+  strengths: string[];
+  improvementPoints: string[];
+  stylistAdvice: string;
+  suggestedUpgrades: string[];
+  shopSuggestions: ShoppingSuggestion[];
 };
