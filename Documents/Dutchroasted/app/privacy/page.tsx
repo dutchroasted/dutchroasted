@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         {
           title: "Welke gegevens verzamelen we?",
           body: [
-            "We verwerken de outfitfoto die je uploadt, de gekozen gelegenheid, de gekozen Roaster en het AI-resultaat dat daarna wordt getoond.",
+            "We verwerken de outfitfoto die je uploadt, de gekozen gelegenheid, het gekozen roastniveau en het AI-resultaat dat daarna wordt getoond.",
             "Als je je vrijwillig aanmeldt voor early access, verzamelen we je e-mailadres, toestemmingstekst, marketingtoestemming en beperkte context zoals gelegenheid en score. We sturen geen foto of AI-resultaat mee naar de lead-database.",
           ],
         },

@@ -51,11 +51,19 @@ export const analytics = {
       file_size_bytes: fileSizeBytes,
     });
   },
-  outfitCheckStarted(occasion: string, persona: string) {
-    trackAnalyticsEvent("outfit_check_started", { occasion, persona });
+  outfitCheckStarted(occasion: string, roastLevel: string, profile: string) {
+    trackAnalyticsEvent("outfit_check_started", {
+      occasion,
+      roast_level: roastLevel,
+      profile,
+    });
   },
-  outfitCheckCompleted(occasion: string, persona: string, score: number) {
-    trackAnalyticsEvent("outfit_check_completed", { occasion, persona, score });
+  outfitCheckCompleted(occasion: string, roastLevel: string, score: number) {
+    trackAnalyticsEvent("outfit_check_completed", {
+      occasion,
+      roast_level: roastLevel,
+      score,
+    });
   },
   shareCardDownloaded(score: number) {
     trackAnalyticsEvent("share_card_downloaded", { score });
