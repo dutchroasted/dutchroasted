@@ -49,10 +49,24 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   }
 
   async function handleShare() {
+<<<<<<< HEAD
     if (disabled || isSharing || !result || !isProcessedOutfitImage(originalImage)) {
       showFeedback("De deelkaart is nog niet klaar. Wacht tot foto en analyse volledig geladen zijn.");
       return;
     }
+=======
+    if (isSharing) {
+      return;
+    }
+
+    setIsSharing(true);
+
+    try {
+      if (!isProcessedOutfitImage(originalImage)) {
+        showFeedback("De outfitfoto ontbreekt. Upload de foto opnieuw voordat je deelt.");
+        return;
+      }
+>>>>>>> a7da14b (Add Stripe premium subscriptions)
 
     setIsSharing(true);
     try {
@@ -135,6 +149,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           quote={selectedQuote}
           originalImage={originalImage}
         />
+<<<<<<< HEAD
         <div className="flex justify-end">
           <button
             type="button"
@@ -145,6 +160,16 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
             {isSharing ? "Story maken..." : "Deel deze roast"}
           </button>
         </div>
+=======
+        <button
+          type="button"
+          onClick={handleShare}
+          disabled={isSharing || !isProcessedOutfitImage(originalImage)}
+          className="min-h-12 w-full rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_18px_70px_rgba(255,106,0,0.28)] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none sm:w-auto"
+        >
+          {isSharing ? "Share card wordt gemaakt..." : "Deel deze roast"}
+        </button>
+>>>>>>> a7da14b (Add Stripe premium subscriptions)
       </div>
 
       <QuoteOptions
