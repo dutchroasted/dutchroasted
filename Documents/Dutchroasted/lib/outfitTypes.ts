@@ -9,7 +9,7 @@ export const OUTFIT_OCCASIONS = [
   "Festival",
 ] as const;
 
-export const OUTFIT_ROAST_LEVELS = ["Mild", "Pittig", "Genadeloos"] as const;
+export const OUTFIT_ROAST_LEVELS = ["Complimenten", "Pittig", "Genadeloos"] as const;
 export const OUTFIT_PROFILES = ["Man", "Vrouw", "Zeg ik liever niet"] as const;
 
 export type OutfitOccasion = (typeof OUTFIT_OCCASIONS)[number];

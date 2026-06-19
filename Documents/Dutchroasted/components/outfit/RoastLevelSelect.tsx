@@ -1,9 +1,14 @@
 import { OUTFIT_ROAST_LEVELS, type OutfitRoastLevel } from "@/lib/outfitTypes";
 
 const levelDescriptions: Record<OutfitRoastLevel, string> = {
-  Mild: "Licht plagen, helder advies.",
+  Complimenten: "Warm, positief en zelfvertrouwen gevend.",
   Pittig: "Scherp, grappig en direct.",
   Genadeloos: "Volle roastenergie, nooit hatelijk.",
+};
+const levelLabels: Record<OutfitRoastLevel, string> = {
+  Complimenten: "😇 Complimenten",
+  Pittig: "😏 Pittig",
+  Genadeloos: "🔥 Genadeloos",
 };
 
 type RoastLevelSelectProps = {
@@ -31,7 +36,9 @@ export function RoastLevelSelect({ value, onChange }: RoastLevelSelectProps) {
                   : "border-white/10 bg-black/25 text-white hover:border-orange-400/50 hover:bg-white/[0.075]"
               }`}
             >
-              <span className="block text-sm font-black sm:text-base">{level}</span>
+              <span className="block text-sm font-black sm:text-base">
+                {levelLabels[level]}
+              </span>
               <span
                 className={`mt-1.5 block text-xs leading-5 sm:text-sm ${
                   isSelected ? "text-black/70" : "text-zinc-500"
