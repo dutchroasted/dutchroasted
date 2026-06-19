@@ -157,26 +157,32 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
 
       <ResultBlock title="🔥 De volledige roast" featured>
         <p className="whitespace-pre-line text-lg font-bold leading-8 text-white">{result.roast}</p>
-        <div className="mt-5 border-t border-orange-400/20 pt-5">
-          <p className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-orange-300">
-            De snelste upgrades
-          </p>
-          <ul className="space-y-2 text-zinc-200">
-            {result.stylingTips.slice(0, 3).map((tip) => (
-              <li key={tip} className="flex gap-3 leading-7">
-                <span className="mt-3 size-1.5 shrink-0 rounded-full bg-orange-500" />
-                <span>{tip}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {result.stylingTips.length > 0 ? (
+          <div className="mt-5 border-t border-orange-400/20 pt-5">
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-orange-300">
+              De snelste upgrades
+            </p>
+            <ul className="space-y-2 text-zinc-200">
+              {result.stylingTips.slice(0, 3).map((tip) => (
+                <li key={tip} className="flex gap-3 leading-7">
+                  <span className="mt-3 size-1.5 shrink-0 rounded-full bg-orange-500" />
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </ResultBlock>
 
       <div className="grid gap-4 md:grid-cols-2">
         <ResultList title="👀 Wat werkt goed" items={result.worksWell} />
-        <ResultList title="⚠️ Wat kan beter" items={result.canImprove} />
+        {result.canImprove.length > 0 ? (
+          <ResultList title="⚠️ Wat kan beter" items={result.canImprove} />
+        ) : null}
       </div>
-      <ResultList title="✨ Stylingtips" items={result.stylingTips} featured />
+      {result.stylingTips.length > 0 ? (
+        <ResultList title="✨ Stylingtips" items={result.stylingTips} featured />
+      ) : null}
       <ShopSuggestions suggestions={result.shoppingSuggestions} />
 
       <p className="dr-glass-card rounded-2xl p-4 text-sm leading-6 text-zinc-400">

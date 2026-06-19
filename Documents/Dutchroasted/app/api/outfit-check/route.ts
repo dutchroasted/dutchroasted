@@ -38,14 +38,14 @@ const ROAST_LEVEL_FALLBACKS: Record<
 > = {
   Stijlcoach: {
     roast: [
-      "De basis staat sterk en geeft de outfit een duidelijke richting.",
-      "De styling werkt goed, al kan één detail meer samenhang brengen.",
-      "Met een praktische aanpassing wordt deze look direct overtuigender.",
+      "Deze outfit weet precies wat hij wil zijn.",
+      "Rustig, stijlvol en verrassend goed gecombineerd.",
+      "Deze look heeft geen excuses nodig.",
     ].join("\n"),
-    shareQuote: "Deze outfit staat sterk en weet precies wat werkt.",
+    shareQuote: "Deze look heeft geen excuses nodig en straalt zelfvertrouwen uit.",
     alternativeQuotes: [
-      "De styling heeft richting en ruimte voor één slimme upgrade.",
-      "Deze look combineert zelfvertrouwen met een helder stijlplan.",
+      "Simpel gedaan, slim uitgevoerd en klaar om gezien te worden.",
+      "Deze outfit weet precies wat werkt en draagt dat uit.",
     ],
   },
   Pittig: {
@@ -317,22 +317,32 @@ function normalizeOutfitResult(
   profile: OutfitProfile = "Zeg ik liever niet",
 ): OutfitResultData {
   const levelFallback = ROAST_LEVEL_FALLBACKS[roastLevel];
-  const roast = normalizeRoast(roastText, inventory, levelFallback.roast);
+  const isStyleCoach = roastLevel === "Stijlcoach";
+  const normalizedRoastText = isStyleCoach
+    ? extractRoastSentences(roastText).filter(isPositiveStyleCoachText).join("\n")
+    : roastText;
+  const roast = normalizeRoast(
+    normalizedRoastText || levelFallback.roast,
+    inventory,
+    levelFallback.roast,
+  );
   const providedQuotes = toStringArray(source.alternativeQuotes);
   const shareQuote = selectValidQuote(
     [
-      toNonEmptyString(source.shareQuote),
-      toNonEmptyString(source.title),
+      isStyleCoach
+        ? positiveStyleCoachText(toNonEmptyString(source.shareQuote))
+        : toNonEmptyString(source.shareQuote),
+      isStyleCoach
+        ? positiveStyleCoachText(toNonEmptyString(source.title))
+        : toNonEmptyString(source.title),
       ...extractRoastSentences(roast),
     ],
     inventory,
     [levelFallback.shareQuote, ...FALLBACK_SHARE_QUOTES],
   );
-  const stylingTips = firstNonEmptyStringArray(
-    source.stylingTips,
-    source.tips,
-    source.advice,
-  );
+  const stylingTips = isStyleCoach
+    ? []
+    : firstNonEmptyStringArray(source.stylingTips, source.tips, source.advice);
 
   const result: OutfitResultData = {
     roast,
@@ -342,19 +352,24 @@ function normalizeOutfitResult(
       shareQuote,
       inventory,
       levelFallback.alternativeQuotes,
+      isStyleCoach,
     ),
     worksWell: withFallback(
       filterInventoryConsistentText(toStringArray(source.worksWell), inventory),
       "De outfit heeft een duidelijke basis waarop je verder kunt stylen.",
     ),
-    canImprove: withFallback(
-      filterInventoryConsistentText(toStringArray(source.canImprove), inventory),
-      "Meer samenhang in kleur, pasvorm en accessoires maakt het geheel sterker.",
-    ),
-    stylingTips: withFallback(
-      filterInventoryConsistentText(stylingTips, inventory),
-      "Kies één duidelijke stijlrichting en laat kleuren en accessoires daarop aansluiten.",
-    ),
+    canImprove: isStyleCoach
+      ? []
+      : withFallback(
+          filterInventoryConsistentText(toStringArray(source.canImprove), inventory),
+          "Meer samenhang in kleur, pasvorm en accessoires maakt het geheel sterker.",
+        ),
+    stylingTips: isStyleCoach
+      ? []
+      : withFallback(
+          filterInventoryConsistentText(stylingTips, inventory),
+          "Kies één duidelijke stijlrichting en laat kleuren en accessoires daarop aansluiten.",
+        ),
     shoppingSuggestions: normalizeShoppingSuggestions(
       source.shoppingSuggestions,
       inventory,
@@ -556,11 +571,13 @@ function fillAlternativeQuotes(
   shareQuote: string,
   inventory: ClothingInventoryItem[],
   styleFallbacks: string[],
+  positiveOnly = false,
 ) {
   const validQuotes = quotes.filter(
     (quote) =>
       isValidShareQuote(quote) &&
-      referencesOnlyDetectedClothing(quote, inventory),
+      referencesOnlyDetectedClothing(quote, inventory) &&
+      (!positiveOnly || isPositiveStyleCoachText(quote)),
   );
   const uniqueQuotes = [
     ...validQuotes,
@@ -573,6 +590,16 @@ function fillAlternativeQuotes(
   );
 
   return uniqueQuotes.slice(0, 2);
+}
+
+function positiveStyleCoachText(value: string | null) {
+  return value && isPositiveStyleCoachText(value) ? value : null;
+}
+
+function isPositiveStyleCoachText(value: string) {
+  return !/\b(mist|fout|probleem|slechter|slecht|saai|chaotisch|twijfel|crisis|redden|verbeter|moet|zou moeten)\b/i.test(
+    value,
+  );
 }
 
 function selectValidQuote(
@@ -822,11 +849,14 @@ function getRoastLevelInstructions(roastLevel: OutfitRoastLevel) {
     case "Stijlcoach":
       return `
 Roastniveau: ✨ Stijlcoach
-- Begin met de zichtbare sterke punten van de outfit.
-- Geef praktische, concrete stylingadviezen die direct toepasbaar zijn.
-- Wees positief maar eerlijk; verberg verbeterpunten niet.
-- Gebruik humor wanneer dat natuurlijk past, zonder gemeen te worden.
-- Maak shareQuote zelfverzekerd, compleet en goed deelbaar.
+- Focus primair op zichtbare sterke punten, stijlwinsten en zelfvertrouwen.
+- Vermijd roasttaal en kritiek; benoem alleen een probleem als dat absoluut noodzakelijk is.
+- Geef standaard geen stylingtips en vertel niet wat de gebruiker moet veranderen.
+- Laat stylingTips en canImprove standaard lege arrays zijn.
+- Wees positief maar eerlijk en gebruik alleen humor die het zelfvertrouwen versterkt.
+- Geef een hoge score wanneer de outfit dat zichtbaar verdient.
+- Maak shareQuote altijd positief, zelfverzekerd en social-mediawaardig.
+- Schrijf in de sfeer van: "Deze outfit weet precies wat hij wil zijn.", "Rustig, stijlvol en verrassend goed gecombineerd.", "Deze look heeft geen excuses nodig." en "Simpel gedaan, slim uitgevoerd."
 `;
     case "Genadeloos":
       return `
@@ -917,10 +947,10 @@ Regels:
 - Schrijf voor een Nederlands publiek.
 - Score is 1 t/m 10
 - Het veld roast bevat exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
-- Bij Stijlcoach zijn dit positieve maar eerlijke coachingsregels met praktisch advies.
+- Bij Stijlcoach zijn dit positieve confidence-regels over sterke punten en stijlwinsten.
 - Bij Pittig en Genadeloos zijn roastregels toegestaan.
 - Iedere feedbackregel heeft een duidelijke clou en is zelfstandig deelbaar.
-- Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief en eerlijk; Pittig en Genadeloos zijn directer.
+- Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief, zelfverzekerd en niet-corrigerend; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit 4 of meer feedbackzinnen of regels.
@@ -946,6 +976,7 @@ Regels:
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
 - shareQuote volgt duidelijk het gekozen roastniveau en is memorabel.
 - Bij Stijlcoach is shareQuote zelfverzekerd, positief en goed deelbaar.
+- Bij Stijlcoach mogen shareQuote en alternativeQuotes nooit kritiek, correcties of roasttaal bevatten.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - Voorbeelden shareQuote: "Je schoenen doen overuren om deze outfit te redden.", "Net niet fout, maar zeker niet goed.", "Dit oogt als haastwerk met ambitie."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
@@ -953,12 +984,14 @@ Regels:
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
 - Voorbeeld goed: "De broek breekt het silhouet. Een slankere pasvorm maakt het geheel direct scherper."
 - Gebruik actuele modecontext als dat helpt, maar verzin geen merken of exacte trends die je niet uit de foto kunt afleiden
-- Werkt goed, kan beter en stylingtips bevatten elk 3 tot 5 concrete punten
+- Bij Pittig en Genadeloos bevatten worksWell, canImprove en stylingTips elk 3 tot 5 concrete punten.
+- Bij Stijlcoach bevat worksWell 3 tot 5 concrete stijlwinsten en zijn canImprove en stylingTips standaard lege arrays.
 - Shopping suggestions bevatten alleen title, reason, category en searchQuery.
 - Gebruik voor category uitsluitend: schoenen, broeken, tops, jassen, accessoires of sportkleding.
 - Genereer geen productUrl, affiliateUrl, imageUrl, domeinnaam of willekeurige Zalando-link; de server vult gecontroleerde Zalando-links in.
 - Laat de reden voor iedere shopsuggestie expliciet aansluiten op een item uit de inventaris, zonder een bestaand kledingstuk opnieuw te benoemen als een ander type.
 - Bij Party: geef shopsuggesties die passen bij verjaardagen, nightlife, bars, borrels, diners en sociale evenementen. Kies feestelijke maar draagbare upgrades en laat searchQuery de partycontext concreet weerspiegelen.
+- Bij Stijlcoach zijn shopsuggesties optionele aanvullingen op een sterke look, nooit correcties op fouten.
 - Geef 3 tot 5 shopping suggestions die passen bij de outfit, gelegenheid en actuele modecontext
 - Voorbeeld searchQuery: "minimalistische witte sneakers heren", "donkere rechte jeans", "overshirt in crème"
 - Geen seksuele opmerkingen
@@ -1041,7 +1074,7 @@ Regels:
 Gebruik uitsluitend deze kledinginventaris:
 ${formatClothingInventory(clothingInventory)}
 
-Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak het veld roast exact 3 korte feedbackzinnen, elk op een eigen regel en met een duidelijke clou. Bij Stijlcoach beginnen de regels met sterke punten en geven ze praktisch, eerlijk stijladvies. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
+Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak het veld roast exact 3 korte feedbackzinnen, elk op een eigen regel en met een duidelijke clou. Bij Stijlcoach zijn alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
