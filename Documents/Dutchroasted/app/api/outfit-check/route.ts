@@ -9,11 +9,15 @@ import {
 
 const MODEL = "gpt-4o-mini";
 const LEGACY_PARTY_OCCASION = "Feest";
-const FALLBACK_SHARE_QUOTE = "Deze outfit twijfelt harder dan nodig.";
+const FALLBACK_SHARE_QUOTES = [
+  "Deze outfit heeft meer twijfel dan een volle groepsapp.",
+  "De styling mist richting, maar blijft opvallend overeind.",
+  "Deze look heeft potentie, maar wacht nog op een besluit.",
+];
 const FALLBACK_ALTERNATIVE_QUOTES = [
-  "Je schoenen en kleding zitten duidelijk niet in dezelfde groepsapp.",
-  "De basis staat, maar de styling mist nog een eindredacteur.",
-  "Deze look heeft potentie, maar wacht nog op een duidelijke beslissing.",
+  "De outfit maakt lawaai, maar vergeet een duidelijke boodschap.",
+  "Deze combinatie heeft ambitie en nog dringend een eindredacteur nodig.",
+  "De styling staat klaar, alleen het plan is zoek.",
 ];
 const FALLBACK_ROAST = [
   "Je outfit heeft een plan, maar de kledingstukken hebben de vergadering gemist.",
@@ -45,6 +49,80 @@ const SHOP_CATEGORY_CONFIG = {
   sportkleding: "sportkleding",
 } as const;
 type ShopCategory = keyof typeof SHOP_CATEGORY_CONFIG;
+const CLOTHING_ITEMS = [
+  "T-shirt",
+  "Polo",
+  "Overhemd",
+  "Vest",
+  "Trui",
+  "Hoodie",
+  "Jas",
+  "Blazer",
+  "Jeans",
+  "Chino",
+  "Sneakers",
+  "Nette schoenen",
+  "Boots",
+  "Tas",
+  "Horloge",
+  "top",
+  "schoenen",
+  "broek",
+  "bovenlaag",
+] as const;
+type ClothingItem = (typeof CLOTHING_ITEMS)[number];
+type ClothingInventoryItem = {
+  item: ClothingItem;
+  color: string;
+  confidence: "hoog" | "middel";
+};
+const CLOTHING_REFERENCE_TERMS: Record<ClothingItem, string[]> = {
+  "T-shirt": ["t-shirt", "tshirt"],
+  Polo: ["polo", "poloshirt"],
+  Overhemd: ["overhemd"],
+  Vest: ["vest", "cardigan"],
+  Trui: ["trui"],
+  Hoodie: ["hoodie"],
+  Jas: ["jas"],
+  Blazer: ["blazer"],
+  Jeans: ["jeans", "spijkerbroek"],
+  Chino: ["chino"],
+  Sneakers: ["sneaker"],
+  "Nette schoenen": ["nette schoenen", "geklede schoenen"],
+  Boots: ["boots", "laarzen", "enkellaars"],
+  Tas: ["tas"],
+  Horloge: ["horloge"],
+  top: ["top"],
+  schoenen: ["schoenen"],
+  broek: ["broek"],
+  bovenlaag: ["bovenlaag"],
+};
+const DANGLING_QUOTE_ENDINGS = new Set([
+  "aan",
+  "als",
+  "bij",
+  "boven",
+  "dat",
+  "de",
+  "die",
+  "door",
+  "een",
+  "en",
+  "het",
+  "in",
+  "maar",
+  "met",
+  "naar",
+  "om",
+  "onder",
+  "op",
+  "te",
+  "tussen",
+  "van",
+  "voor",
+  "want",
+  "zonder",
+]);
 
 const currentFashionContext = `
 Actuele modecontext:
@@ -72,16 +150,22 @@ Belangrijke grenzen:
 - Iedere roastzin heeft een duidelijke clou en moet zelfstandig deelbaar zijn.
 - Klink als een scherpe Nederlandse vriend: direct, gevat en een tikje brutaal, maar vriendelijk.
 - Maak de roast vermakelijk, modebewust en citeerbaar, met een originele stem.
-- Maak de roast specifieker dan "dit is saai": verwijs naar kledingstukken, combinaties, kleuren of stylingkeuzes die je ziet.
-- Noem waar mogelijk zichtbare details zoals schoenen, shirt, broek, kleuren, pasvorm of uitstraling.
+- Gebruik uitsluitend kledingstukken uit de vooraf aangeleverde kledinginventaris.
+- Noem nooit een specifiek kledingstuk dat niet in die inventaris staat.
+- Als de inventaris een generieke term gebruikt, neem exact die generieke term over: top, schoenen, broek of bovenlaag.
+- Maak de roast specifieker dan "dit is saai": verwijs naar gedetecteerde kledingstukken, combinaties, kleuren of stylingkeuzes.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit een vierde roastzin of extra roastregel.
 - Voorbeelden zijn alleen stijlreferenties; neem ze niet letterlijk over:
-  "Die sneakers zijn klaar voor Basic-Fit, maar je shirt denkt dat jullie naar kantoor gaan."
+  "De schoenen zijn klaar voor actie, maar de top plant een vergadering."
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Geef precies 3 deelbare quotes totaal: 1 shareQuote en exact 2 unieke alternativeQuotes.
-- Alle quotes zijn Nederlands, maximaal 12 woorden en dupliceren elkaar niet.
+- Iedere quote is één volledige Nederlandse zin van 6 tot 12 woorden.
+- Quotes eindigen altijd met een punt, vraagteken of uitroepteken.
+- Quotes eindigen nooit met ..., …, een dubbele punt, puntkomma of onafgemaakte bijzin.
+- Alle quotes lezen natuurlijk wanneer ze zonder verdere context op een deelkaart staan.
+- Alle quotes dupliceren elkaar niet.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
@@ -153,14 +237,18 @@ function normalizeOutfitResult(
   source: Record<string, unknown>,
   roastText = FALLBACK_ROAST,
   profile: OutfitProfile = "Verras me",
+  inventory: ClothingInventoryItem[] = [],
 ): OutfitResultData {
-  const roast = normalizeRoast(roastText);
+  const roast = normalizeRoast(roastText, inventory);
   const providedQuotes = toStringArray(source.alternativeQuotes);
-  const shareQuote = normalizeQuote(
-    toNonEmptyString(source.shareQuote) ??
-      toNonEmptyString(source.title) ??
-      makeShareQuote(roast),
-    FALLBACK_SHARE_QUOTE,
+  const shareQuote = selectValidQuote(
+    [
+      toNonEmptyString(source.shareQuote),
+      toNonEmptyString(source.title),
+      ...extractRoastSentences(roast),
+    ],
+    inventory,
+    FALLBACK_SHARE_QUOTES,
   );
   const stylingTips = firstNonEmptyStringArray(
     source.stylingTips,
@@ -171,20 +259,23 @@ function normalizeOutfitResult(
   const result: OutfitResultData = {
     roast,
     shareQuote,
-    alternativeQuotes: fillAlternativeQuotes(providedQuotes, shareQuote),
+    alternativeQuotes: fillAlternativeQuotes(providedQuotes, shareQuote, inventory),
     worksWell: withFallback(
-      toStringArray(source.worksWell),
+      filterInventoryConsistentText(toStringArray(source.worksWell), inventory),
       "De outfit heeft een duidelijke basis waarop je verder kunt stylen.",
     ),
     canImprove: withFallback(
-      toStringArray(source.canImprove),
+      filterInventoryConsistentText(toStringArray(source.canImprove), inventory),
       "Meer samenhang in kleur, pasvorm en accessoires maakt het geheel sterker.",
     ),
     stylingTips: withFallback(
-      stylingTips,
+      filterInventoryConsistentText(stylingTips, inventory),
       "Kies één duidelijke stijlrichting en laat kleuren en accessoires daarop aansluiten.",
     ),
-    shoppingSuggestions: normalizeShoppingSuggestions(source.shoppingSuggestions),
+    shoppingSuggestions: normalizeShoppingSuggestions(
+      source.shoppingSuggestions,
+      inventory,
+    ),
     score: normalizeScore(source.score ?? source.rating),
   };
 
@@ -223,8 +314,10 @@ function neutralizeOutfitResult(result: OutfitResultData): OutfitResultData {
   };
 }
 
-function normalizeRoast(value: string) {
-  const candidates = extractRoastSentences(value);
+function normalizeRoast(value: string, inventory: ClothingInventoryItem[]) {
+  const candidates = extractRoastSentences(value).filter((sentence) =>
+    referencesOnlyDetectedClothing(sentence, inventory),
+  );
   const rankedCandidates = candidates
     .map((sentence, index) => ({
       sentence,
@@ -307,7 +400,10 @@ function normalizeScore(value: unknown) {
   return Number.isFinite(parsed) ? Math.min(10, Math.max(1, Math.round(parsed))) : 5;
 }
 
-function normalizeShoppingSuggestions(value: unknown): OutfitResultData["shoppingSuggestions"] {
+function normalizeShoppingSuggestions(
+  value: unknown,
+  inventory: ClothingInventoryItem[],
+): OutfitResultData["shoppingSuggestions"] {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -321,7 +417,8 @@ function normalizeShoppingSuggestions(value: unknown): OutfitResultData["shoppin
     const title =
       toNonEmptyString(suggestion.title) ??
       toNonEmptyString(suggestion.label);
-    if (!title) {
+    const reason = toNonEmptyString(suggestion.reason);
+    if (!title || (reason && !referencesOnlyDetectedClothing(reason, inventory))) {
       return [];
     }
     const category = normalizeShopCategory(suggestion.category);
@@ -332,9 +429,7 @@ function normalizeShoppingSuggestions(value: unknown): OutfitResultData["shoppin
 
     return [{
       title,
-      reason:
-        toNonEmptyString(suggestion.reason) ??
-        "Dit item kan meer samenhang en richting aan de outfit geven.",
+      reason: reason ?? "Dit item kan meer samenhang en richting aan de outfit geven.",
       imageUrl: "",
       productUrl,
       // Later: append approved affiliate tracking parameters here.
@@ -355,18 +450,18 @@ function createControlledZalandoUrl(searchQuery: string) {
   return `https://www.zalando.nl/catalogus/?q=${encodeURIComponent(searchQuery)}`;
 }
 
-function makeShareQuote(roast: string) {
-  const firstSentence = roast.split(/(?<=[.!?])\s+/)[0] ?? roast;
-  const words = firstSentence.trim().split(/\s+/).filter(Boolean);
-  const shortened = words.slice(0, 12).join(" ");
-  return words.length > 12 ? `${shortened.replace(/[.!?]+$/, "")}…` : shortened;
-}
-
-function fillAlternativeQuotes(quotes: string[], shareQuote: string) {
-  const normalizedQuotes = quotes.map((quote) => normalizeQuote(quote, ""));
-  const uniqueQuotes = [...normalizedQuotes, ...FALLBACK_ALTERNATIVE_QUOTES].filter(
+function fillAlternativeQuotes(
+  quotes: string[],
+  shareQuote: string,
+  inventory: ClothingInventoryItem[],
+) {
+  const validQuotes = quotes.filter(
+    (quote) =>
+      isValidShareQuote(quote) &&
+      referencesOnlyDetectedClothing(quote, inventory),
+  );
+  const uniqueQuotes = [...validQuotes, ...FALLBACK_ALTERNATIVE_QUOTES].filter(
     (quote, index, allQuotes) =>
-      quote.length > 0 &&
       quote.toLowerCase() !== shareQuote.toLowerCase() &&
       allQuotes.findIndex((item) => item.toLowerCase() === quote.toLowerCase()) === index,
   );
@@ -374,15 +469,168 @@ function fillAlternativeQuotes(quotes: string[], shareQuote: string) {
   return uniqueQuotes.slice(0, 2);
 }
 
-function normalizeQuote(value: string, fallback: string) {
-  const firstSentence = value.split(/(?<=[.!?])\s+/)[0]?.trim() ?? "";
-  const words = firstSentence.split(/\s+/).filter(Boolean);
-  const shortened = words.slice(0, 12).join(" ");
-  const quote = words.length > 12
-    ? `${shortened.replace(/[.!?]+$/, "")}…`
-    : shortened;
+function selectValidQuote(
+  candidates: Array<string | null>,
+  inventory: ClothingInventoryItem[],
+  fallbacks: string[],
+) {
+  return [...candidates, ...fallbacks].find(
+    (quote): quote is string =>
+      typeof quote === "string" &&
+      isValidShareQuote(quote) &&
+      referencesOnlyDetectedClothing(quote, inventory),
+  ) ?? FALLBACK_SHARE_QUOTES[0];
+}
 
-  return quote && !containsLikelyEnglish(quote, 1) ? quote : fallback;
+function isValidShareQuote(value: string) {
+  const quote = value.trim();
+  const words = quote.split(/\s+/).filter(Boolean);
+  const lastWord = words.at(-1)?.toLowerCase().replace(/[.!?]+$/, "") ?? "";
+  const sentenceMarks = quote.match(/[.!?]/g) ?? [];
+
+  return (
+    words.length >= 6 &&
+    words.length <= 12 &&
+    sentenceMarks.length === 1 &&
+    /[.!?]$/.test(quote) &&
+    !/(?:\.\.\.|…|:|;)$/.test(quote) &&
+    !DANGLING_QUOTE_ENDINGS.has(lastWord) &&
+    !containsLikelyEnglish(quote, 1)
+  );
+}
+
+function filterInventoryConsistentText(
+  items: string[],
+  inventory: ClothingInventoryItem[],
+) {
+  return items.filter((item) => referencesOnlyDetectedClothing(item, inventory));
+}
+
+function referencesOnlyDetectedClothing(
+  text: string,
+  inventory: ClothingInventoryItem[],
+) {
+  const normalized = text.toLowerCase();
+  const detectedItems = new Set(inventory.map((item) => item.item));
+  const allowedItems = new Set<ClothingItem>(detectedItems);
+
+  if (inventory.some((item) => ["T-shirt", "Polo", "Overhemd", "Trui", "Hoodie", "top"].includes(item.item))) {
+    allowedItems.add("top");
+  }
+  if (inventory.some((item) => ["Jeans", "Chino", "broek"].includes(item.item))) {
+    allowedItems.add("broek");
+  }
+  if (inventory.some((item) => ["Sneakers", "Nette schoenen", "Boots", "schoenen"].includes(item.item))) {
+    allowedItems.add("schoenen");
+  }
+  if (inventory.some((item) => ["Vest", "Jas", "Blazer", "bovenlaag"].includes(item.item))) {
+    allowedItems.add("bovenlaag");
+  }
+
+  if (containsWholeWord(normalized, "shirt")) {
+    return false;
+  }
+
+  return CLOTHING_ITEMS.every((item) => {
+    const mentionsItem = CLOTHING_REFERENCE_TERMS[item].some((term) =>
+      containsWholeWord(normalized, term),
+    );
+    return !mentionsItem || allowedItems.has(item);
+  });
+}
+
+function containsWholeWord(text: string, term: string) {
+  return new RegExp(`(^|[^a-zà-ÿ])${escapeRegExp(term)}([^a-zà-ÿ]|$)`, "i").test(text);
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function normalizeClothingInventory(value: unknown): ClothingInventoryItem[] {
+  const source = getResultObject(value);
+  if (!source || !Array.isArray(source.detectedClothing)) {
+    return [];
+  }
+
+  const inventory = source.detectedClothing.flatMap<ClothingInventoryItem>((entry) => {
+    const item = getResultObject(entry);
+    if (!item || typeof item.item !== "string") {
+      return [];
+    }
+    const itemName = item.item;
+
+    const detectedItem = CLOTHING_ITEMS.find(
+      (candidate) => candidate.toLowerCase() === itemName.toLowerCase(),
+    );
+    if (!detectedItem) {
+      return [];
+    }
+
+    const confidence: ClothingInventoryItem["confidence"] | null =
+      item.confidence === "hoog"
+        ? "hoog"
+        : item.confidence === "middel"
+          ? "middel"
+          : null;
+    if (!confidence) {
+      return [];
+    }
+
+    return [{
+      item: detectedItem,
+      color: toNonEmptyString(item.color) ?? "onbekende kleur",
+      confidence,
+    }];
+  });
+
+  return inventory.filter(
+    (entry, index, entries) =>
+      entries.findIndex((candidate) => candidate.item === entry.item) === index,
+  );
+}
+
+function formatClothingInventory(inventory: ClothingInventoryItem[]) {
+  if (inventory.length === 0) {
+    return "- Geen specifiek kledingstuk met voldoende zekerheid gedetecteerd.";
+  }
+
+  return inventory
+    .map((item) => `- ${item.color} ${item.item} (zekerheid: ${item.confidence})`)
+    .join("\n");
+}
+
+function generatedResultNeedsCorrection(
+  value: unknown,
+  inventory: ClothingInventoryItem[],
+) {
+  const source = getResultObject(value);
+  const roast = getRoastText(value);
+  if (!source || !roast || containsLikelyEnglish(roast)) {
+    return true;
+  }
+
+  const shareQuote = toNonEmptyString(source.shareQuote);
+  const alternatives = toStringArray(source.alternativeQuotes);
+  const analysisText = [
+    roast,
+    ...toStringArray(source.worksWell),
+    ...toStringArray(source.canImprove),
+    ...firstNonEmptyStringArray(source.stylingTips, source.tips, source.advice),
+  ];
+
+  return (
+    !shareQuote ||
+    !isValidShareQuote(shareQuote) ||
+    !referencesOnlyDetectedClothing(shareQuote, inventory) ||
+    alternatives.length !== 2 ||
+    alternatives.some(
+      (quote) =>
+        !isValidShareQuote(quote) ||
+        !referencesOnlyDetectedClothing(quote, inventory),
+    ) ||
+    analysisText.some((text) => !referencesOnlyDetectedClothing(text, inventory))
+  );
 }
 
 function containsLikelyEnglish(text: string, minimumSignals = 2) {
@@ -404,6 +652,63 @@ function containsLikelyEnglish(text: string, minimumSignals = 2) {
   ];
 
   return englishSignals.filter((signal) => normalized.includes(signal)).length >= minimumSignals;
+}
+
+async function detectClothingInventory(openai: OpenAI, image: string) {
+  try {
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Je bent een nauwkeurige kledingherkenner. Identificeer uitsluitend duidelijk zichtbare kleding en accessoires. Leid nooit gender, lichaamstype, leeftijd of identiteit af. Bij twijfel tussen specifieke typen kies je de veilige generieke term top, schoenen, broek of bovenlaag. Verzin niets.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Maak eerst een interne kledinginventaris voor latere stylingfeedback.
+
+Toegestane items, in herkenningsprioriteit:
+T-shirt, Polo, Overhemd, Vest, Trui, Hoodie, Jas, Blazer, Jeans, Chino, Sneakers, Nette schoenen, Boots, Tas, Horloge.
+
+Bij lage zekerheid gebruik je alleen:
+top, schoenen, broek, bovenlaag.
+
+Regels:
+- Neem alleen items op die werkelijk zichtbaar zijn.
+- Onderscheid Polo, Overhemd, Vest, Jas en Blazer zorgvuldig.
+- Noem per item een korte zichtbare kleur.
+- Gebruik uitsluitend zekerheid "hoog" of "middel".
+- Output alleen geldige JSON:
+{
+  "detectedClothing": [
+    {
+      "item": "Polo",
+      "color": "donkerblauw",
+      "confidence": "hoog"
+    }
+  ]
+}`,
+            },
+            { type: "image_url", image_url: { url: image } },
+          ],
+        },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.1,
+    });
+
+    const content = completion.choices[0]?.message.content;
+    return content
+      ? normalizeClothingInventory(JSON.parse(content) as unknown)
+      : [];
+  } catch (error) {
+    console.error("Clothing inventory detection failed:", error);
+    return [];
+  }
 }
 
 export async function POST(request: Request) {
@@ -429,13 +734,21 @@ export async function POST(request: Request) {
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+    const clothingInventory = await detectClothingInventory(openai, body.image);
 
     const userPrompt = `
 Gelegenheid: ${occasion}
 Feedbackstijl: ${body.intensity}
 Profielvoorkeur: ${profile}
 
+Gedetecteerde kledinginventaris — dit is de enige bron voor kledingnamen:
+${formatClothingInventory(clothingInventory)}
+
 Regels:
+- Gebruik de kledinginventaris hierboven consequent voor roast, shareQuote, alternativeQuotes, worksWell, canImprove, stylingTips en redenen bij shopsuggesties.
+- Noem nooit een kledingstuk dat niet in de inventaris staat.
+- Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm top, schoenen, broek of bovenlaag.
+- Herclassificeer de kleding niet opnieuw tijdens het schrijven.
 - Leid gender nooit af uit de foto. De profielvoorkeur hierboven is de enige toegestane bron.
 - Bij profiel "Man": gebruik in minstens één roastzin een natuurlijk mannelijk modewoord zoals herenstijl, herenkleding of herenpasvorm, zonder de persoon zelf te beoordelen.
 - Bij profiel "Vrouw": gebruik in minstens één roastzin een natuurlijk vrouwelijk modewoord zoals damesstijl, dameskleding of damespasvorm, zonder de persoon zelf te beoordelen.
@@ -450,21 +763,24 @@ Regels:
 - Het veld roast bevat exact 3 korte Nederlandse zinnen, elk op een eigen regel.
 - Iedere roastzin heeft een duidelijke clou en is scherp, grappig en zelfstandig deelbaar.
 - Klink als een scherpe Nederlandse vriend: direct, gevat en een tikje brutaal, maar niet gemeen.
-- Noem waar mogelijk zichtbare details zoals schoenen, shirt, broek, kleuren, pasvorm of uitstraling.
+- Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit 4 of meer roastzinnen of roastregels.
 - Roast uitsluitend kleding, styling en geschiktheid voor de gelegenheid; nooit lichaam, gezicht, leeftijd, gewicht, gender, afkomst of aantrekkelijkheid.
 - Gebruik deze voorbeelden alleen als stijlreferentie en neem ze niet letterlijk over:
-  "Die sneakers zijn klaar voor Basic-Fit, maar je shirt denkt dat jullie naar kantoor gaan."
+  "De schoenen zijn klaar voor actie, maar de top plant een vergadering."
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
 - Genereer altijd een apart veld shareQuote.
 - Genereer daarnaast exact 2 verschillende alternativeQuotes.
 - Kies de sterkste en meest deelbare quote als shareQuote.
-- De 3 quotes totaal zijn uitsluitend Nederlands, maximaal 12 woorden en precies één zin.
+- Iedere quote is één complete, natuurlijk klinkende Nederlandse zin van 6 tot 12 woorden.
+- Eindig iedere quote met één punt, vraagteken of uitroepteken.
+- Eindig nooit met ..., …, een dubbele punt, puntkomma of een onafgemaakte bijzin.
+- Vermijd losse eindwoorden zoals van, met, zonder, tussen, naar, maar, en, de of het.
 - Gebruik geen Engelse woorden in de quotes.
-- Laat iedere quote waar mogelijk een zichtbaar kledingdetail noemen, zoals jas, broek, schoenen, kleur, pasvorm of silhouet.
+- Laat iedere quote alleen een kledingdetail noemen wanneer dat exact in de inventaris staat.
 - Alle quotes zijn scherp, grappig, modieus en geschikt voor sociale media.
 - De 3 quotes mogen niet hetzelfde idee of dezelfde formulering herhalen.
 - shareQuote is een korte, harde one-liner voor het deelbeeld.
@@ -486,6 +802,7 @@ Regels:
 - Shopping suggestions bevatten alleen title, reason, category en searchQuery.
 - Gebruik voor category uitsluitend: schoenen, broeken, tops, jassen, accessoires of sportkleding.
 - Genereer geen productUrl, affiliateUrl, imageUrl, domeinnaam of willekeurige Zalando-link; de server vult gecontroleerde Zalando-links in.
+- Laat de reden voor iedere shopsuggestie expliciet aansluiten op een item uit de inventaris, zonder een bestaand kledingstuk opnieuw te benoemen als een ander type.
 - Geef 3 tot 5 shopping suggestions die passen bij de outfit, gelegenheid en actuele modecontext
 - Voorbeeld searchQuery: "minimalistische witte sneakers heren", "donkere rechte jeans", "overshirt in crème"
 - Geen seksuele opmerkingen
@@ -556,9 +873,10 @@ Regels:
 
     let parsedObject = getResultObject(parsed);
     let roastText = getRoastText(parsed);
-    const needsDutchRewrite =
-      !hasValidRoast(parsed) ||
-      (typeof roastText === "string" && containsLikelyEnglish(roastText));
+    const needsDutchRewrite = generatedResultNeedsCorrection(
+      parsed,
+      clothingInventory,
+    );
 
     if (needsDutchRewrite) {
       const correctionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -566,8 +884,11 @@ Regels:
         { role: "assistant", content },
         {
           role: "user",
-          content:
-            "Herschrijf dit volledige JSON-resultaat nu strikt in natuurlijk Nederlands. Gebruik nergens Engelse zinnen of gemengde taal. Behoud het exacte JSON-format. Maak shareQuote de beste scherpe Nederlandse zin van maximaal 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook uitsluitend Nederlands en maximaal 12 woorden. De 3 quotes totaal mogen elkaar niet dupliceren. Laat de quotes waar mogelijk een zichtbaar kledingdetail noemen. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Klink direct, gevat en een tikje brutaal, maar roast alleen kleding en styling. Schrijf nooit een vierde roastzin. Controleer alle arrays en shopsuggesties.",
+          content: `Herschrijf dit volledige JSON-resultaat nu strikt volgens de regels.
+Gebruik uitsluitend deze kledinginventaris:
+${formatClothingInventory(clothingInventory)}
+
+Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
         },
       ];
 
@@ -595,7 +916,9 @@ Regels:
       typeof roastText === "string" &&
       !containsLikelyEnglish(roastText)
     ) {
-      return Response.json(normalizeOutfitResult(parsedObject, roastText, profile));
+      return Response.json(
+        normalizeOutfitResult(parsedObject, roastText, profile, clothingInventory),
+      );
     }
 
     if (typeof roastText === "string" && containsLikelyEnglish(roastText)) {
@@ -604,7 +927,14 @@ Regels:
     }
 
     console.warn("OpenAI response did not include a roast; using Dutch fallback.", parsed);
-    return Response.json(normalizeOutfitResult(parsedObject, FALLBACK_ROAST, profile));
+    return Response.json(
+      normalizeOutfitResult(
+        parsedObject,
+        FALLBACK_ROAST,
+        profile,
+        clothingInventory,
+      ),
+    );
   } catch (error) {
     console.error("Outfit check API error:", error);
     return Response.json({ error: "Outfit check failed" }, { status: 500 });
