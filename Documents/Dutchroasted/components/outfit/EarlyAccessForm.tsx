@@ -1,18 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { OutfitIntensity, OutfitOccasion } from "@/lib/outfitTypes";
+import type { OutfitOccasion } from "@/lib/outfitTypes";
 
 type EarlyAccessFormProps = {
   occasion: OutfitOccasion;
-  intensity: OutfitIntensity;
   score: number;
 };
 
 const CONSENT_TEXT =
   "Ik wil updates ontvangen over Outfit Roaster en geef toestemming om mij hierover te mailen.";
 
-export function EarlyAccessForm({ occasion, intensity, score }: EarlyAccessFormProps) {
+export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +46,6 @@ export function EarlyAccessForm({ occasion, intensity, score }: EarlyAccessFormP
           email: trimmedEmail,
           source: "outfit_check",
           occasion,
-          intensity,
           score,
           marketingConsent,
           consentText: CONSENT_TEXT,

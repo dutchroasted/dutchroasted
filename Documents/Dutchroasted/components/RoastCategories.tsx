@@ -2,7 +2,7 @@ const categories = [
   ["Date", "Eerlijk advies voor outfits met intentie, niet met paniek."],
   ["Werk", "Professioneel zonder dat je eruitziet alsof je in een spreadsheet woont."],
   ["School", "Comfortabel, zelfverzekerd en zonder overdreven je best te doen."],
-  ["Sportschool", "Van trainingsset naar een sportlook met een duidelijk plan."],
+  ["Gym", "Van trainingsset naar een sportlook met een duidelijk plan."],
   ["Festival", "Praktisch, uitgesproken en niet alsof je verdwaald bent bij de glitterkraam."],
 ];
 

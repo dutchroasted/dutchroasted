@@ -1,10 +1,7 @@
 import OpenAI from "openai";
 import {
-  OUTFIT_INTENSITIES,
   OUTFIT_OCCASIONS,
-  OUTFIT_PROFILES,
   OUTFIT_ROASTER_PERSONAS,
-  type OutfitProfile,
   type OutfitResultData,
   type OutfitRoasterPersona,
 } from "@/lib/outfitTypes";
@@ -12,10 +9,11 @@ import {
 const MODEL = "gpt-4o-mini";
 const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Casual: "School",
-  Feest: "Sportschool",
+  Feest: "Gym",
   Bruiloft: "Date",
   Sollicitatie: "Werk",
   Anders: "School",
+  Sportschool: "Gym",
 };
 const FALLBACK_SHARE_QUOTES = [
   "Deze outfit heeft meer twijfel dan een volle groepsapp.",
@@ -186,8 +184,7 @@ Belangrijke grenzen:
 - Focus alleen op kleding, styling, kleuren, pasvorm van kleding, silhouet, accessoires en de gekozen gelegenheid.
 - Beoordeel nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst, gezondheid of seksuele uitstraling.
 - Leid gender nooit af uit de foto, kleding, lichaamsbouw, gezicht, haar of andere zichtbare kenmerken.
-- Gebruik alleen een expliciet meegegeven profiel voor mannelijke of vrouwelijke formuleringen.
-- Bij profiel "Verras me" gebruik je volledig neutrale Nederlandse formuleringen en noem je nergens gender.
+- Gebruik volledig neutrale Nederlandse formuleringen en noem nergens gender.
 - Geen seksuele opmerkingen, geen bodyshaming, geen discriminatie.
 - De roast mag scherp en grappig zijn, maar nooit gemeen of persoonlijk kwetsend.
 - Schrijf uitsluitend Nederlands. Gebruik geen Engelse zinnen en meng geen Nederlands met Engels.
@@ -214,7 +211,7 @@ Belangrijke grenzen:
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
-- Bij feedbackstijl "rotterdams": schrijf als een Rotterdamse steek: droog, direct, straatwijs en met een knipoog. Denk "niet lullen, stylen", maar zonder schelden op de persoon. Je mag woorden gebruiken als "maat", "gozer" of "schat" als dat natuurlijk voelt. Altijd kleding roasten, nooit het lichaam.
+- Laat toon en woordkeuze volledig bepalen door de gekozen Roaster-persona.
 
 Output altijd als geldige JSON:
 {
@@ -252,16 +249,6 @@ function normalizeRoasterPersona(value: unknown): OutfitRoasterPersona {
     : "🔥 Brutale Vriend";
 }
 
-function isValidIntensity(value: unknown): value is string {
-  return typeof value === "string" && OUTFIT_INTENSITIES.includes(value as never);
-}
-
-function normalizeProfile(value: unknown): OutfitProfile {
-  return typeof value === "string" && OUTFIT_PROFILES.includes(value as never)
-    ? value as OutfitProfile
-    : "Verras me";
-}
-
 function isValidImage(value: unknown): value is string {
   return typeof value === "string" && /^data:image\/jpeg;base64,/.test(value);
 }
@@ -287,7 +274,6 @@ function getRoastText(value: unknown) {
 function normalizeOutfitResult(
   source: Record<string, unknown>,
   roastText = FALLBACK_ROAST,
-  profile: OutfitProfile = "Verras me",
   inventory: ClothingInventoryItem[] = [],
   persona: OutfitRoasterPersona = "🔥 Brutale Vriend",
 ): OutfitResultData {
@@ -337,7 +323,7 @@ function normalizeOutfitResult(
     score: normalizeScore(source.score ?? source.rating),
   };
 
-  return profile === "Verras me" ? neutralizeOutfitResult(result) : result;
+  return neutralizeOutfitResult(result);
 }
 
 function neutralizeOutfitResult(result: OutfitResultData): OutfitResultData {
@@ -815,15 +801,12 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       image?: unknown;
       occasion?: unknown;
-      intensity?: unknown;
-      profile?: unknown;
       persona?: unknown;
     };
     const occasion = normalizeOccasion(body.occasion);
-    const profile = normalizeProfile(body.profile);
     const persona = normalizeRoasterPersona(body.persona);
 
-    if (!isValidImage(body.image) || !occasion || !isValidIntensity(body.intensity)) {
+    if (!isValidImage(body.image) || !occasion) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
     }
 
@@ -839,8 +822,6 @@ export async function POST(request: Request) {
 
     const userPrompt = `
 Gelegenheid: ${occasion}
-Feedbackstijl: ${body.intensity}
-Profielvoorkeur: ${profile}
 Gekozen Roaster: ${persona}
 
 Gedetecteerde kledinginventaris — dit is de enige bron voor kledingnamen:
@@ -853,16 +834,14 @@ Regels:
 - Noem nooit een kledingstuk dat niet in de inventaris staat.
 - Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm bovenlaag, schoenen, broek of accessoire.
 - Herclassificeer de kleding niet opnieuw tijdens het schrijven.
-- De gekozen Roaster bepaalt de primaire toon; de feedbackstijl is alleen een subtiel secundair accent.
+- De gekozen Roaster bepaalt de volledige toon en stijl.
 - Maak de drie persona's duidelijk verschillend en meng hun perspectieven niet.
-- Leid gender nooit af uit de foto. De profielvoorkeur hierboven is de enige toegestane bron.
-- Bij profiel "Man": gebruik in minstens één roastzin een natuurlijk mannelijk modewoord zoals herenstijl, herenkleding of herenpasvorm, zonder de persoon zelf te beoordelen.
-- Bij profiel "Vrouw": gebruik in minstens één roastzin een natuurlijk vrouwelijk modewoord zoals damesstijl, dameskleding of damespasvorm, zonder de persoon zelf te beoordelen.
-- Bij profiel "Verras me": schrijf volledig genderneutraal. Gebruik geen man, vrouw, jongen, meisje, meneer, mevrouw, hij, hem, zijn, zij of haar als persoonsverwijzing.
+- Leid gender nooit af uit de foto en schrijf volledig genderneutraal.
+- Gebruik geen man, vrouw, jongen, meisje, meneer, mevrouw, hij, hem, zijn, zij of haar als persoonsverwijzing.
 - Roast altijd de outfit, kledingcombinatie en styling; nooit de persoon.
 - Beoordeel de outfit specifiek voor de gekozen gelegenheid.
 - Bij School: beoordeel geschiktheid voor school, college of les. Houd de toon casual en praktisch. Focus op comfort, zelfvertrouwen en niet ogen alsof er overdreven hard geprobeerd is. Houd de roast grappig, niet gemeen.
-- Bij Sportschool: herken sportkleding, trainingsschoenen, ademende materialen, bewegingsvrijheid en praktische laagjes. Beoordeel of de outfit logisch en stijlvol werkt voor trainen.
+- Bij Gym: herken sportkleding, trainingsschoenen, ademende materialen, bewegingsvrijheid en praktische laagjes. Beoordeel of de outfit logisch en stijlvol werkt voor trainen.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
@@ -893,13 +872,9 @@ Regels:
 - shareQuote is een korte, harde one-liner voor het deelbeeld.
 - shareQuote is maximaal 12 woorden, precies 1 zin en bevat geen tweede zin.
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
-- Bij feedbackstijl "roast": shareQuote is Nederlands, scherp, grappig en memorabel.
-- Bij feedbackstijl "rotterdams": shareQuote is Nederlands, direct, grappig en Rotterdams van toon.
+- shareQuote volgt duidelijk de gekozen Roaster-persona en is scherp, grappig en memorabel.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
-- Voorbeelden shareQuote roast: "Je schoenen doen overuren om deze outfit te redden.", "Net niet fout, maar zeker niet goed.", "Dit oogt als haastwerk met ambitie."
-- Voorbeelden shareQuote rotterdams: "Zelfs de tram rijdt deze outfit zonder twijfel voorbij.", "Niet fout, maar ook geen Coolsingel-materiaal.", "Deze outfit staat stil op de A20.", "De schoenen kwamen opdagen, de rest niet."
-- Bij feedbackstijl "roast": geef de gekozen persona een iets flamboyanter, modischer accent.
-- Bij feedbackstijl "rotterdams": geef de gekozen persona een droger en directer Rotterdams accent, zonder het persona-perspectief te verliezen.
+- Voorbeelden shareQuote: "Je schoenen doen overuren om deze outfit te redden.", "Net niet fout, maar zeker niet goed.", "Dit oogt als haastwerk met ambitie."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
@@ -962,10 +937,7 @@ Regels:
       return completion.choices[0]?.message.content;
     }
 
-    let content = await generateResult(
-      messages,
-      body.intensity === "rotterdams" ? 0.9 : 0.95,
-    );
+    let content = await generateResult(messages, 0.9);
     if (!content) {
       console.error("OpenAI returned an empty outfit response.");
       return Response.json({ error: "Empty response" }, { status: 500 });
@@ -1027,7 +999,6 @@ Behoud duidelijk de toon van ${persona}. Noem geen enkel ander kledingstuk en he
         normalizeOutfitResult(
           parsedObject,
           roastText,
-          profile,
           clothingInventory,
           persona,
         ),
@@ -1044,7 +1015,6 @@ Behoud duidelijk de toon van ${persona}. Noem geen enkel ander kledingstuk en he
       normalizeOutfitResult(
         parsedObject,
         PERSONA_FALLBACKS[persona].roast,
-        profile,
         clothingInventory,
         persona,
       ),

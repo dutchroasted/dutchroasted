@@ -51,11 +51,11 @@ export const analytics = {
       file_size_bytes: fileSizeBytes,
     });
   },
-  outfitCheckStarted(occasion: string, intensity: string, profile: string) {
-    trackAnalyticsEvent("outfit_check_started", { occasion, intensity, profile });
+  outfitCheckStarted(occasion: string, persona: string) {
+    trackAnalyticsEvent("outfit_check_started", { occasion, persona });
   },
-  outfitCheckCompleted(occasion: string, intensity: string, score: number) {
-    trackAnalyticsEvent("outfit_check_completed", { occasion, intensity, score });
+  outfitCheckCompleted(occasion: string, persona: string, score: number) {
+    trackAnalyticsEvent("outfit_check_completed", { occasion, persona, score });
   },
   shareCardDownloaded(score: number) {
     trackAnalyticsEvent("share_card_downloaded", { score });

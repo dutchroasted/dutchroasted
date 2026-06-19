@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import { analytics } from "@/lib/analytics";
 import type {
-  OutfitIntensity,
   OutfitOccasion,
-  OutfitProfile,
   OutfitResultData,
   OutfitRoasterPersona,
 } from "@/lib/outfitTypes";
@@ -14,11 +12,9 @@ import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
 import { FreeCheckLimitNotice } from "./FreeCheckLimitNotice";
 import { ImageUpload } from "./ImageUpload";
-import { IntensitySelector } from "./IntensitySelector";
 import { LoadingState } from "./LoadingState";
 import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
-import { ProfileSelect } from "./ProfileSelect";
 import { RoasterPersonaSelect } from "./RoasterPersonaSelect";
 
 const FREE_CHECK_LIMIT = 3;
@@ -48,14 +44,11 @@ export function OutfitCheckForm() {
   const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [occasion, setOccasion] = useState<OutfitOccasion>("Date");
-  const [intensity, setIntensity] = useState<OutfitIntensity>("roast");
-  const [profile, setProfile] = useState<OutfitProfile>("Verras me");
   const [persona, setPersona] = useState<OutfitRoasterPersona>("🔥 Brutale Vriend");
   const [result, setResult] = useState<OutfitResultData | null>(null);
   const [resultImage, setResultImage] = useState("");
   const [resultMeta, setResultMeta] = useState<{
     occasion: OutfitOccasion;
-    intensity: OutfitIntensity;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadProcessing, setIsUploadProcessing] = useState(false);
@@ -85,14 +78,12 @@ export function OutfitCheckForm() {
     setIsLoading(true);
     setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
-    analytics.outfitCheckStarted(occasion, intensity, profile);
+    analytics.outfitCheckStarted(occasion, persona);
 
     try {
       const response = await runOutfitCheckWithRetry(
         selectedPreviewImage,
         occasion,
-        intensity,
-        profile,
         persona,
       );
 
@@ -104,9 +95,9 @@ export function OutfitCheckForm() {
       }
       setResult(data);
       setResultImage(selectedPreviewImage);
-      setResultMeta({ occasion, intensity });
+      setResultMeta({ occasion });
       setDailyLimit(incrementDailyLimit());
-      analytics.outfitCheckCompleted(occasion, intensity, data.score);
+      analytics.outfitCheckCompleted(occasion, persona, data.score);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -184,8 +175,6 @@ export function OutfitCheckForm() {
         <div className="mt-6 grid gap-6">
           <OccasionSelect value={occasion} onChange={setOccasion} />
           <RoasterPersonaSelect value={persona} onChange={setPersona} />
-          <ProfileSelect value={profile} onChange={setProfile} />
-          <IntensitySelector value={intensity} onChange={setIntensity} />
         </div>
 
         {error ? (
@@ -234,7 +223,6 @@ export function OutfitCheckForm() {
             {resultMeta ? (
               <EarlyAccessForm
                 occasion={resultMeta.occasion}
-                intensity={resultMeta.intensity}
                 score={result.score}
               />
             ) : null}
@@ -270,8 +258,6 @@ export function OutfitCheckForm() {
 async function runOutfitCheckWithRetry(
   selectedPreviewImage: string,
   occasion: OutfitOccasion,
-  intensity: OutfitIntensity,
-  profile: OutfitProfile,
   persona: OutfitRoasterPersona,
 ) {
   let requestImage = selectedPreviewImage;
@@ -283,8 +269,6 @@ async function runOutfitCheckWithRetry(
     const response = await requestOutfitCheck(
       requestImage,
       occasion,
-      intensity,
-      profile,
       persona,
       `poging ${attempt}`,
     );
@@ -327,8 +311,6 @@ async function runOutfitCheckWithRetry(
 async function requestOutfitCheck(
   image: string,
   occasion: OutfitOccasion,
-  intensity: OutfitIntensity,
-  profile: OutfitProfile,
   persona: OutfitRoasterPersona,
   attempt: string,
 ) {
@@ -343,7 +325,7 @@ async function requestOutfitCheck(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image, occasion, intensity, profile, persona }),
+      body: JSON.stringify({ image, occasion, persona }),
       signal: controller.signal,
     });
     console.info(`[Outfit check] API response status (${attempt}):`, response.status);

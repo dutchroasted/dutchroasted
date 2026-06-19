@@ -1,6 +1,6 @@
 const steps = [
   ["1", "Upload je outfitfoto", "Kies een duidelijke foto waarop je outfit goed zichtbaar is."],
-  ["2", "Kies de gelegenheid", "Date, werk, school, sportschool of festival."],
+  ["2", "Kies de gelegenheid", "Date, werk, school, gym of festival."],
   ["3", "Krijg roast, score en stylingtips", "Eerst de waarheid, daarna concrete outfit-upgrades."],
 ];
 

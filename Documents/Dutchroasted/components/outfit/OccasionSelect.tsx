@@ -6,11 +6,11 @@ type OccasionSelectProps = {
 };
 
 const occasionLabels: Record<OutfitOccasion, string> = {
-  Date: "Date",
-  Werk: "Werk",
-  School: "School",
-  Sportschool: "Sportschool",
-  Festival: "Festival",
+  Date: "❤️ Date",
+  Werk: "💼 Werk",
+  School: "🎓 School",
+  Gym: "🏋️ Gym",
+  Festival: "🎪 Festival",
 };
 
 export function OccasionSelect({ value, onChange }: OccasionSelectProps) {
