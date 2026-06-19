@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-<<<<<<< HEAD
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import { analytics } from "@/lib/analytics";
 import type {
@@ -12,13 +11,6 @@ import type {
   OutfitResultData,
   OutfitRoastLevel,
 } from "@/lib/outfitTypes";
-=======
-import {
-  compressImageToJpegDataUrl,
-  getDataUrlByteSize,
-} from "@/lib/clientImageCompression";
-import type { OutfitIntensity, OutfitOccasion, OutfitResultData } from "@/lib/outfitTypes";
->>>>>>> a7da14b (Add Stripe premium subscriptions)
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
 import { FreeCheckLimitNotice } from "./FreeCheckLimitNotice";
@@ -33,12 +25,8 @@ import { RoastLevelSelect } from "./RoastLevelSelect";
 
 const FREE_CHECK_LIMIT = 5;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
-<<<<<<< HEAD
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
-=======
-const API_TIMEOUT_MS = 60_000;
->>>>>>> a7da14b (Add Stripe premium subscriptions)
 const RETRYABLE_API_STATUSES = new Set([429, 500, 502, 503, 504]);
 const LOADING_MESSAGES: readonly string[] = [
   "Even kijken of dit een fit is... of een kledingcrisis met zelfvertrouwen.",
@@ -72,11 +60,7 @@ export function OutfitCheckForm() {
     occasion: OutfitOccasion;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
   const [isUploadProcessing, setIsUploadProcessing] = useState(false);
-=======
-  const [isImageProcessing, setIsImageProcessing] = useState(false);
->>>>>>> a7da14b (Add Stripe premium subscriptions)
   const [loadingMessage, setLoadingMessage] = useState<string>(LOADING_MESSAGES[0]);
   const [error, setError] = useState("");
   const [dailyLimit, setDailyLimit] = useState<DailyLimitState>(() => ({
@@ -86,16 +70,11 @@ export function OutfitCheckForm() {
   const submitLockRef = useRef(false);
 
   const isLimitReached = dailyLimit.used >= FREE_CHECK_LIMIT;
-<<<<<<< HEAD
   const isProcessing = isLoading || isUploadProcessing;
   const canSubmit =
     Boolean(selectedPreviewImage) &&
     !isProcessing &&
     (mode === "pro-analysis" || !isLimitReached);
-=======
-  const canSubmit =
-    Boolean(image) && !isLoading && !isImageProcessing && !isLimitReached;
->>>>>>> a7da14b (Add Stripe premium subscriptions)
 
   useEffect(() => {
     setDailyLimit(readDailyLimit());
@@ -103,11 +82,7 @@ export function OutfitCheckForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-<<<<<<< HEAD
     if (!canSubmit || submitLockRef.current || isLoading) {
-=======
-    if (!canSubmit || submitLockRef.current) {
->>>>>>> a7da14b (Add Stripe premium subscriptions)
       return;
     }
 
@@ -122,7 +97,6 @@ export function OutfitCheckForm() {
     );
 
     try {
-<<<<<<< HEAD
       const response = await runOutfitCheckWithRetry(
         selectedPreviewImage,
         mode,
@@ -161,20 +135,6 @@ export function OutfitCheckForm() {
         caughtError instanceof Error
           ? caughtError.message
           : "De outfitcheck is onverwacht mislukt. Probeer het opnieuw.",
-=======
-      const previewImage = image;
-      const data = await requestOutfitCheck(previewImage, occasion, intensity);
-      setResult(data);
-      setResultImage(previewImage);
-      setResultMeta({ occasion, intensity });
-      setDailyLimit(incrementDailyLimit());
-    } catch (requestError) {
-      console.error("[Outfit Roaster] Outfitcheck mislukt:", requestError);
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "De outfitcheck is op een onbekende stap mislukt. Probeer het opnieuw.",
->>>>>>> a7da14b (Add Stripe premium subscriptions)
       );
     } finally {
       submitLockRef.current = false;
@@ -241,14 +201,8 @@ export function OutfitCheckForm() {
         )}
 
         <ImageUpload
-<<<<<<< HEAD
           previewUrl={selectedPreviewImage}
           disabled={isProcessing}
-=======
-          previewUrl={image}
-          disabled={isLoading}
-          onProcessingChange={setIsImageProcessing}
->>>>>>> a7da14b (Add Stripe premium subscriptions)
           onChange={(dataUrl, name) => {
             setSelectedPreviewImage(dataUrl);
             setFileName(name);
@@ -318,7 +272,7 @@ export function OutfitCheckForm() {
 
       <div className="dr-glass-card min-h-[32rem] rounded-[2rem] p-4 sm:p-6">
         {isLoading ? <LoadingState message={loadingMessage} /> : null}
-        {!isLoading && result && resultImage ? (
+        {!isLoading && result ? (
           <div className="space-y-5">
             <OutfitResult
               result={result}
@@ -334,17 +288,12 @@ export function OutfitCheckForm() {
             ) : null}
           </div>
         ) : null}
-<<<<<<< HEAD
         {!isLoading && proAnalysis ? (
           <ProAnalysisResult result={proAnalysis} onNewCheck={handleNewCheck} />
         ) : null}
         {!isLoading && !result && !proAnalysis ? (
           <div className="relative flex min-h-[30rem] items-center justify-center overflow-hidden rounded-[1.6rem] border border-dashed border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,106,0,0.15),transparent_35%),linear-gradient(145deg,rgba(255,255,255,0.05),rgba(0,0,0,0.3))] p-8 text-center">
             <div className="absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/10 blur-3xl" />
-=======
-        {!isLoading && (!result || !resultImage) ? (
-          <div className="flex min-h-[24rem] items-center justify-center rounded-3xl border border-dashed border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.045),rgba(255,106,0,0.035))] p-8 text-center">
->>>>>>> a7da14b (Add Stripe premium subscriptions)
             <div>
               <div className="relative mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] border border-orange-400/25 bg-orange-400/10 text-3xl shadow-[0_20px_70px_rgba(255,106,0,0.15)]">
                 ✦
@@ -490,139 +439,6 @@ function delay(milliseconds: number) {
 
 function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
-}
-
-async function requestOutfitCheck(
-  previewImage: string,
-  occasion: OutfitOccasion,
-  intensity: OutfitIntensity,
-) {
-  let requestImage = previewImage;
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    console.info(
-      `[Outfit Roaster] API-request gestart (poging ${attempt + 1})`,
-      formatBytes(getDataUrlByteSize(requestImage)),
-    );
-
-    const response = await fetchOutfitCheckWithTimeout(
-      requestImage,
-      occasion,
-      intensity,
-    );
-    console.info("[Outfit Roaster] API-response status:", response.status);
-
-    if (response.ok) {
-      try {
-        return (await response.json()) as OutfitResultData;
-      } catch (error) {
-        console.error("[Outfit Roaster] API-antwoord kon niet worden gelezen:", error);
-        throw new Error(
-          "De analyse kwam terug, maar het antwoord kon niet worden gelezen. Probeer opnieuw.",
-        );
-      }
-    }
-
-    if (attempt === 0 && response.status === 413) {
-      try {
-        requestImage = await compressImageToJpegDataUrl(previewImage, {
-          maxDimension: 900,
-          quality: 0.65,
-        });
-        console.info(
-          "[Outfit Roaster] Kleinere retry-afbeelding:",
-          formatBytes(getDataUrlByteSize(requestImage)),
-        );
-        continue;
-      } catch (error) {
-        console.error("[Outfit Roaster] Verkleinen na 413 mislukt:", error);
-        throw new Error(
-          "De foto was te groot voor verzending en kleiner maken is mislukt.",
-        );
-      }
-    }
-
-    if (attempt === 0 && RETRYABLE_API_STATUSES.has(response.status)) {
-      console.warn(
-        `[Outfit Roaster] Tijdelijke API-fout ${response.status}; nieuwe poging over 1 seconde.`,
-      );
-      await delay(1000);
-      continue;
-    }
-
-    throw createApiStatusError(response.status);
-  }
-
-  throw new Error("De outfitcheck bleef mislukken na een tweede poging.");
-}
-
-async function fetchOutfitCheckWithTimeout(
-  image: string,
-  occasion: OutfitOccasion,
-  intensity: OutfitIntensity,
-) {
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), API_TIMEOUT_MS);
-
-  try {
-    // Privacy: uploaded outfit images are only used for the AI analysis request and are not stored by this application.
-    return await fetch("/api/outfit-check", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ image, occasion, intensity }),
-      signal: controller.signal,
-    });
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error(
-        "De outfitcheck duurde te lang en is gestopt. Probeer het nog één keer.",
-      );
-    }
-
-    throw new Error(
-      "De API kon niet worden bereikt. Controleer je verbinding en probeer opnieuw.",
-    );
-  } finally {
-    window.clearTimeout(timeout);
-  }
-}
-
-function createApiStatusError(status: number) {
-  if (status === 413) {
-    return new Error(
-      "De foto blijft te groot voor verzending. Kies een kleinere foto.",
-    );
-  }
-
-  if (status === 429) {
-    return new Error(
-      "Het is even druk bij de stylist. Wacht een moment en probeer opnieuw.",
-    );
-  }
-
-  if ([500, 502, 503, 504].includes(status)) {
-    return new Error(
-      `De AI-stylist gaf na een tweede poging nog een serverfout (${status}). Probeer later opnieuw.`,
-    );
-  }
-
-  return new Error(
-    `De outfitcheck werd geweigerd door de server (status ${status}).`,
-  );
-}
-
-function delay(milliseconds: number) {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
-}
-
-function formatBytes(bytes: number) {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }
 
 function getRandomLoadingMessage(currentMessage?: string): string {
