@@ -66,7 +66,14 @@ Output als geldige JSON volgens deze structuur:
   "improvementPoints": ["string", "string", "string"],
   "stylistAdvice": "string",
   "suggestedUpgrades": ["string"],
-  "shopSuggestions": []
+  "shopSuggestions": [
+    {
+      "title": "string",
+      "reason": "string",
+      "category": "schoenen | broeken | tops | jassen | accessoires | sportkleding",
+      "searchQuery": "string"
+    }
+  ]
 }
 `;
 }

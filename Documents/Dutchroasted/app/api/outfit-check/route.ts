@@ -1,11 +1,15 @@
 import OpenAI from "openai";
+import { buildProAnalysisPrompt } from "@/lib/proAnalysisPrompt";
 import {
+  type OutfitCheckMode,
   OUTFIT_OCCASIONS,
   OUTFIT_PROFILES,
   OUTFIT_ROAST_LEVELS,
+  type OutfitOccasion,
   type OutfitProfile,
   type OutfitResultData,
   type OutfitRoastLevel,
+  type ProAnalysisResult,
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
@@ -236,13 +240,13 @@ Output altijd als geldige JSON:
 }
 `;
 
-function normalizeOccasion(value: unknown) {
+function normalizeOccasion(value: unknown): OutfitOccasion | null {
   if (typeof value === "string" && value in LEGACY_OCCASION_MAP) {
     return LEGACY_OCCASION_MAP[value];
   }
 
   return typeof value === "string" && OUTFIT_OCCASIONS.includes(value as never)
-    ? value
+    ? value as OutfitOccasion
     : null;
 }
 
@@ -554,6 +558,82 @@ function normalizeShoppingSuggestions(
       searchQuery,
     }];
   });
+}
+
+function normalizeProAnalysis(
+  value: unknown,
+  inventory: ClothingInventoryItem[],
+): ProAnalysisResult {
+  const source = getResultObject(value) ?? {};
+  const normalizeAnalysisSection = (
+    sectionValue: unknown,
+    fallbackSummary: string,
+  ): ProAnalysisResult["colorAnalysis"] => {
+    const section = getResultObject(sectionValue) ?? {};
+    return {
+      score: normalizeScore(section.score),
+      summary: toNonEmptyString(section.summary) ?? fallbackSummary,
+      strengths: filterInventoryConsistentText(toStringArray(section.strengths), inventory),
+      improvements: filterInventoryConsistentText(toStringArray(section.improvements), inventory),
+    };
+  };
+  const normalizeScoreSummary = (
+    sectionValue: unknown,
+    fallbackSummary: string,
+  ) => {
+    const section = getResultObject(sectionValue) ?? {};
+    return {
+      score: normalizeScore(section.score),
+      summary: toNonEmptyString(section.summary) ?? fallbackSummary,
+    };
+  };
+
+  return {
+    overallScore: normalizeScore(source.overallScore),
+    styleIdentity:
+      toNonEmptyString(source.styleIdentity) ?? "Verzorgde, eigentijdse basisstijl",
+    colorAnalysis: normalizeAnalysisSection(
+      source.colorAnalysis,
+      "De kleurwerking kon slechts beperkt worden beoordeeld.",
+    ),
+    fitAnalysis: normalizeAnalysisSection(
+      source.fitAnalysis,
+      "De pasvorm en het silhouet konden slechts beperkt worden beoordeeld.",
+    ),
+    cohesionAnalysis: normalizeAnalysisSection(
+      source.cohesionAnalysis,
+      "De samenhang tussen de zichtbare kledingstukken is neutraal.",
+    ),
+    occasionFit: normalizeScoreSummary(
+      source.occasionFit,
+      "De outfit is redelijk bruikbaar voor de gekozen gelegenheid.",
+    ),
+    trendScore: normalizeScoreSummary(
+      source.trendScore,
+      "De outfit gebruikt een tijdloze basis met beperkte trendinformatie.",
+    ),
+    strengths: withFallback(
+      filterInventoryConsistentText(toStringArray(source.strengths), inventory),
+      "De outfit heeft een herkenbare en bruikbare basis.",
+    ),
+    improvementPoints: [
+      ...filterInventoryConsistentText(toStringArray(source.improvementPoints), inventory),
+      "Maak de gekozen stijlrichting consequenter in kleur.",
+      "Let op een rustigere samenhang tussen de zichtbare onderdelen.",
+      "Kies één duidelijke prioriteit voor de volledige outfit.",
+    ].slice(0, 3),
+    stylistAdvice: (() => {
+      const advice = toNonEmptyString(source.stylistAdvice);
+      return advice && referencesOnlyDetectedClothing(advice, inventory)
+        ? advice
+        : "Behoud de sterke basis en werk met één duidelijke stijlrichting.";
+    })(),
+    suggestedUpgrades: filterInventoryConsistentText(
+      toStringArray(source.suggestedUpgrades),
+      inventory,
+    ),
+    shopSuggestions: normalizeShoppingSuggestions(source.shopSuggestions, inventory),
+  };
 }
 
 function normalizeShopCategory(value: unknown): ShopCategory {
@@ -883,6 +963,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       image?: unknown;
+      mode?: unknown;
       occasion?: unknown;
       roastLevel?: unknown;
       feedbackStyle?: unknown;
@@ -890,6 +971,8 @@ export async function POST(request: Request) {
       intensity?: unknown;
       profile?: unknown;
     };
+    const mode: OutfitCheckMode =
+      body.mode === "pro-analysis" ? "pro-analysis" : "roast";
     const occasion = normalizeOccasion(body.occasion);
     const roastLevel = normalizeRoastLevel(
       body.roastLevel,
@@ -911,6 +994,48 @@ export async function POST(request: Request) {
       apiKey: process.env.OPENAI_API_KEY,
     });
     const clothingInventory = await detectClothingInventory(openai, body.image);
+
+    if (mode === "pro-analysis") {
+      const proPrompt = buildProAnalysisPrompt({
+        occasion,
+        profile,
+        clothingInventory: formatClothingInventory(clothingInventory),
+      });
+      const completion = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Je bent een serieuze Nederlandse AI-stylist. Geef geen roast of grappen. Gebruik alleen kleding uit de aangeleverde inventaris en antwoord uitsluitend als geldige JSON.",
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: proPrompt },
+              { type: "image_url", image_url: { url: body.image } },
+            ],
+          },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.35,
+      });
+      const proContent = completion.choices[0]?.message.content;
+      if (!proContent) {
+        return Response.json({ error: "Empty Pro Analysis response" }, { status: 500 });
+      }
+
+      let parsedProAnalysis: unknown;
+      try {
+        parsedProAnalysis = JSON.parse(proContent) as unknown;
+      } catch {
+        return Response.json({ error: "Invalid Pro Analysis response" }, { status: 500 });
+      }
+
+      return Response.json({
+        proAnalysis: normalizeProAnalysis(parsedProAnalysis, clothingInventory),
+      });
+    }
 
     const userPrompt = `
 Gelegenheid: ${occasion}

@@ -26,22 +26,27 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
           </span>
         </button>
 
-        <div className="relative min-h-28 rounded-3xl border border-violet-300/20 bg-[linear-gradient(145deg,rgba(139,92,246,0.15),rgba(255,255,255,0.035))] p-4 text-left">
+        <button
+          type="button"
+          onClick={() => onChange("pro-analysis")}
+          aria-pressed={value === "pro-analysis"}
+          className={`relative min-h-28 rounded-3xl border p-4 text-left transition ${
+            value === "pro-analysis"
+              ? "border-violet-300/60 bg-[linear-gradient(145deg,rgba(139,92,246,0.35),rgba(76,29,149,0.2))] shadow-[0_18px_50px_rgba(124,58,237,0.2)]"
+              : "border-violet-300/20 bg-[linear-gradient(145deg,rgba(139,92,246,0.15),rgba(255,255,255,0.035))]"
+          }`}
+        >
           <span className="absolute right-3 top-3 rounded-full border border-violet-300/20 bg-violet-400/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-violet-200">
-            Premium
+            Testmodus
           </span>
           <span className="block pr-20 text-lg font-black text-white">💎 Pro Analyse</span>
           <span className="mt-2 block text-sm leading-5 text-zinc-400">
             Diepe stijlanalyse met kleur, pasvorm, samenhang en trendcheck.
           </span>
-          <button
-            type="button"
-            disabled
-            className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-black text-zinc-400"
-          >
-            Binnenkort beschikbaar
-          </button>
-        </div>
+          <span className="mt-3 inline-flex rounded-xl border border-violet-300/20 bg-violet-400/10 px-3 py-2 text-xs font-black text-violet-100">
+            Pro Analyse testmodus
+          </span>
+        </button>
       </div>
     </section>
   );

@@ -15,7 +15,7 @@ export const OUTFIT_PROFILES = ["Man", "Vrouw", "Zeg ik liever niet"] as const;
 export type OutfitOccasion = (typeof OUTFIT_OCCASIONS)[number];
 export type OutfitRoastLevel = (typeof OUTFIT_ROAST_LEVELS)[number];
 export type OutfitProfile = (typeof OUTFIT_PROFILES)[number];
-export type OutfitCheckMode = "roast" | "pro";
+export type OutfitCheckMode = "roast" | "pro-analysis";
 
 export type ShoppingSuggestion = {
   title: string;

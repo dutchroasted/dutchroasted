@@ -7,6 +7,7 @@ import type {
   OutfitCheckMode,
   OutfitOccasion,
   OutfitProfile,
+  ProAnalysisResult as ProAnalysisResultData,
   OutfitResultData,
   OutfitRoastLevel,
 } from "@/lib/outfitTypes";
@@ -19,6 +20,7 @@ import { ModeSelector } from "./ModeSelector";
 import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
 import { ProfileSelect } from "./ProfileSelect";
+import { ProAnalysisResult } from "./ProAnalysisResult";
 import { RoastLevelSelect } from "./RoastLevelSelect";
 
 const FREE_CHECK_LIMIT = 5;
@@ -52,6 +54,7 @@ export function OutfitCheckForm() {
   const [roastLevel, setRoastLevel] = useState<OutfitRoastLevel>("Genadeloos");
   const [profile, setProfile] = useState<OutfitProfile>("Zeg ik liever niet");
   const [result, setResult] = useState<OutfitResultData | null>(null);
+  const [proAnalysis, setProAnalysis] = useState<ProAnalysisResultData | null>(null);
   const [resultImage, setResultImage] = useState("");
   const [resultMeta, setResultMeta] = useState<{
     occasion: OutfitOccasion;
@@ -68,7 +71,10 @@ export function OutfitCheckForm() {
 
   const isLimitReached = dailyLimit.used >= FREE_CHECK_LIMIT;
   const isProcessing = isLoading || isUploadProcessing;
-  const canSubmit = Boolean(selectedPreviewImage) && !isProcessing && !isLimitReached;
+  const canSubmit =
+    Boolean(selectedPreviewImage) &&
+    !isProcessing &&
+    (mode === "pro-analysis" || !isLimitReached);
 
   useEffect(() => {
     setDailyLimit(readDailyLimit());
@@ -84,27 +90,46 @@ export function OutfitCheckForm() {
     setIsLoading(true);
     setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
-    analytics.outfitCheckStarted(occasion, roastLevel, profile);
+    analytics.outfitCheckStarted(
+      occasion,
+      mode === "pro-analysis" ? "Pro Analyse testmodus" : roastLevel,
+      profile,
+    );
 
     try {
       const response = await runOutfitCheckWithRetry(
         selectedPreviewImage,
+        mode,
         occasion,
         roastLevel,
         profile,
       );
 
-      let data: OutfitResultData;
+      let data: OutfitResultData | { proAnalysis: ProAnalysisResultData };
       try {
-        data = (await response.json()) as OutfitResultData;
+        data = (await response.json()) as OutfitResultData | { proAnalysis: ProAnalysisResultData };
       } catch {
         throw new Error("De outfitcheck gaf een onleesbaar antwoord terug. Probeer het opnieuw.");
       }
-      setResult(data);
+
+      if (mode === "pro-analysis") {
+        if (!("proAnalysis" in data)) {
+          throw new Error("De Pro Analyse gaf geen geldig resultaat terug.");
+        }
+        setProAnalysis(data.proAnalysis);
+        setResult(null);
+        analytics.outfitCheckCompleted(occasion, "Pro Analyse testmodus", data.proAnalysis.overallScore);
+      } else {
+        if ("proAnalysis" in data) {
+          throw new Error("De outfit roast gaf een onverwacht resultaat terug.");
+        }
+        setResult(data);
+        setProAnalysis(null);
+        setDailyLimit(incrementDailyLimit());
+        analytics.outfitCheckCompleted(occasion, roastLevel, data.score);
+      }
       setResultImage(selectedPreviewImage);
       setResultMeta({ occasion });
-      setDailyLimit(incrementDailyLimit());
-      analytics.outfitCheckCompleted(occasion, roastLevel, data.score);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -121,6 +146,7 @@ export function OutfitCheckForm() {
     setSelectedPreviewImage("");
     setFileName("");
     setResult(null);
+    setProAnalysis(null);
     setResultImage("");
     setResultMeta(null);
     setError("");
@@ -151,13 +177,28 @@ export function OutfitCheckForm() {
           </span>
         </div>
 
-        <FreeCheckLimitNotice
-          used={Math.min(dailyLimit.used, FREE_CHECK_LIMIT)}
-          limit={FREE_CHECK_LIMIT}
-          isLimitReached={isLimitReached}
+        <ModeSelector
+          value={mode}
+          onChange={(nextMode) => {
+            setMode(nextMode);
+            setResult(null);
+            setProAnalysis(null);
+            setResultMeta(null);
+            setError("");
+          }}
         />
 
-        <ModeSelector value={mode} onChange={setMode} />
+        {mode === "roast" ? (
+          <FreeCheckLimitNotice
+            used={Math.min(dailyLimit.used, FREE_CHECK_LIMIT)}
+            limit={FREE_CHECK_LIMIT}
+            isLimitReached={isLimitReached}
+          />
+        ) : (
+          <div className="mb-5 rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm font-bold text-violet-100">
+            Pro Analyse testmodus · telt niet mee voor je 5 gratis roasts.
+          </div>
+        )}
 
         <ImageUpload
           previewUrl={selectedPreviewImage}
@@ -167,6 +208,7 @@ export function OutfitCheckForm() {
             setFileName(name);
             setError("");
             setResult(null);
+            setProAnalysis(null);
             setResultImage("");
             setResultMeta(null);
           }}
@@ -184,7 +226,9 @@ export function OutfitCheckForm() {
         <div className="mt-6 grid gap-5">
           <ProfileSelect value={profile} onChange={setProfile} />
           <OccasionSelect value={occasion} onChange={setOccasion} />
-          <RoastLevelSelect value={roastLevel} onChange={setRoastLevel} />
+          {mode === "roast" ? (
+            <RoastLevelSelect value={roastLevel} onChange={setRoastLevel} />
+          ) : null}
         </div>
 
         {error ? (
@@ -198,10 +242,16 @@ export function OutfitCheckForm() {
           disabled={!canSubmit}
           className="dr-primary-button mt-7 min-h-16 w-full px-5 py-4 text-base"
         >
-          {isLoading ? "Even kijken..." : isLimitReached ? "5 gratis roasts gebruikt" : "Roast mijn outfit"}
+          {isLoading
+            ? "Even kijken..."
+            : mode === "pro-analysis"
+              ? "Start Pro Analyse"
+              : isLimitReached
+                ? "5 gratis roasts gebruikt"
+                : "Roast mijn outfit"}
         </button>
 
-        {isLimitReached ? (
+        {mode === "roast" && isLimitReached ? (
           <div className="mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
             <p className="text-sm font-bold leading-6 text-orange-100">
               Je hebt vandaag nog 0 van de 5 gratis roasts over.
@@ -238,7 +288,10 @@ export function OutfitCheckForm() {
             ) : null}
           </div>
         ) : null}
-        {!isLoading && !result ? (
+        {!isLoading && proAnalysis ? (
+          <ProAnalysisResult result={proAnalysis} onNewCheck={handleNewCheck} />
+        ) : null}
+        {!isLoading && !result && !proAnalysis ? (
           <div className="relative flex min-h-[30rem] items-center justify-center overflow-hidden rounded-[1.6rem] border border-dashed border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,106,0,0.15),transparent_35%),linear-gradient(145deg,rgba(255,255,255,0.05),rgba(0,0,0,0.3))] p-8 text-center">
             <div className="absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/10 blur-3xl" />
             <div>
@@ -249,8 +302,9 @@ export function OutfitCheckForm() {
                 Hier landt je verdict.
               </p>
               <p className="mt-4 max-w-md leading-7 text-zinc-500">
-                AI kijkt naar kleding, kleur, pasvorm en vibe. Jij krijgt drie scherpe punchlines,
-                concrete upgrades en een deelkaart voor je Story.
+                {mode === "pro-analysis"
+                  ? "Je krijgt een diepe analyse van kleur, pasvorm, samenhang, gelegenheid en trends."
+                  : "AI kijkt naar kleding, kleur, pasvorm en vibe. Jij krijgt drie scherpe punchlines, concrete upgrades en een deelkaart voor je Story."}
               </p>
               <div className="mt-7 flex flex-wrap justify-center gap-2 text-[10px] font-black uppercase tracking-[0.13em] text-zinc-400">
                 <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Roast</span>
@@ -267,6 +321,7 @@ export function OutfitCheckForm() {
 
 async function runOutfitCheckWithRetry(
   selectedPreviewImage: string,
+  mode: OutfitCheckMode,
   occasion: OutfitOccasion,
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
@@ -279,6 +334,7 @@ async function runOutfitCheckWithRetry(
   while (true) {
     const response = await requestOutfitCheck(
       requestImage,
+      mode,
       occasion,
       roastLevel,
       profile,
@@ -322,6 +378,7 @@ async function runOutfitCheckWithRetry(
 
 async function requestOutfitCheck(
   image: string,
+  mode: OutfitCheckMode,
   occasion: OutfitOccasion,
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
@@ -338,7 +395,7 @@ async function requestOutfitCheck(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image, occasion, roastLevel, profile }),
+      body: JSON.stringify({ image, mode, occasion, roastLevel, profile }),
       signal: controller.signal,
     });
     console.info(`[Outfit check] API response status (${attempt}):`, response.status);
