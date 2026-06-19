@@ -6,14 +6,11 @@ type OccasionSelectProps = {
 };
 
 const occasionLabels: Record<OutfitOccasion, string> = {
-  Casual: "Casual",
-  Werk: "Werk",
   Date: "Date",
+  Werk: "Werk",
+  School: "School",
   Sportschool: "Sportschool",
   Festival: "Festival",
-  Bruiloft: "Bruiloft",
-  Sollicitatie: "Sollicitatie",
-  Anders: "Anders",
 };
 
 export function OccasionSelect({ value, onChange }: OccasionSelectProps) {
@@ -22,7 +19,7 @@ export function OccasionSelect({ value, onChange }: OccasionSelectProps) {
       <legend className="dr-kicker">
         Waar draag je dit?
       </legend>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
         {OUTFIT_OCCASIONS.map((occasion) => (
           <button
             key={occasion}

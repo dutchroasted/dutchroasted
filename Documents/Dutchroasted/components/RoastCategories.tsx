@@ -1,12 +1,9 @@
 const categories = [
-  ["Casual", "Check of je dagelijkse outfit relaxed of vooral per ongeluk is."],
-  ["Werk", "Professioneel zonder dat je eruitziet alsof je in een spreadsheet woont."],
   ["Date", "Eerlijk advies voor outfits met intentie, niet met paniek."],
+  ["Werk", "Professioneel zonder dat je eruitziet alsof je in een spreadsheet woont."],
+  ["School", "Comfortabel, zelfverzekerd en zonder overdreven je best te doen."],
   ["Sportschool", "Van trainingsset naar een sportlook met een duidelijk plan."],
   ["Festival", "Praktisch, uitgesproken en niet alsof je verdwaald bent bij de glitterkraam."],
-  ["Bruiloft", "Netjes, feestelijk en zonder de bruid visueel te tackelen."],
-  ["Sollicitatie", "Sterk, verzorgd en geloofwaardig voor de eerste indruk."],
-  ["Anders", "Voor alle outfitmomenten waar je zelf even blind op bent geworden."],
 ];
 
 export function RoastCategories() {

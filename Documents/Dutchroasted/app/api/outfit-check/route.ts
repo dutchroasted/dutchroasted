@@ -3,12 +3,20 @@ import {
   OUTFIT_INTENSITIES,
   OUTFIT_OCCASIONS,
   OUTFIT_PROFILES,
+  OUTFIT_ROASTER_PERSONAS,
   type OutfitProfile,
   type OutfitResultData,
+  type OutfitRoasterPersona,
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
-const LEGACY_PARTY_OCCASION = "Feest";
+const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
+  Casual: "School",
+  Feest: "Sportschool",
+  Bruiloft: "Date",
+  Sollicitatie: "Werk",
+  Anders: "School",
+};
 const FALLBACK_SHARE_QUOTES = [
   "Deze outfit heeft meer twijfel dan een volle groepsapp.",
   "De styling mist richting, maar blijft opvallend overeind.",
@@ -24,6 +32,43 @@ const FALLBACK_ROAST = [
   "De basis staat, alleen de styling zoekt nog naar een duidelijke richting.",
   "Met één sterke kleur of accessoire stopt deze look met twijfelen.",
 ].join("\n");
+const PERSONA_FALLBACKS: Record<
+  OutfitRoasterPersona,
+  { roast: string; shareQuote: string; alternativeQuotes: string[] }
+> = {
+  "🔥 Brutale Vriend": {
+    roast: FALLBACK_ROAST,
+    shareQuote: "Deze outfit heeft meer twijfel dan een volle groepsapp.",
+    alternativeQuotes: [
+      "De outfit maakt lawaai, maar vergeet een duidelijke boodschap.",
+      "De styling staat klaar, alleen het plan is zoek.",
+    ],
+  },
+  "❤️ Date Coach": {
+    roast: [
+      "Deze outfit wil flirten, maar houdt nog veilig afstand.",
+      "De styling oogt ontspannen, alleen het zelfvertrouwen mag luider.",
+      "Voor een date mist deze look nog één overtuigende keuze.",
+    ].join("\n"),
+    shareQuote: "Deze outfit flirt voorzichtig en vergeet de sterke openingszin.",
+    alternativeQuotes: [
+      "De date-vibe is veilig, maar nog niet onweerstaanbaar.",
+      "Deze look oogt ontspannen en mist één zelfverzekerd detail.",
+    ],
+  },
+  "💼 Recruiter": {
+    roast: [
+      "Deze outfit heeft potentie, maar mist een duidelijke functietitel.",
+      "De styling oogt geloofwaardig en nog net niet sollicitatieklaar.",
+      "Voor de werkvloer mag deze combinatie strakker communiceren.",
+    ].join("\n"),
+    shareQuote: "Deze outfit haalt de eerste ronde, maar mist overtuiging.",
+    alternativeQuotes: [
+      "De styling oogt professioneel, maar het verhaal blijft vaag.",
+      "Deze look is geloofwaardig en nog niet helemaal sollicitatieklaar.",
+    ],
+  },
+};
 const ROAST_DETAIL_TERMS = [
   "schoenen",
   "sneakers",
@@ -65,10 +110,10 @@ const CLOTHING_ITEMS = [
   "Boots",
   "Tas",
   "Horloge",
-  "top",
   "schoenen",
   "broek",
   "bovenlaag",
+  "accessoire",
 ] as const;
 type ClothingItem = (typeof CLOTHING_ITEMS)[number];
 type ClothingInventoryItem = {
@@ -92,10 +137,10 @@ const CLOTHING_REFERENCE_TERMS: Record<ClothingItem, string[]> = {
   Boots: ["boots", "laarzen", "enkellaars"],
   Tas: ["tas"],
   Horloge: ["horloge"],
-  top: ["top"],
   schoenen: ["schoenen"],
   broek: ["broek"],
   bovenlaag: ["bovenlaag"],
+  accessoire: ["accessoire"],
 };
 const DANGLING_QUOTE_ENDINGS = new Set([
   "aan",
@@ -133,7 +178,7 @@ Actuele modecontext:
 `;
 
 const systemPrompt = `
-Je bent Outfit Roaster, een scherpe maar behulpzame Nederlandse AI-stylist met een originele, flamboyante televisie-energie. Je bent modisch, theatraal, gevat, speels en direct, zonder een echte persoon te imiteren of bestaande uitspraken over te nemen. Je geeft eerlijke outfitfeedback met humor. Je focust alleen op kleding, styling, kleuren, pasvorm van kleding, accessoires en de gekozen gelegenheid. Je beoordeelt nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst of gezondheid. Je maakt geen seksueel getinte opmerkingen. Je bent uitgesproken, maar niet kwetsend of discriminerend. Maak duidelijk dat feedback over de outfit gaat, niet over de persoon.
+Je bent Outfit Roaster, een scherpe maar behulpzame Nederlandse AI-stylist. Je past je stem strikt aan de gekozen Roaster-persona aan: Brutale Vriend, Date Coach of Recruiter. Je bent modisch, gevat, speels en direct, zonder een echte persoon te imiteren of bestaande uitspraken over te nemen. Je geeft eerlijke outfitfeedback met humor. Je focust alleen op kleding, styling, kleuren, pasvorm van kleding, accessoires en de gekozen gelegenheid. Je beoordeelt nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst of gezondheid. Je maakt geen seksueel getinte opmerkingen. Je bent uitgesproken, maar niet kwetsend of discriminerend. Maak duidelijk dat feedback over de outfit gaat, niet over de persoon.
 
 ${currentFashionContext}
 
@@ -152,12 +197,12 @@ Belangrijke grenzen:
 - Maak de roast vermakelijk, modebewust en citeerbaar, met een originele stem.
 - Gebruik uitsluitend kledingstukken uit de vooraf aangeleverde kledinginventaris.
 - Noem nooit een specifiek kledingstuk dat niet in die inventaris staat.
-- Als de inventaris een generieke term gebruikt, neem exact die generieke term over: top, schoenen, broek of bovenlaag.
+- Als de inventaris een generieke term gebruikt, neem exact die generieke term over: bovenlaag, schoenen, broek of accessoire.
 - Maak de roast specifieker dan "dit is saai": verwijs naar gedetecteerde kledingstukken, combinaties, kleuren of stylingkeuzes.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit een vierde roastzin of extra roastregel.
 - Voorbeelden zijn alleen stijlreferenties; neem ze niet letterlijk over:
-  "De schoenen zijn klaar voor actie, maar de top plant een vergadering."
+  "De schoenen zijn klaar voor actie, maar de bovenlaag plant een vergadering."
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Geef precies 3 deelbare quotes totaal: 1 shareQuote en exact 2 unieke alternativeQuotes.
@@ -192,13 +237,19 @@ Output altijd als geldige JSON:
 `;
 
 function normalizeOccasion(value: unknown) {
-  if (value === LEGACY_PARTY_OCCASION) {
-    return "Sportschool" as const;
+  if (typeof value === "string" && value in LEGACY_OCCASION_MAP) {
+    return LEGACY_OCCASION_MAP[value];
   }
 
   return typeof value === "string" && OUTFIT_OCCASIONS.includes(value as never)
     ? value
     : null;
+}
+
+function normalizeRoasterPersona(value: unknown): OutfitRoasterPersona {
+  return typeof value === "string" && OUTFIT_ROASTER_PERSONAS.includes(value as never)
+    ? value as OutfitRoasterPersona
+    : "🔥 Brutale Vriend";
 }
 
 function isValidIntensity(value: unknown): value is string {
@@ -238,8 +289,10 @@ function normalizeOutfitResult(
   roastText = FALLBACK_ROAST,
   profile: OutfitProfile = "Verras me",
   inventory: ClothingInventoryItem[] = [],
+  persona: OutfitRoasterPersona = "🔥 Brutale Vriend",
 ): OutfitResultData {
-  const roast = normalizeRoast(roastText, inventory);
+  const personaFallback = PERSONA_FALLBACKS[persona];
+  const roast = normalizeRoast(roastText, inventory, personaFallback.roast);
   const providedQuotes = toStringArray(source.alternativeQuotes);
   const shareQuote = selectValidQuote(
     [
@@ -248,7 +301,7 @@ function normalizeOutfitResult(
       ...extractRoastSentences(roast),
     ],
     inventory,
-    FALLBACK_SHARE_QUOTES,
+    [personaFallback.shareQuote, ...FALLBACK_SHARE_QUOTES],
   );
   const stylingTips = firstNonEmptyStringArray(
     source.stylingTips,
@@ -259,7 +312,12 @@ function normalizeOutfitResult(
   const result: OutfitResultData = {
     roast,
     shareQuote,
-    alternativeQuotes: fillAlternativeQuotes(providedQuotes, shareQuote, inventory),
+    alternativeQuotes: fillAlternativeQuotes(
+      providedQuotes,
+      shareQuote,
+      inventory,
+      personaFallback.alternativeQuotes,
+    ),
     worksWell: withFallback(
       filterInventoryConsistentText(toStringArray(source.worksWell), inventory),
       "De outfit heeft een duidelijke basis waarop je verder kunt stylen.",
@@ -314,7 +372,11 @@ function neutralizeOutfitResult(result: OutfitResultData): OutfitResultData {
   };
 }
 
-function normalizeRoast(value: string, inventory: ClothingInventoryItem[]) {
+function normalizeRoast(
+  value: string,
+  inventory: ClothingInventoryItem[],
+  fallbackRoast: string,
+) {
   const candidates = extractRoastSentences(value).filter((sentence) =>
     referencesOnlyDetectedClothing(sentence, inventory),
   );
@@ -329,7 +391,7 @@ function normalizeRoast(value: string, inventory: ClothingInventoryItem[]) {
     .sort((left, right) => left.index - right.index)
     .map(({ sentence }) => sentence);
 
-  const fallbackSentences = extractRoastSentences(FALLBACK_ROAST);
+  const fallbackSentences = extractRoastSentences(fallbackRoast);
   const uniqueSentences = [...rankedCandidates, ...fallbackSentences].filter(
     (sentence, index, sentences) =>
       sentences.findIndex(
@@ -454,13 +516,18 @@ function fillAlternativeQuotes(
   quotes: string[],
   shareQuote: string,
   inventory: ClothingInventoryItem[],
+  personaFallbacks: string[],
 ) {
   const validQuotes = quotes.filter(
     (quote) =>
       isValidShareQuote(quote) &&
       referencesOnlyDetectedClothing(quote, inventory),
   );
-  const uniqueQuotes = [...validQuotes, ...FALLBACK_ALTERNATIVE_QUOTES].filter(
+  const uniqueQuotes = [
+    ...validQuotes,
+    ...personaFallbacks,
+    ...FALLBACK_ALTERNATIVE_QUOTES,
+  ].filter(
     (quote, index, allQuotes) =>
       quote.toLowerCase() !== shareQuote.toLowerCase() &&
       allQuotes.findIndex((item) => item.toLowerCase() === quote.toLowerCase()) === index,
@@ -514,9 +581,6 @@ function referencesOnlyDetectedClothing(
   const detectedItems = new Set(inventory.map((item) => item.item));
   const allowedItems = new Set<ClothingItem>(detectedItems);
 
-  if (inventory.some((item) => ["T-shirt", "Polo", "Overhemd", "Trui", "Hoodie", "top"].includes(item.item))) {
-    allowedItems.add("top");
-  }
   if (inventory.some((item) => ["Jeans", "Chino", "broek"].includes(item.item))) {
     allowedItems.add("broek");
   }
@@ -525,6 +589,9 @@ function referencesOnlyDetectedClothing(
   }
   if (inventory.some((item) => ["Vest", "Jas", "Blazer", "bovenlaag"].includes(item.item))) {
     allowedItems.add("bovenlaag");
+  }
+  if (inventory.some((item) => ["Tas", "Horloge", "accessoire"].includes(item.item))) {
+    allowedItems.add("accessoire");
   }
 
   if (containsWholeWord(normalized, "shirt")) {
@@ -662,7 +729,7 @@ async function detectClothingInventory(openai: OpenAI, image: string) {
         {
           role: "system",
           content:
-            "Je bent een nauwkeurige kledingherkenner. Identificeer uitsluitend duidelijk zichtbare kleding en accessoires. Leid nooit gender, lichaamstype, leeftijd of identiteit af. Bij twijfel tussen specifieke typen kies je de veilige generieke term top, schoenen, broek of bovenlaag. Verzin niets.",
+            "Je bent een nauwkeurige kledingherkenner. Identificeer uitsluitend duidelijk zichtbare kleding en accessoires. Leid nooit gender, lichaamstype, leeftijd of identiteit af. Bij twijfel tussen specifieke typen kies je de veilige generieke term bovenlaag, schoenen, broek of accessoire. Verzin niets.",
         },
         {
           role: "user",
@@ -675,7 +742,7 @@ Toegestane items, in herkenningsprioriteit:
 T-shirt, Polo, Overhemd, Vest, Trui, Hoodie, Jas, Blazer, Jeans, Chino, Sneakers, Nette schoenen, Boots, Tas, Horloge.
 
 Bij lage zekerheid gebruik je alleen:
-top, schoenen, broek, bovenlaag.
+bovenlaag, schoenen, broek, accessoire.
 
 Regels:
 - Neem alleen items op die werkelijk zichtbaar zijn.
@@ -711,6 +778,38 @@ Regels:
   }
 }
 
+function getPersonaInstructions(persona: OutfitRoasterPersona) {
+  switch (persona) {
+    case "❤️ Date Coach":
+      return `
+Persona: ❤️ Date Coach
+- Focus op de eerste indruk, zelfvertrouwen en de uitstraling van de outfit tijdens een date.
+- Benoem of de outfit aantrekkelijk, ontspannen, ongemakkelijk, veilig of zelfverzekerd oogt.
+- "Aantrekkelijk" beschrijft uitsluitend de outfit en styling, nooit de persoon.
+- Wees grappig en behulpzaam; iedere punchline bevat ook een bruikbaar stijlgevoel.
+- Gebruik geen recruiterstaal en klink niet als de Brutale Vriend.
+`;
+    case "💼 Recruiter":
+      return `
+Persona: 💼 Recruiter
+- Beoordeel de outfit alsof je een kandidaat ontvangt voor een gesprek of werkdag.
+- Focus op professionaliteit, geloofwaardigheid en geschiktheid voor de werkvloer.
+- Benoem of de outfit sollicitatieklaar, te casual, chaotisch of geloofwaardig oogt.
+- Wees grappig maar praktisch; de roast moet bruikbaar blijven.
+- Gebruik geen date-taal en klink niet als de Brutale Vriend.
+`;
+    default:
+      return `
+Persona: 🔥 Brutale Vriend
+- Dit is de scherpste en grappigste optie.
+- Gebruik directe Nederlandse humor: gevat, een tikje brutaal en screenshotwaardig.
+- Iedere regel heeft een duidelijke punchline.
+- Roast uitsluitend de outfit en nooit de persoon.
+- Gebruik geen recruiterstaal of date-coaching.
+`;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
@@ -718,9 +817,11 @@ export async function POST(request: Request) {
       occasion?: unknown;
       intensity?: unknown;
       profile?: unknown;
+      persona?: unknown;
     };
     const occasion = normalizeOccasion(body.occasion);
     const profile = normalizeProfile(body.profile);
+    const persona = normalizeRoasterPersona(body.persona);
 
     if (!isValidImage(body.image) || !occasion || !isValidIntensity(body.intensity)) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
@@ -740,21 +841,27 @@ export async function POST(request: Request) {
 Gelegenheid: ${occasion}
 Feedbackstijl: ${body.intensity}
 Profielvoorkeur: ${profile}
+Gekozen Roaster: ${persona}
 
 Gedetecteerde kledinginventaris — dit is de enige bron voor kledingnamen:
 ${formatClothingInventory(clothingInventory)}
 
+${getPersonaInstructions(persona)}
+
 Regels:
 - Gebruik de kledinginventaris hierboven consequent voor roast, shareQuote, alternativeQuotes, worksWell, canImprove, stylingTips en redenen bij shopsuggesties.
 - Noem nooit een kledingstuk dat niet in de inventaris staat.
-- Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm top, schoenen, broek of bovenlaag.
+- Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm bovenlaag, schoenen, broek of accessoire.
 - Herclassificeer de kleding niet opnieuw tijdens het schrijven.
+- De gekozen Roaster bepaalt de primaire toon; de feedbackstijl is alleen een subtiel secundair accent.
+- Maak de drie persona's duidelijk verschillend en meng hun perspectieven niet.
 - Leid gender nooit af uit de foto. De profielvoorkeur hierboven is de enige toegestane bron.
 - Bij profiel "Man": gebruik in minstens één roastzin een natuurlijk mannelijk modewoord zoals herenstijl, herenkleding of herenpasvorm, zonder de persoon zelf te beoordelen.
 - Bij profiel "Vrouw": gebruik in minstens één roastzin een natuurlijk vrouwelijk modewoord zoals damesstijl, dameskleding of damespasvorm, zonder de persoon zelf te beoordelen.
 - Bij profiel "Verras me": schrijf volledig genderneutraal. Gebruik geen man, vrouw, jongen, meisje, meneer, mevrouw, hij, hem, zijn, zij of haar als persoonsverwijzing.
 - Roast altijd de outfit, kledingcombinatie en styling; nooit de persoon.
 - Beoordeel de outfit specifiek voor de gekozen gelegenheid.
+- Bij School: beoordeel geschiktheid voor school, college of les. Houd de toon casual en praktisch. Focus op comfort, zelfvertrouwen en niet ogen alsof er overdreven hard geprobeerd is. Houd de roast grappig, niet gemeen.
 - Bij Sportschool: herken sportkleding, trainingsschoenen, ademende materialen, bewegingsvrijheid en praktische laagjes. Beoordeel of de outfit logisch en stijlvol werkt voor trainen.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
@@ -766,9 +873,9 @@ Regels:
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
 - Schrijf nooit 4 of meer roastzinnen of roastregels.
-- Roast uitsluitend kleding, styling en geschiktheid voor de gelegenheid; nooit lichaam, gezicht, leeftijd, gewicht, gender, afkomst of aantrekkelijkheid.
+- Roast uitsluitend kleding, styling en geschiktheid voor de gelegenheid; nooit leeftijd, lichaam, gewicht, afkomst, beperking, genderidentiteit of aantrekkelijkheid van de persoon.
 - Gebruik deze voorbeelden alleen als stijlreferentie en neem ze niet letterlijk over:
-  "De schoenen zijn klaar voor actie, maar de top plant een vergadering."
+  "De schoenen zijn klaar voor actie, maar de bovenlaag plant een vergadering."
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
@@ -790,9 +897,9 @@ Regels:
 - Bij feedbackstijl "rotterdams": shareQuote is Nederlands, direct, grappig en Rotterdams van toon.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - Voorbeelden shareQuote roast: "Je schoenen doen overuren om deze outfit te redden.", "Net niet fout, maar zeker niet goed.", "Dit oogt als haastwerk met ambitie."
-- Voorbeelden shareQuote rotterdams: "Gozer, zelfs de tram zou je voorbijrijden.", "Niet lelijk, maar ook niet bepaald Coolsingel-materiaal.", "Je outfit staat in de file op de A20.", "Je schoenen kwamen opdagen, de rest niet."
-- Bij feedbackstijl "roast": maak het flamboyant, modisch en theatraal.
-- Bij feedbackstijl "rotterdams": maak het directer, droger en volkser. Het mag voelen als een Rotterdamse steek, maar blijft behulpzaam en nooit kwetsend.
+- Voorbeelden shareQuote rotterdams: "Zelfs de tram rijdt deze outfit zonder twijfel voorbij.", "Niet fout, maar ook geen Coolsingel-materiaal.", "Deze outfit staat stil op de A20.", "De schoenen kwamen opdagen, de rest niet."
+- Bij feedbackstijl "roast": geef de gekozen persona een iets flamboyanter, modischer accent.
+- Bij feedbackstijl "rotterdams": geef de gekozen persona een droger en directer Rotterdams accent, zonder het persona-perspectief te verliezen.
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
@@ -888,7 +995,7 @@ Regels:
 Gebruik uitsluitend deze kledinginventaris:
 ${formatClothingInventory(clothingInventory)}
 
-Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
+Behoud duidelijk de toon van ${persona}. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak roast exact 3 korte zinnen, elk op een eigen regel en met een duidelijke clou. Pas ook worksWell, canImprove, stylingTips en shopsuggesties aan op de inventaris.`,
         },
       ];
 
@@ -917,7 +1024,13 @@ Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel 
       !containsLikelyEnglish(roastText)
     ) {
       return Response.json(
-        normalizeOutfitResult(parsedObject, roastText, profile, clothingInventory),
+        normalizeOutfitResult(
+          parsedObject,
+          roastText,
+          profile,
+          clothingInventory,
+          persona,
+        ),
       );
     }
 
@@ -930,9 +1043,10 @@ Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel 
     return Response.json(
       normalizeOutfitResult(
         parsedObject,
-        FALLBACK_ROAST,
+        PERSONA_FALLBACKS[persona].roast,
         profile,
         clothingInventory,
+        persona,
       ),
     );
   } catch (error) {

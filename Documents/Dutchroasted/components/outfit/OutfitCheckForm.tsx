@@ -8,6 +8,7 @@ import type {
   OutfitOccasion,
   OutfitProfile,
   OutfitResultData,
+  OutfitRoasterPersona,
 } from "@/lib/outfitTypes";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { ErrorMessage } from "./ErrorMessage";
@@ -18,6 +19,7 @@ import { LoadingState } from "./LoadingState";
 import { OccasionSelect } from "./OccasionSelect";
 import { OutfitResult } from "./OutfitResult";
 import { ProfileSelect } from "./ProfileSelect";
+import { RoasterPersonaSelect } from "./RoasterPersonaSelect";
 
 const FREE_CHECK_LIMIT = 3;
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
@@ -45,9 +47,10 @@ type DailyLimitState = {
 export function OutfitCheckForm() {
   const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
-  const [occasion, setOccasion] = useState<OutfitOccasion>("Casual");
+  const [occasion, setOccasion] = useState<OutfitOccasion>("Date");
   const [intensity, setIntensity] = useState<OutfitIntensity>("roast");
   const [profile, setProfile] = useState<OutfitProfile>("Verras me");
+  const [persona, setPersona] = useState<OutfitRoasterPersona>("🔥 Brutale Vriend");
   const [result, setResult] = useState<OutfitResultData | null>(null);
   const [resultImage, setResultImage] = useState("");
   const [resultMeta, setResultMeta] = useState<{
@@ -90,6 +93,7 @@ export function OutfitCheckForm() {
         occasion,
         intensity,
         profile,
+        persona,
       );
 
       let data: OutfitResultData;
@@ -179,6 +183,7 @@ export function OutfitCheckForm() {
 
         <div className="mt-6 grid gap-6">
           <OccasionSelect value={occasion} onChange={setOccasion} />
+          <RoasterPersonaSelect value={persona} onChange={setPersona} />
           <ProfileSelect value={profile} onChange={setProfile} />
           <IntensitySelector value={intensity} onChange={setIntensity} />
         </div>
@@ -267,6 +272,7 @@ async function runOutfitCheckWithRetry(
   occasion: OutfitOccasion,
   intensity: OutfitIntensity,
   profile: OutfitProfile,
+  persona: OutfitRoasterPersona,
 ) {
   let requestImage = selectedPreviewImage;
   let didRetryAfter413 = false;
@@ -279,6 +285,7 @@ async function runOutfitCheckWithRetry(
       occasion,
       intensity,
       profile,
+      persona,
       `poging ${attempt}`,
     );
 
@@ -322,6 +329,7 @@ async function requestOutfitCheck(
   occasion: OutfitOccasion,
   intensity: OutfitIntensity,
   profile: OutfitProfile,
+  persona: OutfitRoasterPersona,
   attempt: string,
 ) {
   const controller = new AbortController();
@@ -335,7 +343,7 @@ async function requestOutfitCheck(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image, occasion, intensity, profile }),
+      body: JSON.stringify({ image, occasion, intensity, profile, persona }),
       signal: controller.signal,
     });
     console.info(`[Outfit check] API response status (${attempt}):`, response.status);
