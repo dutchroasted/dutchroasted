@@ -278,6 +278,9 @@ function SharePreviewCard({
               <p className="mt-1 text-xl font-black leading-6 text-white sm:text-2xl sm:leading-7">
                 “{quote}”
               </p>
+              <p className="mt-2 text-[10px] font-black tracking-[0.12em] text-orange-300">
+                #outfitroaster
+              </p>
             </div>
           </div>
           <p className="mt-2 text-[9px] font-black uppercase tracking-[0.16em] text-zinc-400">
@@ -496,9 +499,13 @@ async function createShareImage(
   context.font = "900 46px Arial, sans-serif";
   drawWrappedText(context, `“${selectedQuote}”`, 354, 1368, 610, 58, 4);
 
+  context.fillStyle = "#ff9a4f";
+  context.font = "900 22px Arial, sans-serif";
+  context.fillText("#outfitroaster", 354, 1590);
+
   context.fillStyle = "rgba(255,255,255,0.62)";
   context.font = "900 19px Arial, sans-serif";
-  context.fillText("OUTFITROASTER.NL", 92, 1588);
+  context.fillText("OUTFITROASTER.NL", 92, 1620);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
@@ -610,7 +617,11 @@ function downloadBlob(blob: Blob, fileName: string) {
 function formatShareCaption(selectedQuote: string, appUrl: string) {
   return [
     "Mijn outfit is geroast door Outfit Roaster 🔥",
-    selectedQuote,
+    "",
+    `“${selectedQuote}”`,
+    "",
+    "#outfitroaster",
+    "",
     `Probeer zelf: ${appUrl}`,
   ].join("\n");
 }
