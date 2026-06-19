@@ -1,9 +1,10 @@
 import { PricingCards } from "@/components/pricing/PricingCards";
+import { EarlyAccessForm } from "@/components/outfit/EarlyAccessForm";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
   title: "Pricing | Outfit Roaster",
-  description: "Start gratis met Outfit Roaster. Premium en Pro komen eraan.",
+  description: "Start gratis of meld je aan voor de Outfit Roaster Premium bèta.",
 };
 
 export default function PricingPage() {
@@ -37,18 +38,43 @@ export default function PricingPage() {
 
         <section className="max-w-4xl pt-8 sm:pt-14">
           <p className="inline-flex rounded-md border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-sm font-bold text-orange-300">
-            Premium komt eraan
+            Premium bèta
           </p>
           <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
-            Kies hoe uitgebreid je stylingrapport straks wordt.
+            Kies hoe uitgebreid je stylingrapport wordt.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-            Start gratis met 5 Outfit Roasts per dag. Pro Analyse brengt straks diepere inzichten
-            in kleur, pasvorm, samenhang en trends.
+            Start gratis met 5 Outfit Roasts per dag. Pro Analyse tijdelijk gratis testen tijdens
+            de Premium bèta. Premium wordt straks €4,99 per maand.
           </p>
         </section>
 
         <PricingCards />
+
+        <section
+          id="premium-wachtlijst"
+          className="scroll-mt-8 rounded-[2rem] border border-violet-300/20 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.2),transparent_35%),linear-gradient(145deg,rgba(255,255,255,0.07),rgba(0,0,0,0.28))] p-5 sm:p-8"
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+                Premium bèta
+              </p>
+              <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">
+                Wil je Premium als eerste testen?
+              </h2>
+              <p className="mt-4 max-w-xl leading-7 text-zinc-300">
+                Laat je e-mailadres achter en krijg als eerste toegang tot Pro Analyse.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm font-bold text-zinc-200">
+                <li>✦ 1 maand gratis Premium bij lancering</li>
+                <li>✦ Als eerste toegang tot Pro Analyse</li>
+                <li>✦ Kans op lifetime korting voor vroege testers</li>
+              </ul>
+            </div>
+            <EarlyAccessForm variant="pricing" />
+          </div>
+        </section>
       </div>
     </main>
   );

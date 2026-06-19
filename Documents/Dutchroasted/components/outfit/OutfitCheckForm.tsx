@@ -92,7 +92,7 @@ export function OutfitCheckForm() {
     setError("");
     analytics.outfitCheckStarted(
       occasion,
-      mode === "pro-analysis" ? "Pro Analyse testmodus" : roastLevel,
+      mode === "pro-analysis" ? "Premium bèta – Pro Analyse" : roastLevel,
       profile,
     );
 
@@ -118,7 +118,11 @@ export function OutfitCheckForm() {
         }
         setProAnalysis(data.proAnalysis);
         setResult(null);
-        analytics.outfitCheckCompleted(occasion, "Pro Analyse testmodus", data.proAnalysis.overallScore);
+        analytics.outfitCheckCompleted(
+          occasion,
+          "Premium bèta – Pro Analyse",
+          data.proAnalysis.overallScore,
+        );
       } else {
         if ("proAnalysis" in data) {
           throw new Error("De outfit roast gaf een onverwacht resultaat terug.");
@@ -196,7 +200,8 @@ export function OutfitCheckForm() {
           />
         ) : (
           <div className="mb-5 rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm font-bold text-violet-100">
-            Pro Analyse testmodus · telt niet mee voor je 5 gratis roasts.
+            Premium bèta – Pro Analyse tijdelijk gratis testen. Deze analyse telt niet mee voor je
+            5 gratis roasts.
           </div>
         )}
 
@@ -245,7 +250,7 @@ export function OutfitCheckForm() {
           {isLoading
             ? "Even kijken..."
             : mode === "pro-analysis"
-              ? "Start Pro Analyse"
+              ? "Pro Analyse tijdelijk gratis testen"
               : isLimitReached
                 ? "5 gratis roasts gebruikt"
                 : "Roast mijn outfit"}

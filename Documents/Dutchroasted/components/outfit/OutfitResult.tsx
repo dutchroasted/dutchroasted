@@ -617,7 +617,7 @@ function downloadBlob(blob: Blob, fileName: string) {
 }
 
 function formatShareCaption(selectedQuote: string, appUrl: string) {
-  return [
+  const shareText = [
     "Mijn outfit is geroast door Outfit Roaster 🔥",
     "",
     `“${selectedQuote}”`,
@@ -626,6 +626,10 @@ function formatShareCaption(selectedQuote: string, appUrl: string) {
     "",
     `Probeer zelf: ${appUrl}`,
   ].join("\n");
+
+  return /(^|\s)#outfitroaster(\s|$)/i.test(shareText)
+    ? shareText
+    : `${shareText.trim()}\n\n#outfitroaster`;
 }
 
 function formatAdvice(result: OutfitResultData) {

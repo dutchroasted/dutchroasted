@@ -4,14 +4,20 @@ import { useState } from "react";
 import type { OutfitOccasion } from "@/lib/outfitTypes";
 
 type EarlyAccessFormProps = {
-  occasion: OutfitOccasion;
-  score: number;
+  occasion?: OutfitOccasion;
+  score?: number;
+  variant?: "result" | "pricing";
 };
 
-const CONSENT_TEXT =
-  "Ik wil updates ontvangen over Outfit Roaster en geef toestemming om mij hierover te mailen.";
-
-export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
+export function EarlyAccessForm({
+  occasion,
+  score,
+  variant = "result",
+}: EarlyAccessFormProps) {
+  const isPricingWaitlist = variant === "pricing";
+  const consentText = isPricingWaitlist
+    ? "Ik wil updates ontvangen over de Premium bèta en geef toestemming om mij hierover te mailen."
+    : "Ik wil updates ontvangen over Outfit Roaster en geef toestemming om mij hierover te mailen.";
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,11 +50,11 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
         },
         body: JSON.stringify({
           email: trimmedEmail,
-          source: "outfit_check",
+          source: isPricingWaitlist ? "pricing-premium-beta" : "outfit_check",
           occasion,
           score,
           marketingConsent,
-          consentText: CONSENT_TEXT,
+          consentText,
         }),
       });
 
@@ -58,7 +64,11 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
 
       setEmail("");
       setMarketingConsent(false);
-      setMessage("Je staat erop 🔥");
+      setMessage(
+        isPricingWaitlist
+          ? "Je staat op de lijst. We sturen je een mail zodra Premium open gaat."
+          : "Je staat erop 🔥",
+      );
     } catch {
       setError("Opslaan lukt niet. Probeer het opnieuw.");
     } finally {
@@ -68,10 +78,15 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
 
   return (
     <article className="dr-card-hover rounded-3xl border border-orange-500/30 bg-[linear-gradient(145deg,rgba(255,106,0,0.13),rgba(255,255,255,0.035))] p-5 shadow-[0_22px_80px_rgba(255,106,0,0.09)] sm:p-6">
-      <h3 className="text-2xl font-black text-white">Wil je als eerste Pro Analyse proberen?</h3>
+      <h3 className="text-2xl font-black text-white">
+        {isPricingWaitlist
+          ? "Pro Analyse tijdelijk gratis testen"
+          : "Wil je als eerste Pro Analyse proberen?"}
+      </h3>
       <p className="mt-3 leading-7 text-zinc-300">
-        Laat je e-mail achter en krijg als eerste toegang tot Premium, style history en
-        persoonlijke outfit tips.
+        {isPricingWaitlist
+          ? "Laat je e-mailadres achter en krijg als eerste toegang tot de Premium bèta."
+          : "Laat je e-mail achter en krijg als eerste toegang tot Premium, style history en persoonlijke outfit tips."}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
@@ -95,7 +110,7 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
             onChange={(event) => setMarketingConsent(event.target.checked)}
             className="mt-1 size-4 accent-orange-500"
           />
-          <span>{CONSENT_TEXT}</span>
+          <span>{consentText}</span>
         </label>
 
         {message ? <p className="font-black text-orange-200">{message}</p> : null}
@@ -106,7 +121,7 @@ export function EarlyAccessForm({ occasion, score }: EarlyAccessFormProps) {
           disabled={isSubmitting}
           className="min-h-12 w-full rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_16px_50px_rgba(255,106,0,0.18)] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 sm:w-auto"
         >
-          {isSubmitting ? "Even opslaan..." : "Zet mij op de lijst"}
+          {isSubmitting ? "Even opslaan..." : "Zet mij op de wachtlijst"}
         </button>
       </form>
       <p className="mt-4 text-xs leading-5 text-zinc-500">
