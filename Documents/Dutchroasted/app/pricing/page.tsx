@@ -53,18 +53,23 @@ export default function PricingPage() {
 
         <section
           id="premium-wachtlijst"
-          className="scroll-mt-8 rounded-[2rem] border border-violet-300/20 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.2),transparent_35%),linear-gradient(145deg,rgba(255,255,255,0.07),rgba(0,0,0,0.28))] p-5 sm:p-8"
+          aria-labelledby="premium-wachtlijst-titel"
+          className="scroll-mt-8 rounded-[2rem] border border-orange-400/40 bg-[radial-gradient(circle_at_top_right,rgba(255,106,0,0.24),transparent_38%),linear-gradient(145deg,rgba(255,255,255,0.09),rgba(0,0,0,0.34))] p-5 shadow-[0_24px_90px_rgba(255,106,0,0.14)] sm:p-8"
         >
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-300">
                 Premium bèta
               </p>
-              <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">
+              <h2
+                id="premium-wachtlijst-titel"
+                className="mt-3 text-3xl font-black text-white sm:text-4xl"
+              >
                 Wil je Premium als eerste testen?
               </h2>
               <p className="mt-4 max-w-xl leading-7 text-zinc-300">
-                Laat je e-mailadres achter en krijg als eerste toegang tot Pro Analyse.
+                Laat je e-mailadres achter. Je krijgt toegang tot de Premium bèta zodra we de
+                eerste testers toelaten.
               </p>
               <ul className="mt-6 space-y-3 text-sm font-bold text-zinc-200">
                 <li>✦ 1 maand gratis Premium bij lancering</li>
