@@ -3,7 +3,7 @@ import { EarlyAccessForm } from "@/components/outfit/EarlyAccessForm";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
-  title: "Pricing | Outfit Roaster",
+  title: "Prijzen | Outfit Roaster",
   description: "Start gratis of activeer Outfit Roaster Premium.",
 };
 
@@ -24,7 +24,7 @@ export default function PricingPage() {
               Outfit Check
             </a>
             <a href="/pricing" className="text-orange-300 transition hover:text-white">
-              Pricing
+              Prijzen
             </a>
           </nav>
 
@@ -44,7 +44,8 @@ export default function PricingPage() {
             Kies hoe uitgebreid je stylingrapport wordt.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-            Start gratis met 5 Outfit Roasts per dag of activeer Premium voor €4,99 per maand.
+            Premium Verdict is tijdelijk gratis te testen in beta. Wil je een seintje wanneer de
+            volledige premium versie live gaat?
           </p>
         </section>
 

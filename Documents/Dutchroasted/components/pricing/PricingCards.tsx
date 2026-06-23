@@ -1,5 +1,3 @@
-import { CheckoutButton } from "@/components/billing/CheckoutButton";
-
 const plans = [
   {
     name: "Gratis",
@@ -88,7 +86,12 @@ export function PricingCards() {
             <div className="mt-8 flex-1" />
 
             {plan.name === "Premium" ? (
-              <CheckoutButton />
+              <a
+                href="mailto:info@outfitroaster.nl?subject=Premium%20update%20OutfitRoaster"
+                className="mt-8 min-h-12 w-full rounded-2xl bg-orange-500 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_16px_50px_rgba(255,106,0,0.18)]"
+              >
+                Ontvang premium update
+              </a>
             ) : plan.disabled ? (
               <button
                 type="button"
