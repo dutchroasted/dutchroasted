@@ -19,11 +19,18 @@ type OutfitResultProps = {
   onNewCheck: () => void;
 };
 
+type PendingVideoDownload = {
+  blob: Blob;
+  fileName: string;
+  url: string;
+};
+
 export function OutfitResult({ result, originalImage, disabled, onNewCheck }: OutfitResultProps) {
   const [feedback, setFeedback] = useState("");
   const [selectedQuote, setSelectedQuote] = useState<string>(result.shareQuote);
   const [isSharing, setIsSharing] = useState(false);
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [pendingVideo, setPendingVideo] = useState<PendingVideoDownload | null>(null);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
   const quoteOptions = useMemo(
@@ -34,6 +41,14 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   useEffect(() => {
     setSelectedQuote(result.shareQuote);
   }, [result]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingVideo) {
+        URL.revokeObjectURL(pendingVideo.url);
+      }
+    };
+  }, [pendingVideo]);
 
   function showFeedback(message: string) {
     setFeedback(message);
@@ -121,7 +136,32 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         result.score,
         selectedQuote || result.roast.split("\n")[0] || result.shareQuote,
       );
-      downloadVideoBlob(video.blob);
+      const browserInfo = getBrowserDownloadInfo();
+      const fileName = `outfitroaster-${Date.now()}.mp4`;
+      logVideoDownload({
+        browserType: browserInfo.browserType,
+        isIos: browserInfo.isIos,
+        downloadStarted: false,
+      });
+
+      if (browserInfo.isIosSafari) {
+        const url = URL.createObjectURL(video.blob);
+        setPendingVideo((currentVideo) => {
+          if (currentVideo) {
+            URL.revokeObjectURL(currentVideo.url);
+          }
+          return { blob: video.blob, fileName, url };
+        });
+        setFeedback("");
+        return;
+      }
+
+      downloadVideoBlob(video.blob, fileName);
+      logVideoDownload({
+        browserType: browserInfo.browserType,
+        isIos: browserInfo.isIos,
+        downloadStarted: true,
+      });
       showFeedback("TikTok-video gedownload ✅");
     } catch (error) {
       console.error("Outfit video generation failed:", error);
@@ -129,6 +169,61 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
     } finally {
       setIsCreatingVideo(false);
     }
+  }
+
+  async function handleSaveIosVideo() {
+    if (!pendingVideo) {
+      showFeedback("Video maken lukt niet, probeer opnieuw.");
+      return;
+    }
+
+    const browserInfo = getBrowserDownloadInfo();
+
+    try {
+      const file = new File([pendingVideo.blob], pendingVideo.fileName, {
+        type: pendingVideo.blob.type || "video/mp4",
+      });
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: "OutfitRoaster TikTok-video",
+          text: "Mijn OutfitRoaster-video 🔥 #outfitroaster",
+          files: [file],
+        });
+        logVideoDownload({
+          browserType: browserInfo.browserType,
+          isIos: browserInfo.isIos,
+          downloadStarted: true,
+        });
+        showFeedback("TikTok-video gedownload ✅");
+        closeVideoModal();
+        return;
+      }
+
+      showFeedback("Bewaren lukt niet automatisch. Gebruik de deelknop van Safari.");
+      logVideoDownload({
+        browserType: browserInfo.browserType,
+        isIos: browserInfo.isIos,
+        downloadStarted: false,
+      });
+    } catch (error) {
+      console.error("iOS video save failed:", error);
+      logVideoDownload({
+        browserType: browserInfo.browserType,
+        isIos: browserInfo.isIos,
+        downloadStarted: false,
+      });
+      showFeedback("Video maken lukt niet, probeer opnieuw.");
+    }
+  }
+
+  function closeVideoModal() {
+    setPendingVideo((currentVideo) => {
+      if (currentVideo) {
+        URL.revokeObjectURL(currentVideo.url);
+      }
+      return null;
+    });
   }
 
   function handleDownloadPdf() {
@@ -163,6 +258,46 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       {feedback ? (
         <div className="rounded-2xl border border-orange-400/30 bg-orange-400/10 px-4 py-3 text-sm font-bold text-orange-100 backdrop-blur-xl">
           {feedback}
+        </div>
+      ) : null}
+
+      {pendingVideo ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/72 px-4 py-5 backdrop-blur-md sm:items-center">
+          <div className="w-full max-w-md rounded-[2rem] border border-orange-300/25 bg-zinc-950 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.65)]">
+            <div className="mb-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
+              <video
+                src={pendingVideo.url}
+                controls
+                playsInline
+                className="aspect-[9/16] max-h-[54vh] w-full object-cover"
+              />
+            </div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
+              Video klaar 🎉
+            </p>
+            <h3 className="mt-2 text-2xl font-black tracking-[-0.03em] text-white">
+              Bewaar je TikTok-video
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-300">
+              Tik op bewaren om de iOS deelopties te openen. Je blijft gewoon op OutfitRoaster.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={handleSaveIosVideo}
+                className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm"
+              >
+                Bewaar video
+              </button>
+              <button
+                type="button"
+                onClick={closeVideoModal}
+                className="dr-secondary-button min-h-12 w-full px-6 py-3 text-sm"
+              >
+                Sluiten
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
 
@@ -581,7 +716,7 @@ async function createShareImage(
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const VIDEO_DURATION_MS = 9500;
+const VIDEO_DURATION_MS = 10_000;
 
 async function createOutfitVideo(
   originalImage: string,
@@ -695,92 +830,57 @@ function drawOutfitVideoFrame(
   context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
   drawImageCoverWithZoom(context, photo, VIDEO_WIDTH, VIDEO_HEIGHT, zoom);
 
-  const fullShade = context.createLinearGradient(0, 0, 0, VIDEO_HEIGHT);
-  fullShade.addColorStop(0, "rgba(0,0,0,0.48)");
-  fullShade.addColorStop(0.45, "rgba(0,0,0,0.10)");
-  fullShade.addColorStop(1, "rgba(0,0,0,0.78)");
-  context.fillStyle = fullShade;
-  context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+  if (elapsedSeconds < 2) {
+    return;
+  }
 
-  context.fillStyle = "#ffffff";
-  context.font = "900 38px Arial, sans-serif";
-  context.fillText("Outfit", 72, 154);
-  context.fillStyle = "#ff6a00";
-  context.fillText("Roaster", 188, 154);
-
-  context.textAlign = "right";
-  context.fillStyle = "rgba(255,255,255,0.82)";
-  context.font = "900 20px Arial, sans-serif";
-  context.fillText("OUTFITROASTER.COM", 1008, 150);
-  context.textAlign = "left";
-
-  if (elapsedSeconds >= 1.5 && elapsedSeconds < 3) {
-    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 1.5, 3));
-    drawCenteredVideoText(
-      context,
-      "OutfitRoaster checkt…",
-      960,
-      78,
-      870,
-      1,
-      "#ffffff",
-    );
-  } else if (elapsedSeconds >= 3 && elapsedSeconds < 5) {
-    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 3, 5));
+  if (elapsedSeconds >= 2 && elapsedSeconds < 4) {
+    drawVideoShade(context, 0.74);
     context.textAlign = "center";
     context.fillStyle = "#ff6a00";
-    context.font = "900 190px Arial, sans-serif";
+    context.font = "900 220px Arial, sans-serif";
     context.fillText(`${score}/10`, VIDEO_WIDTH / 2, 1000);
     context.fillStyle = "#ffffff";
     context.font = "900 30px Arial, sans-serif";
     context.fillText("JOUW OUTFIT VERDICT", VIDEO_WIDTH / 2, 1070);
     context.textAlign = "left";
-  } else if (elapsedSeconds >= 5 && elapsedSeconds < 8.5) {
-    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 5, 8.5));
-    drawCenteredVideoText(context, `“${quote}”`, 870, 70, 860, 5, "#ffffff");
+    return;
+  }
+
+  if (elapsedSeconds >= 4 && elapsedSeconds < 7) {
+    drawVideoShade(context, 0.7);
+    drawCenteredVideoText(context, `“${quote}”`, 940, 76, 880, 5, "#ffffff");
     context.textAlign = "center";
     context.fillStyle = "#ff9a4f";
     context.font = "900 27px Arial, sans-serif";
-    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1260);
+    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1238);
     context.textAlign = "left";
-  } else if (elapsedSeconds >= 8.5) {
-    context.fillStyle = `rgba(5,5,5,${0.82 * phaseOpacity(elapsedSeconds, 8.5, 9.5)})`;
-    context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-    context.textAlign = "center";
-    context.fillStyle = "#ff6a00";
-    context.font = "900 34px Arial, sans-serif";
-    context.fillText("OUTFIT ROASTER", VIDEO_WIDTH / 2, 790);
-    drawCenteredVideoText(
-      context,
-      "Roast jouw outfit op OutfitRoaster.com",
-      900,
-      68,
-      870,
-      3,
-      "#ffffff",
-    );
-    context.textAlign = "left";
+    return;
   }
 
+  const bottomShade = context.createLinearGradient(0, 1360, 0, VIDEO_HEIGHT);
+  bottomShade.addColorStop(0, "rgba(0,0,0,0)");
+  bottomShade.addColorStop(1, "rgba(0,0,0,0.78)");
+  context.fillStyle = bottomShade;
+  context.fillRect(0, 1360, VIDEO_WIDTH, 560);
+
   context.fillStyle = "rgba(0,0,0,0.58)";
-  roundRect(context, 60, 1720, 960, 104, 28);
+  roundRect(context, 60, 1712, 960, 112, 32);
   context.fill();
+  context.textAlign = "center";
   context.fillStyle = "#ffffff";
-  context.font = "900 26px Arial, sans-serif";
-  context.fillText("OutfitRoaster.com", 98, 1785);
-  context.textAlign = "right";
-  context.fillStyle = "#ff9a4f";
-  context.fillText("#outfitroaster", 982, 1785);
+  context.font = "900 34px Arial, sans-serif";
+  context.fillText("🔥 OutfitRoaster.com", VIDEO_WIDTH / 2, 1782);
   context.textAlign = "left";
 }
 
-function drawVideoPanel(context: CanvasRenderingContext2D, opacity: number) {
-  context.fillStyle = `rgba(5,5,5,${0.72 * opacity})`;
-  roundRect(context, 55, 650, 970, 650, 48);
-  context.fill();
-  context.strokeStyle = `rgba(255,255,255,${0.18 * opacity})`;
-  context.lineWidth = 2;
-  context.stroke();
+function drawVideoShade(context: CanvasRenderingContext2D, opacity: number) {
+  const fullShade = context.createLinearGradient(0, 0, 0, VIDEO_HEIGHT);
+  fullShade.addColorStop(0, `rgba(0,0,0,${0.35 * opacity})`);
+  fullShade.addColorStop(0.45, `rgba(0,0,0,${0.62 * opacity})`);
+  fullShade.addColorStop(1, `rgba(0,0,0,${0.84 * opacity})`);
+  context.fillStyle = fullShade;
+  context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 }
 
 function drawCenteredVideoText(
@@ -838,17 +938,6 @@ function drawImageCoverWithZoom(
     drawWidth,
     drawHeight,
   );
-}
-
-function phaseOpacity(current: number, start: number, end: number) {
-  const fadeDuration = Math.min(0.35, (end - start) / 3);
-  if (current < start + fadeDuration) {
-    return Math.max(0, (current - start) / fadeDuration);
-  }
-  if (current > end - fadeDuration) {
-    return Math.max(0, (end - current) / fadeDuration);
-  }
-  return 1;
 }
 
 function loadShareImage(source: string) {
@@ -943,12 +1032,12 @@ function downloadBlob(blob: Blob, fileName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
-function downloadVideoBlob(blob: Blob) {
+function downloadVideoBlob(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = `outfitroaster-${Date.now()}.mp4`;
+  link.download = fileName;
   link.rel = "noopener";
   link.style.display = "none";
 
@@ -957,6 +1046,58 @@ function downloadVideoBlob(blob: Blob) {
   link.remove();
 
   window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}
+
+function getBrowserDownloadInfo() {
+  const userAgent = navigator.userAgent;
+  const isIos =
+    /iPad|iPhone|iPod/.test(userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isSafari =
+    /Safari/i.test(userAgent) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome|Chromium|Android/i.test(userAgent);
+  const isIosSafari = isIos && isSafari;
+
+  let browserType = "Unknown browser";
+  if (isIosSafari) {
+    browserType = "iOS Safari";
+  } else if (/CriOS/i.test(userAgent)) {
+    browserType = "Chrome iOS";
+  } else if (/FxiOS/i.test(userAgent)) {
+    browserType = "Firefox iOS";
+  } else if (/EdgiOS/i.test(userAgent)) {
+    browserType = "Edge iOS";
+  } else if (/Chrome|Chromium/i.test(userAgent)) {
+    browserType = "Chrome desktop";
+  } else if (isSafari) {
+    browserType = "Safari Mac";
+  } else if (/Firefox/i.test(userAgent)) {
+    browserType = "Firefox desktop";
+  } else if (/Edg/i.test(userAgent)) {
+    browserType = "Edge desktop";
+  }
+
+  return {
+    browserType,
+    isIos,
+    isIosSafari,
+  };
+}
+
+function logVideoDownload({
+  browserType,
+  isIos,
+  downloadStarted,
+}: {
+  browserType: string;
+  isIos: boolean;
+  downloadStarted: boolean;
+}) {
+  console.info("[OutfitRoaster video export]", {
+    browserType,
+    isIos,
+    downloadStarted,
+  });
 }
 
 function formatShareCaption(selectedQuote: string, appUrl: string) {
