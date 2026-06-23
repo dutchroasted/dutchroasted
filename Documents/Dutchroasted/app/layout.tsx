@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { MicrosoftClarity } from "@/components/analytics/MicrosoftClarity";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { StructuredData } from "@/components/StructuredData";
 import "./globals.css";
@@ -81,6 +82,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const clarityProjectId =
+    process.env.NODE_ENV === "production" ? "xbixjso8vk" : null;
   const structuredData = [
     {
       "@context": "https://schema.org",
@@ -129,6 +132,7 @@ export default function RootLayout({
         <ServiceWorkerRegister />
         {children}
         {measurementId ? <GoogleAnalytics measurementId={measurementId} /> : null}
+        {clarityProjectId ? <MicrosoftClarity projectId={clarityProjectId} /> : null}
       </body>
     </html>
   );
