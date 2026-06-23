@@ -46,7 +46,7 @@ export function FreeLimitNotice({
           ) : null}
           {isLimitReached ? (
             <p className="mt-3 font-bold leading-7 text-orange-200">
-              Je gratis roasts voor vandaag zijn op. Met actief Premium krijg je Pro Analyse.
+              Je gratis roasts voor vandaag zijn op. Premium Verdict Beta blijft gratis te testen.
             </p>
           ) : null}
         </div>
@@ -56,7 +56,7 @@ export function FreeLimitNotice({
             href="/pricing"
             className="shrink-0 rounded-md bg-orange-500 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-orange-400"
           >
-            Bekijk Premium
+            Test Premium Verdict Beta
           </a>
         ) : null}
       </div>

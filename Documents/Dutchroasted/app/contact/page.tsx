@@ -2,7 +2,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 
 export const metadata = {
-  title: "Contact | Outfit Roaster",
+  title: "Contact",
   description: "Neem contact op met Outfit Roaster.",
 };
 

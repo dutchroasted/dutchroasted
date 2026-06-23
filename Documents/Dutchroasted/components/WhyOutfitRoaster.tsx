@@ -1,8 +1,8 @@
 const reasons = [
-  "Niet alleen grappig, maar ook stijlvol nuttig",
+  "Niet alleen grappig, maar ook echt bruikbaar",
   "Je krijgt concrete stylingtips",
   "Je ziet wat werkt aan kleur, pasvorm en accessoires",
-  "Je krijgt algemene shop suggesties zonder affiliate gedoe",
+  "Je krijgt concrete shoprichtingen zonder verkooppraat",
 ];
 
 export function WhyOutfitRoaster() {

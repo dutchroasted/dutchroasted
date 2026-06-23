@@ -3,7 +3,6 @@ const categories = [
   ["Werk", "Professioneel zonder dat je eruitziet alsof je in een spreadsheet woont."],
   ["School", "Comfortabel, zelfverzekerd en zonder overdreven je best te doen."],
   ["Gym", "Van trainingsset naar een sportlook met een duidelijk plan."],
-  ["Party", "Klaar voor verjaardagen, bars, diners en een sterke entree."],
   ["Festival", "Praktisch, uitgesproken en niet alsof je verdwaald bent bij de glitterkraam."],
 ];
 

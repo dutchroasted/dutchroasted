@@ -1,7 +1,7 @@
 import { LegalPage } from "@/components/LegalPage";
 
 export const metadata = {
-  title: "Privacyverklaring Outfit Roaster",
+  title: "Privacyverklaring",
   description: "Privacyverklaring van Outfit Roaster.",
 };
 
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         {
           title: "Wie zijn wij?",
           body: [
-            "Outfit Roaster is een Nederlandse AI outfit checker. Je uploadt een outfitfoto en krijgt stylingfeedback met humor, score en verbeterpunten.",
+            "Outfit Roaster is een Nederlandse AI-outfitchecker. Je uploadt een outfitfoto en krijgt stylingfeedback met humor, een score en verbeterpunten.",
             "Voor privacyvragen of verwijderverzoeken kun je mailen naar info@outfitroaster.nl.",
           ],
         },
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           title: "Waarvoor gebruiken we je gegevens?",
           body: [
             "Je outfitfoto en instellingen gebruiken we alleen om de outfitcheck uit te voeren en het resultaat aan jou te tonen.",
-            "Je e-mailadres gebruiken we alleen voor updates van Outfit Roaster, early access tot Premium en relevante productinformatie.",
+            "Je e-mailadres gebruiken we alleen voor gevraagde updates over Outfit Roaster en Premium Verdict.",
           ],
         },
         {

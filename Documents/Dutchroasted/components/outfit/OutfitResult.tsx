@@ -142,7 +142,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
             disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
             className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm sm:w-auto"
           >
-            {isSharing ? "Story maken..." : "Deel deze roast"}
+            {isSharing ? "Deelkaart maken..." : "Deel deze roast"}
           </button>
         </div>
       </div>
@@ -260,7 +260,7 @@ function SharePreviewCard({
               Outfit <span className="text-orange-500">Roaster</span>
             </p>
             <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-200">
-              roast my outfit
+              jouw outfit verdict
             </p>
           </div>
         </div>
@@ -650,7 +650,7 @@ function formatAdvice(result: OutfitResultData) {
     "✨ Stylingtips",
     ...result.stylingTips.map((item) => `- ${item}`),
     "",
-    "🛍️ Shop suggesties",
+    "🛍️ Shopsuggesties",
     ...result.shoppingSuggestions.map((item) => `- ${item.title}: ${item.reason}`),
     "",
     "Gemaakt met OutfitRoaster.nl",
@@ -718,7 +718,7 @@ function downloadResultPdf(result: OutfitResultData) {
   addSection("Wat werkt goed", result.worksWell);
   addSection("Wat kan beter", result.canImprove);
   addSection(
-    "Shop suggesties",
+    "Shopsuggesties",
     result.shoppingSuggestions.map((item) => `${item.title}: ${item.reason}`),
   );
 

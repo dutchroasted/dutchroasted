@@ -1,7 +1,7 @@
 import { LegalPage } from "@/components/LegalPage";
 
 export const metadata = {
-  title: "Voorwaarden Outfit Roaster",
+  title: "Voorwaarden",
   description: "Voorwaarden van Outfit Roaster.",
 };
 
@@ -57,8 +57,8 @@ export default function TermsPage() {
         {
           title: "Beschikbaarheid",
           body: [
-            "Outfit Roaster is een MVP. De app kan tijdelijk niet beschikbaar zijn, fouten bevatten of veranderen zonder voorafgaande aankondiging.",
-            "Premium, betaling en accounts zijn nog niet actief, tenzij later anders wordt aangekondigd.",
+            "Outfit Roaster is in ontwikkeling. De app kan tijdelijk niet beschikbaar zijn, fouten bevatten of veranderen zonder voorafgaande aankondiging.",
+            "Premium Verdict Beta is tijdelijk gratis te testen. Functies en beschikbaarheid kunnen tijdens de beta veranderen.",
           ],
         },
         {

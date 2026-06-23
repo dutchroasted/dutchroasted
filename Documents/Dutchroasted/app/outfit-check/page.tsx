@@ -2,8 +2,11 @@ import { OutfitCheckForm } from "@/components/outfit/OutfitCheckForm";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
-  title: "Outfit Checker | Outfit Roaster",
+  title: "Outfit check",
   description: "Upload je outfitfoto en krijg eerlijke Nederlandse AI-stylingfeedback.",
+  alternates: {
+    canonical: "/outfit-check",
+  },
 };
 
 export default function OutfitCheckPage() {
@@ -25,7 +28,7 @@ export default function OutfitCheckPage() {
               Outfit Check
             </a>
             <a href="/pricing" className="rounded-md px-4 py-2 transition hover:bg-white/10 hover:text-white">
-              Pricing
+              Premium Beta
             </a>
           </nav>
 
@@ -33,21 +36,21 @@ export default function OutfitCheckPage() {
             href="/pricing"
             className="dr-secondary-button min-h-11 px-4 py-3 text-center text-xs sm:text-sm"
           >
-            Premium
+            Premium Beta
           </a>
         </header>
 
         <section className="grid gap-8 py-4 sm:py-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-end">
           <div className="max-w-5xl">
             <p className="dr-kicker inline-flex rounded-full border border-orange-400/30 bg-orange-400/10 px-4 py-2">
-              AI fashion roast · 2026 edition
+              Nederlandse AI-outfitcheck
             </p>
             <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.88] tracking-[-0.065em] text-white sm:text-7xl lg:text-[6.5rem]">
               Je spiegel liegt. <span className="dr-gradient-text">Wij niet.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-zinc-400 sm:text-xl">
-              Upload je fit voor een scherpe Nederlandse roast, bruikbare styling-upgrades en
-              een Story die klaar is voor je groepsapp.
+              Kies voor een snelle roast of een uitgebreid Premium Verdict over stijl, pasvorm,
+              kleur, context en trends.
             </p>
           </div>
           <div className="dr-glass-card rounded-[2rem] p-5 sm:p-6">
@@ -59,9 +62,9 @@ export default function OutfitCheckPage() {
               Geen brave AI-pap. Wel drie punchlines, een score en concrete fixes.
             </p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300">
-              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">3 roasts</span>
-              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">Fit score</span>
-              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">9:16 Story</span>
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">3 regels</span>
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">Outfitscore</span>
+              <span className="rounded-xl border border-white/10 bg-black/30 px-2 py-3">Deelkaart</span>
             </div>
           </div>
         </section>

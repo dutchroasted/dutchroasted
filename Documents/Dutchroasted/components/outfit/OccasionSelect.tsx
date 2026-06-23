@@ -10,7 +10,6 @@ const occasionLabels: Record<OutfitOccasion, string> = {
   Werk: "💼 Werk",
   School: "🎓 School",
   Gym: "🏋️ Gym",
-  Party: "🎉 Party",
   Festival: "🎪 Festival",
 };
 

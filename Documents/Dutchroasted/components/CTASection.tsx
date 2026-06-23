@@ -17,10 +17,10 @@ export function CTASection() {
               Check mijn outfit
             </a>
             <a
-              href="/pricing"
+              href="mailto:info@outfitroaster.nl?subject=Premium%20update%20OutfitRoaster"
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-6 py-4 text-center text-base font-black text-white transition hover:border-white/30 hover:bg-white/10"
             >
-              Bekijk pricing
+              Ontvang premium update
             </a>
           </div>
         </div>

@@ -95,7 +95,7 @@ export function OutfitCheckForm() {
     setError("");
     analytics.outfitCheckStarted(
       occasion,
-      mode === "pro-analysis" ? "Premium Pro Analyse" : roastLevel,
+      mode === "pro-analysis" ? "Premium Verdict Beta" : roastLevel,
       profile,
     );
 
@@ -118,13 +118,13 @@ export function OutfitCheckForm() {
 
       if (mode === "pro-analysis") {
         if (!("proAnalysis" in data)) {
-          throw new Error("De Pro Analyse gaf geen geldig resultaat terug.");
+          throw new Error("Premium Verdict gaf geen geldig resultaat terug.");
         }
         setProAnalysis(data.proAnalysis);
         setResult(null);
         analytics.outfitCheckCompleted(
           occasion,
-          "Premium Pro Analyse",
+          "Premium Verdict Beta",
           data.proAnalysis.overallScore,
         );
       } else {
@@ -222,7 +222,7 @@ export function OutfitCheckForm() {
           <div className="mb-5 rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm font-bold text-violet-100">
             {PREMIUM_BETA_ENABLED
               ? "Beta: tijdelijk gratis te testen. Later onderdeel van Premium."
-              : "Premium actief · Pro Analyse is alleen beschikbaar met een actief abonnement."}
+              : "Premium Verdict is alleen beschikbaar met een actief abonnement."}
           </div>
         )}
 
@@ -273,7 +273,7 @@ export function OutfitCheckForm() {
             : mode === "pro-analysis"
               ? PREMIUM_BETA_ENABLED
                 ? "Start Premium Verdict Beta"
-                : "Start Pro Analyse"
+                : "Start Premium Verdict"
               : isLimitReached
                 ? "5 gratis roasts gebruikt"
                 : "Roast mijn outfit"}
@@ -299,7 +299,7 @@ export function OutfitCheckForm() {
       </form>
 
       <div className="dr-glass-card min-h-[32rem] rounded-[2rem] p-4 sm:p-6">
-        {isLoading ? <LoadingState message={loadingMessage} /> : null}
+        {isLoading ? <LoadingState message={loadingMessage} mode={mode} /> : null}
         {!isLoading && result ? (
           <div className="space-y-5">
             <OutfitResult
@@ -332,12 +332,12 @@ export function OutfitCheckForm() {
               <p className="mt-4 max-w-md leading-7 text-zinc-500">
                 {mode === "pro-analysis"
                   ? "Je krijgt een diepe analyse van kleur, pasvorm, samenhang, gelegenheid en trends."
-                  : "AI kijkt naar kleding, kleur, pasvorm en vibe. Jij krijgt drie scherpe punchlines, concrete upgrades en een deelkaart voor je Story."}
+                  : "AI kijkt naar kleding, kleur, pasvorm en vibe. Jij krijgt drie scherpe punchlines, concrete verbeteringen en een deelkaart."}
               </p>
               <div className="mt-7 flex flex-wrap justify-center gap-2 text-[10px] font-black uppercase tracking-[0.13em] text-zinc-400">
                 <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Roast</span>
                 <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Score</span>
-                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Story card</span>
+                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-2">Deelkaart</span>
               </div>
             </div>
           </div>
@@ -446,10 +446,10 @@ async function requestOutfitCheck(
 
 function getApiErrorMessage(status: number) {
   if (status === 401) {
-    return "Log eerst in om Pro Analyse te gebruiken.";
+    return "Log eerst in om Premium Verdict te gebruiken.";
   }
   if (status === 403) {
-    return "Je hebt een actief Premium-abonnement nodig voor Pro Analyse.";
+    return "Je hebt een actief Premium-abonnement nodig voor Premium Verdict.";
   }
   if (status === 413) {
     return "De foto is nog steeds te groot voor de outfitcheck. Kies een kleinere foto.";

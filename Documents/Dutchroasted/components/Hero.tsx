@@ -13,11 +13,11 @@ export function Hero() {
           <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-normal text-white sm:text-7xl lg:text-8xl">
             Upload je outfit.
             <br />
-            Krijg de waarheid.
+            Krijg je verdict.
           </h1>
           <p className="mt-7 max-w-2xl text-lg font-semibold leading-8 text-zinc-300 sm:text-xl">
-            Een AI-stylist met humor checkt je outfit op stijl, pasvorm, kleur en vibe.
-            Eerlijk advies. Geen bodyshaming.
+            Een Nederlandse AI-stylist met humor checkt je outfit op stijl, pasvorm, kleur en
+            vibe. Eerlijk, scherp en zonder bodyshaming.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -31,7 +31,7 @@ export function Hero() {
               href="#voorbeelden"
               className="min-h-14 rounded-2xl border border-white/15 bg-white/5 px-6 py-4 text-center text-base font-black text-white transition hover:border-white/30 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-black"
             >
-              Bekijk voorbeeld
+              Bekijk een roast
             </a>
           </div>
 
@@ -40,7 +40,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative lg:-translate-y-6">
           <div className="dr-card-hover rotate-0 rounded-3xl border border-white/12 bg-zinc-950/80 p-4 shadow-2xl shadow-black/60 lg:rotate-1">
             <div className="mb-4 flex items-center gap-2 border-b border-white/10 pb-4">
               <span className="size-3 rounded-full bg-orange-500" />

@@ -1,8 +1,9 @@
 type LoadingStateProps = {
   message: string;
+  mode?: "roast" | "pro-analysis";
 };
 
-export function LoadingState({ message }: LoadingStateProps) {
+export function LoadingState({ message, mode = "roast" }: LoadingStateProps) {
   return (
     <div className="dr-fade-in rounded-2xl border border-orange-500/30 bg-[linear-gradient(135deg,rgba(255,106,0,0.16),rgba(255,255,255,0.035))] p-6 shadow-[0_22px_80px_rgba(255,106,0,0.12)]">
       <div className="flex items-start gap-4">
@@ -10,7 +11,9 @@ export function LoadingState({ message }: LoadingStateProps) {
         <div>
           <p className="text-xl font-black text-white">{message}</p>
           <p className="mt-2 leading-7 text-zinc-400">
-            De stylist warmt op, de roast wordt gestoomd.
+            {mode === "pro-analysis"
+              ? "Kleur, pasvorm, stijl, context en trends worden zorgvuldig bekeken."
+              : "De outfit wordt bekeken. De punchlines staan al warm."}
           </p>
         </div>
       </div>

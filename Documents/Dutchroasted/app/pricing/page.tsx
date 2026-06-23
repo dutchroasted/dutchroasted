@@ -3,8 +3,12 @@ import { EarlyAccessForm } from "@/components/outfit/EarlyAccessForm";
 import { Logo } from "@/components/Logo";
 
 export const metadata = {
-  title: "Prijzen | Outfit Roaster",
-  description: "Start gratis of activeer Outfit Roaster Premium.",
+  title: "Premium Verdict Beta",
+  description:
+    "Vergelijk de gratis Outfit Roast met Premium Verdict Beta, tijdelijk gratis te testen.",
+  alternates: {
+    canonical: "/pricing",
+  },
 };
 
 export default function PricingPage() {
@@ -38,14 +42,14 @@ export default function PricingPage() {
 
         <section className="max-w-4xl pt-8 sm:pt-14">
           <p className="inline-flex rounded-md border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-sm font-bold text-orange-300">
-            Premium
+            Premium Verdict Beta
           </p>
           <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
-            Kies hoe uitgebreid je stylingrapport wordt.
+            Kies hoeveel waarheid je outfit aankan.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-            Premium Verdict is tijdelijk gratis te testen in beta. Wil je een seintje wanneer de
-            volledige premium versie live gaat?
+            Start met 5 gratis Outfit Roasts per dag. Premium Verdict Beta is tijdelijk gratis te
+            testen en geeft je een veel uitgebreidere stijlanalyse.
           </p>
         </section>
 
@@ -59,21 +63,21 @@ export default function PricingPage() {
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-300">
-                Premium wachtlijst
+                Premium Verdict Beta
               </p>
               <h2
                 id="premium-wachtlijst-titel"
                 className="mt-3 text-3xl font-black text-white sm:text-4xl"
               >
-                Nog niet klaar om te betalen?
+                Wil je weten wanneer de volledige versie live gaat?
               </h2>
               <p className="mt-4 max-w-xl leading-7 text-zinc-300">
-                Zet je op de wachtlijst en ontvang updates over Premium.
+                Laat je e-mailadres achter en ontvang alleen belangrijke premium-updates.
               </p>
               <ul className="mt-6 space-y-3 text-sm font-bold text-zinc-200">
-                <li>✦ 1 maand gratis Premium bij lancering</li>
-                <li>✦ Als eerste toegang tot Pro Analyse</li>
-                <li>✦ Kans op lifetime korting voor vroege testers</li>
+                <li>✦ Als eerste horen wanneer Premium live gaat</li>
+                <li>✦ Updates over nieuwe Verdict-functies</li>
+                <li>✦ Geen spam, altijd eenvoudig afmelden</li>
               </ul>
             </div>
             <EarlyAccessForm variant="pricing" />

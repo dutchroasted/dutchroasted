@@ -21,7 +21,6 @@ const MODEL = "gpt-4o-mini";
 const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Casual: "School",
-  Feest: "Party",
   Bruiloft: "Date",
   Sollicitatie: "Werk",
   Anders: "School",
@@ -1078,7 +1077,7 @@ export async function POST(request: Request) {
       const user = await getCurrentUser(request);
       if (!user) {
         return Response.json(
-          { error: "Log eerst in om Pro Analyse te gebruiken." },
+          { error: "Log eerst in om Premium Verdict te gebruiken." },
           { status: 401 },
         );
       }
@@ -1086,7 +1085,7 @@ export async function POST(request: Request) {
       const userProfile = await getUserProfile(user);
       if (!hasActivePremium(userProfile)) {
         return Response.json(
-          { error: "Een actief Premium-abonnement is vereist." },
+          { error: "Een actief Premium-abonnement is vereist voor Premium Verdict." },
           { status: 403 },
         );
       }
@@ -1163,7 +1162,7 @@ Regels:
 - Noem nooit een kledingstuk dat niet in de inventaris staat.
 - Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm bovenlaag, schoenen, broek of accessoire.
 - Herclassificeer de kleding niet opnieuw tijdens het schrijven.
-- De gelegenheid bepaalt de context: Date, Werk, School, Gym, Party of Festival.
+- De gelegenheid bepaalt de context: Date, Werk, School, Gym of Festival.
 - Het roastniveau bepaalt de toon: Stijlcoach, Pittig of Genadeloos.
 - Houd gelegenheid en roastniveau strikt gescheiden; verzin geen extra rol of persona.
 - Leid gender nooit af uit de foto. De keuze bij "Voor wie" hierboven is de enige toegestane bron.
@@ -1176,7 +1175,6 @@ Regels:
 - Bij Werk: beoordeel professionaliteit, geloofwaardigheid en netheid.
 - Bij School: beoordeel comfort, zelfvertrouwen en een casual passende uitstraling.
 - Bij Gym: beoordeel sportieve pasvorm, praktisch gebruik en gym-vibe.
-- Bij Party: beoordeel de outfit voor verjaardagen, uitgaan, bars, borrels, diners en sociale evenementen. Focus op uitstraling, comfort, sociale vibe en een sterke entree.
 - Bij Festival: beoordeel vibe, expressie, comfort en opvallende kledingdetails.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
@@ -1228,7 +1226,6 @@ Regels:
 - Gebruik voor category uitsluitend: schoenen, broeken, tops, jassen, accessoires of sportkleding.
 - Genereer geen productUrl, affiliateUrl, imageUrl, domeinnaam of willekeurige Zalando-link; de server vult gecontroleerde Zalando-links in.
 - Laat de reden voor iedere shopsuggestie expliciet aansluiten op een item uit de inventaris, zonder een bestaand kledingstuk opnieuw te benoemen als een ander type.
-- Bij Party: geef shopsuggesties die passen bij verjaardagen, nightlife, bars, borrels, diners en sociale evenementen. Kies feestelijke maar draagbare upgrades en laat searchQuery de partycontext concreet weerspiegelen.
 - Bij Stijlcoach zijn shopsuggesties optionele aanvullingen op een sterke look, nooit correcties op fouten.
 - Geef 3 tot 5 shopping suggestions die passen bij de outfit, gelegenheid en actuele modecontext
 - Voorbeeld searchQuery: "minimalistische witte sneakers heren", "donkere rechte jeans", "overshirt in crème"

@@ -30,7 +30,7 @@ export function AuthHeaderActions() {
           onClick={() => void auth.signOut()}
           className="rounded-md bg-white px-4 py-2 text-sm font-black text-black transition hover:bg-orange-500"
         >
-          Logout
+          Uitloggen
         </button>
       </div>
     );
@@ -42,7 +42,7 @@ export function AuthHeaderActions() {
         href="/login"
         className="hidden rounded-md border border-white/15 bg-white/5 px-4 py-2 text-sm font-black text-white transition hover:border-white/30 hover:bg-white/10 sm:inline-flex"
       >
-        Login
+        Inloggen
       </a>
       <a
         href="/login"

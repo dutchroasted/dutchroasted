@@ -5,7 +5,6 @@ export const OUTFIT_OCCASIONS = [
   "Werk",
   "School",
   "Gym",
-  "Party",
   "Festival",
 ] as const;
 

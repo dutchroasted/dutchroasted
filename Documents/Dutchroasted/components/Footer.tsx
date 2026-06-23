@@ -12,7 +12,9 @@ export function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Logo />
-          <p className="mt-2 text-sm text-zinc-500">Eerlijke AI-outfitfeedback met een scherpe rand.</p>
+          <p className="mt-2 text-sm text-zinc-500">
+            Nederlandse outfitfeedback met humor, zonder bodyshaming.
+          </p>
         </div>
 
         <nav className="flex flex-wrap gap-5 text-sm font-semibold text-zinc-400">
