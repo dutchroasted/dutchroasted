@@ -593,31 +593,53 @@ function normalizeProAnalysis(
       summary: toNonEmptyString(section.summary) ?? fallbackSummary,
     };
   };
+  const colorAnalysis = normalizeAnalysisSection(
+    source.colorAnalysis,
+    "De kleurwerking kon slechts beperkt worden beoordeeld.",
+  );
+  const fitAnalysis = normalizeAnalysisSection(
+    source.fitAnalysis,
+    "De pasvorm en het silhouet konden slechts beperkt worden beoordeeld.",
+  );
+  const cohesionAnalysis = normalizeAnalysisSection(
+    source.cohesionAnalysis,
+    "De samenhang tussen de zichtbare kledingstukken is neutraal.",
+  );
+  const occasionFit = normalizeScoreSummary(
+    source.occasionFit,
+    "De outfit is redelijk bruikbaar voor de gekozen gelegenheid.",
+  );
+  const trendScore = normalizeScoreSummary(
+    source.trendScore,
+    "De outfit gebruikt een tijdloze basis met beperkte trendinformatie.",
+  );
+  const scoreBreakdownSource = getResultObject(source.scoreBreakdown) ?? {};
 
   return {
     overallScore: normalizeScore(source.overallScore),
     styleIdentity:
       toNonEmptyString(source.styleIdentity) ?? "Verzorgde, eigentijdse basisstijl",
-    colorAnalysis: normalizeAnalysisSection(
-      source.colorAnalysis,
-      "De kleurwerking kon slechts beperkt worden beoordeeld.",
+    styleCategories: withFallback(
+      toStringArray(source.styleCategories).slice(0, 4),
+      "Eigentijdse basisstijl",
     ),
-    fitAnalysis: normalizeAnalysisSection(
-      source.fitAnalysis,
-      "De pasvorm en het silhouet konden slechts beperkt worden beoordeeld.",
+    wornColors: withFallback(
+      toStringArray(source.wornColors).slice(0, 8),
+      "Kleuren beperkt zichtbaar",
     ),
-    cohesionAnalysis: normalizeAnalysisSection(
-      source.cohesionAnalysis,
-      "De samenhang tussen de zichtbare kledingstukken is neutraal.",
-    ),
-    occasionFit: normalizeScoreSummary(
-      source.occasionFit,
-      "De outfit is redelijk bruikbaar voor de gekozen gelegenheid.",
-    ),
-    trendScore: normalizeScoreSummary(
-      source.trendScore,
-      "De outfit gebruikt een tijdloze basis met beperkte trendinformatie.",
-    ),
+    colorAnalysis,
+    fitAnalysis,
+    cohesionAnalysis,
+    occasionFit,
+    trendScore,
+    contextAnalysis: normalizeContextAnalysis(source.contextAnalysis, occasionFit),
+    scoreBreakdown: {
+      style: normalizeScore(scoreBreakdownSource.style ?? cohesionAnalysis.score),
+      colors: normalizeScore(scoreBreakdownSource.colors ?? colorAnalysis.score),
+      fit: normalizeScore(scoreBreakdownSource.fit ?? fitAnalysis.score),
+      trends: normalizeScore(scoreBreakdownSource.trends ?? trendScore.score),
+      context: normalizeScore(scoreBreakdownSource.context ?? occasionFit.score),
+    },
     strengths: withFallback(
       filterInventoryConsistentText(toStringArray(source.strengths), inventory),
       "De outfit heeft een herkenbare en bruikbare basis.",
@@ -638,8 +660,55 @@ function normalizeProAnalysis(
       toStringArray(source.suggestedUpgrades),
       inventory,
     ),
-    shopSuggestions: normalizeShoppingSuggestions(source.shopSuggestions, inventory),
+    shopSuggestions: normalizeProShopSuggestions(source.shopSuggestions, inventory),
   };
+}
+
+function normalizeContextAnalysis(
+  value: unknown,
+  fallback: { score: number; summary: string },
+): ProAnalysisResult["contextAnalysis"] {
+  const contexts = new Map<string, { score: number; summary: string }>();
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => {
+      const source = getResultObject(item);
+      const occasion = toNonEmptyString(source?.occasion);
+      if (!source || !occasion || !OUTFIT_OCCASIONS.includes(occasion as OutfitOccasion)) {
+        return;
+      }
+      contexts.set(occasion, {
+        score: normalizeScore(source.score),
+        summary:
+          toNonEmptyString(source.summary) ??
+          "De geschiktheid voor deze context kon beperkt worden beoordeeld.",
+      });
+    });
+  }
+
+  return (["Date", "Werk", "School", "Gym", "Festival"] as const).map((occasion) => ({
+    occasion,
+    ...(contexts.get(occasion) ?? fallback),
+  }));
+}
+
+function normalizeProShopSuggestions(
+  value: unknown,
+  inventory: ClothingInventoryItem[],
+): ProAnalysisResult["shopSuggestions"] {
+  const normalized = normalizeShoppingSuggestions(value, inventory);
+  const sourceItems = Array.isArray(value) ? value : [];
+
+  return normalized.map((suggestion, index) => {
+    const source = getResultObject(sourceItems[index]) ?? {};
+    return {
+      ...suggestion,
+      brand: toNonEmptyString(source.brand) ?? "Merk naar keuze",
+      improvementPoint:
+        toNonEmptyString(source.improvementPoint) ??
+        "Versterkt de samenhang en stijlrichting van de outfit.",
+    };
+  });
 }
 
 function normalizeShopCategory(value: unknown): ShopCategory {

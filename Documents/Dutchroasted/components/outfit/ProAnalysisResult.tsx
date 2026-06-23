@@ -31,7 +31,29 @@ export function ProAnalysisResult({ result, onNewCheck }: ProAnalysisResultProps
             <p className="text-3xl font-black">{result.overallScore}/10</p>
           </div>
         </div>
+        <div className="mt-6 flex flex-wrap gap-2">
+          {result.styleCategories.map((category) => (
+            <span
+              key={category}
+              className="rounded-full border border-violet-300/20 bg-violet-400/10 px-3 py-2 text-xs font-black text-violet-100"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
       </div>
+
+      <article className="dr-glass-card rounded-3xl p-5 sm:p-6">
+        <h3 className="text-xl font-black text-white">Eindscore</h3>
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <ScoreTile label="Stijl" score={result.scoreBreakdown.style} />
+          <ScoreTile label="Kleuren" score={result.scoreBreakdown.colors} />
+          <ScoreTile label="Pasvorm" score={result.scoreBreakdown.fit} />
+          <ScoreTile label="Trends" score={result.scoreBreakdown.trends} />
+          <ScoreTile label="Context" score={result.scoreBreakdown.context} />
+          <ScoreTile label="Totaal" score={result.overallScore} featured />
+        </div>
+      </article>
 
       <div className="grid gap-4 md:grid-cols-3">
         {(Object.keys(analysisLabels) as Array<keyof typeof analysisLabels>).map((key) => {
@@ -52,10 +74,45 @@ export function ProAnalysisResult({ result, onNewCheck }: ProAnalysisResultProps
         })}
       </div>
 
+      <article className="dr-glass-card rounded-3xl p-5 sm:p-6">
+        <h3 className="text-xl font-black text-white">Gedragen kleuren</h3>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {result.wornColors.map((color) => (
+            <span
+              key={color}
+              className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-bold text-zinc-200"
+            >
+              {color}
+            </span>
+          ))}
+        </div>
+      </article>
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <ScoreSummary title="Gelegenheid" data={result.occasionFit} />
-        <ScoreSummary title="Trendrelevantie" data={result.trendScore} />
+        <ScoreSummary title="Gekozen context" data={result.occasionFit} />
+        <ScoreSummary title="Trendanalyse" data={result.trendScore} />
       </div>
+
+      <article className="dr-glass-card rounded-3xl p-5 sm:p-6">
+        <h3 className="text-xl font-black text-white">Contextanalyse</h3>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+          Zo sterk werkt deze outfit in verschillende situaties.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {result.contextAnalysis.map((context) => (
+            <div
+              key={context.occasion}
+              className="rounded-2xl border border-white/10 bg-black/25 p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h4 className="font-black text-white">{context.occasion}</h4>
+                <span className="font-black text-violet-300">{context.score}/10</span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">{context.summary}</p>
+            </div>
+          ))}
+        </div>
+      </article>
 
       <article className="dr-glass-card rounded-3xl p-5 sm:p-6">
         <h3 className="text-xl font-black text-white">Stylistadvies</h3>
@@ -81,7 +138,16 @@ export function ProAnalysisResult({ result, onNewCheck }: ProAnalysisResultProps
                 className="rounded-2xl border border-white/10 bg-black/25 p-4 transition hover:border-violet-300/40"
               >
                 <p className="font-black text-white">{item.title}</p>
+                <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-violet-300">
+                  {item.brand} · {item.category}
+                </p>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">{item.reason}</p>
+                <p className="mt-3 text-xs leading-5 text-zinc-500">
+                  Voor: {item.improvementPoint}
+                </p>
+                <p className="mt-2 text-xs font-bold text-zinc-400">
+                  Zoekterm: {item.searchQuery}
+                </p>
               </a>
             ))}
           </div>
@@ -92,6 +158,29 @@ export function ProAnalysisResult({ result, onNewCheck }: ProAnalysisResultProps
         Nieuwe analyse
       </button>
     </section>
+  );
+}
+
+function ScoreTile({
+  label,
+  score,
+  featured = false,
+}: {
+  label: string;
+  score: number;
+  featured?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-2xl border p-4 text-center ${
+        featured
+          ? "border-violet-300/40 bg-violet-400 text-black"
+          : "border-white/10 bg-black/25 text-white"
+      }`}
+    >
+      <p className="text-xs font-black uppercase tracking-[0.12em] opacity-70">{label}</p>
+      <p className="mt-2 text-3xl font-black">{score}/10</p>
+    </div>
   );
 }
 

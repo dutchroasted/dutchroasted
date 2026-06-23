@@ -45,9 +45,22 @@ export type ProAnalysisSection = {
   improvements: string[];
 };
 
+export type ProContextAnalysis = {
+  occasion: OutfitOccasion;
+  score: number;
+  summary: string;
+};
+
+export type ProShopSuggestion = ShoppingSuggestion & {
+  brand: string;
+  improvementPoint: string;
+};
+
 export type ProAnalysisResult = {
   overallScore: number;
   styleIdentity: string;
+  styleCategories: string[];
+  wornColors: string[];
   colorAnalysis: ProAnalysisSection;
   fitAnalysis: ProAnalysisSection;
   cohesionAnalysis: ProAnalysisSection;
@@ -59,9 +72,17 @@ export type ProAnalysisResult = {
     score: number;
     summary: string;
   };
+  contextAnalysis: ProContextAnalysis[];
+  scoreBreakdown: {
+    style: number;
+    colors: number;
+    fit: number;
+    trends: number;
+    context: number;
+  };
   strengths: string[];
   improvementPoints: string[];
   stylistAdvice: string;
   suggestedUpgrades: string[];
-  shopSuggestions: ShoppingSuggestion[];
+  shopSuggestions: ProShopSuggestion[];
 };
