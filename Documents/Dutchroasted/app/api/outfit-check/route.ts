@@ -699,7 +699,7 @@ function normalizeContextAnalysis(
     });
   }
 
-  return (["Date", "Werk", "School", "Gym", "Festival"] as const).map((occasion) => ({
+  return (["Date", "Werk", "School", "Gym", "Feest", "Festival"] as const).map((occasion) => ({
     occasion,
     ...(contexts.get(occasion) ?? fallback),
   }));
@@ -1162,7 +1162,7 @@ Regels:
 - Noem nooit een kledingstuk dat niet in de inventaris staat.
 - Als een specifiek type niet zeker is, gebruik uitsluitend de generieke inventaristerm bovenlaag, schoenen, broek of accessoire.
 - Herclassificeer de kleding niet opnieuw tijdens het schrijven.
-- De gelegenheid bepaalt de context: Date, Werk, School, Gym of Festival.
+- De gelegenheid bepaalt de context: Date, Werk, School, Gym, Feest of Festival.
 - Het roastniveau bepaalt de toon: Stijlcoach, Pittig of Genadeloos.
 - Houd gelegenheid en roastniveau strikt gescheiden; verzin geen extra rol of persona.
 - Leid gender nooit af uit de foto. De keuze bij "Voor wie" hierboven is de enige toegestane bron.
@@ -1175,6 +1175,7 @@ Regels:
 - Bij Werk: beoordeel professionaliteit, geloofwaardigheid en netheid.
 - Bij School: beoordeel comfort, zelfvertrouwen en een casual passende uitstraling.
 - Bij Gym: beoordeel sportieve pasvorm, praktisch gebruik en gym-vibe.
+- Bij Feest: beoordeel de outfit voor verjaardagen, borrels, uitgaan, diners en sociale evenementen. Focus op uitstraling, comfort en een sterke entree.
 - Bij Festival: beoordeel vibe, expressie, comfort en opvallende kledingdetails.
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.

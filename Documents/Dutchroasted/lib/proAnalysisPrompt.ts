@@ -24,7 +24,7 @@ Analyseer uitvoerig:
 1. Kleuren: benoem zichtbare kleuren, harmonieuze combinaties, contrast, balans en eventuele botsingen.
 2. Pasvorm: beschrijf per zichtbaar kledingstuk hoe het valt, wat ruim/strak/lang/kort oogt en welke snit beter zou werken.
 3. Stijl: benoem één primaire stijlidentiteit en relevante categorieën, bijvoorbeeld streetwear, smart casual, business casual, minimalistisch, sportief, klassiek of festival.
-4. Context: beoordeel de outfit afzonderlijk voor Date, Werk, School, Gym en Festival. Geef per context een score en concrete uitleg.
+4. Context: beoordeel de outfit afzonderlijk voor Date, Werk, School, Gym, Feest en Festival. Geef per context een score en concrete uitleg.
 5. Trends: leg uit hoe modern de outfit oogt, welke zichtbare onderdelen actueel zijn en welke gedateerd voelen.
 6. Verbeteringen: geef precies 3 concrete verbeterpunten en een uitvoerig stylistadvies.
 7. Shop: geef voor ieder verbeterpunt minimaal één concrete suggestie met kledingstuk, reden, passend merk, categorie en zoekterm.
@@ -78,6 +78,7 @@ Output uitsluitend als geldige JSON:
     { "occasion": "Werk", "score": 1, "summary": "string" },
     { "occasion": "School", "score": 1, "summary": "string" },
     { "occasion": "Gym", "score": 1, "summary": "string" },
+    { "occasion": "Feest", "score": 1, "summary": "string" },
     { "occasion": "Festival", "score": 1, "summary": "string" }
   ],
   "scoreBreakdown": {
