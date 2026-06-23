@@ -189,6 +189,14 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   }
 
   async function handleSaveIosVideo() {
+    await sharePendingIosVideo("save");
+  }
+
+  async function handleShareIosVideo() {
+    await sharePendingIosVideo("share");
+  }
+
+  async function sharePendingIosVideo(action: "save" | "share") {
     if (!pendingVideo) {
       showFeedback("Video maken lukt niet, probeer opnieuw.");
       return;
@@ -212,12 +220,20 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           isIos: browserInfo.isIos,
           downloadStarted: true,
         });
-        showFeedback("TikTok-video gedownload ✅");
+        showFeedback(
+          action === "share"
+            ? "Deelopties geopend ✅"
+            : "TikTok-video gedownload ✅",
+        );
         closeVideoModal();
         return;
       }
 
-      setIosVideoHint("Houd de video ingedrukt en kies Bewaar video");
+      setIosVideoHint(
+        action === "share"
+          ? "Delen lukt hier niet automatisch. Houd de video ingedrukt en kies Deel."
+          : "Houd de video ingedrukt en kies Bewaar video",
+      );
       logVideoDownload({
         browserType: browserInfo.browserType,
         isIos: browserInfo.isIos,
@@ -306,21 +322,28 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
               Video klaar 🎉
             </p>
             <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">
-              Bewaar je TikTok-video
+              Deel of bewaar je video
             </h3>
             <p className="mt-2 text-sm leading-5 text-zinc-300">
-              Tik op bewaren om de iOS deelopties te openen. Je blijft gewoon op OutfitRoaster.
+              Tik op delen om TikTok, Instagram of je iPhone opties te openen.
             </p>
             {iosVideoHint ? (
               <p className="mt-3 rounded-2xl border border-orange-300/20 bg-orange-400/10 px-4 py-2 text-sm font-bold text-orange-100">
                 {iosVideoHint}
               </p>
             ) : null}
-            <div className="mt-3 grid shrink-0 gap-2 sm:grid-cols-2 sm:gap-3">
+            <div className="mt-3 grid shrink-0 gap-2 sm:grid-cols-3 sm:gap-3">
+              <button
+                type="button"
+                onClick={handleShareIosVideo}
+                className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm"
+              >
+                Deel video
+              </button>
               <button
                 type="button"
                 onClick={handleSaveIosVideo}
-                className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm"
+                className="dr-secondary-button min-h-12 w-full px-6 py-3 text-sm"
               >
                 Bewaar video
               </button>
@@ -865,11 +888,30 @@ function drawOutfitVideoFrame(
   context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
   drawImageCoverWithZoom(context, photo, VIDEO_WIDTH, VIDEO_HEIGHT, zoom);
 
-  if (elapsedSeconds < 2) {
+  if (elapsedSeconds < 1.6) {
     return;
   }
 
-  if (elapsedSeconds >= 2 && elapsedSeconds < 4) {
+  if (elapsedSeconds >= 1.6 && elapsedSeconds < 3) {
+    drawVideoShade(context, 0.68);
+    drawCenteredVideoText(
+      context,
+      "OutfitRoaster checkt…",
+      960,
+      78,
+      880,
+      2,
+      "#ffffff",
+    );
+    context.textAlign = "center";
+    context.fillStyle = "#ff9a4f";
+    context.font = "900 27px Arial, sans-serif";
+    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1125);
+    context.textAlign = "left";
+    return;
+  }
+
+  if (elapsedSeconds >= 3 && elapsedSeconds < 4.6) {
     drawVideoShade(context, 0.74);
     context.textAlign = "center";
     context.fillStyle = "#ff6a00";
@@ -882,7 +924,7 @@ function drawOutfitVideoFrame(
     return;
   }
 
-  if (elapsedSeconds >= 4 && elapsedSeconds < 7) {
+  if (elapsedSeconds >= 4.6 && elapsedSeconds < 6.8) {
     drawVideoShade(context, 0.7);
     drawCenteredVideoText(context, `“${quote}”`, 940, 76, 880, 5, "#ffffff");
     context.textAlign = "center";
@@ -904,8 +946,11 @@ function drawOutfitVideoFrame(
   context.fill();
   context.textAlign = "center";
   context.fillStyle = "#ffffff";
+  context.font = "900 44px Arial, sans-serif";
+  context.fillText("Roast jouw outfit", VIDEO_WIDTH / 2, 1758);
+  context.fillStyle = "#ff9a4f";
   context.font = "900 34px Arial, sans-serif";
-  context.fillText("🔥 OutfitRoaster.com", VIDEO_WIDTH / 2, 1782);
+  context.fillText("🔥 OutfitRoaster.com", VIDEO_WIDTH / 2, 1812);
   context.textAlign = "left";
 }
 
