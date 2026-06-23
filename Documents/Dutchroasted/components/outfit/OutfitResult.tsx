@@ -196,19 +196,6 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
     await sharePendingIosVideo("share");
   }
 
-  function handleOpenTikTok() {
-    setIosVideoHint("TikTok wordt geopend… Upload daarna je bewaarde video.");
-    window.location.href = "snssdk1233://";
-
-    window.setTimeout(() => {
-      if (document.visibilityState === "visible") {
-        setIosVideoHint(
-          "TikTok kon niet automatisch openen. Open de TikTok-app handmatig en kies je bewaarde video.",
-        );
-      }
-    }, 1500);
-  }
-
   async function sharePendingIosVideo(action: "save" | "share") {
     if (!pendingVideo) {
       showFeedback("Video maken lukt niet, probeer opnieuw.");
@@ -338,27 +325,20 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
               Deel of bewaar je video
             </h3>
             <p className="mt-2 text-sm leading-5 text-zinc-300">
-              Bewaar eerst de video. Met Open TikTok ga je daarna rechtstreeks naar de app om hem te plaatsen.
+              Bewaar de video op je iPhone of deel hem via het Apple-deelmenu.
             </p>
             {iosVideoHint ? (
               <p className="mt-3 rounded-2xl border border-orange-300/20 bg-orange-400/10 px-4 py-2 text-sm font-bold text-orange-100">
                 {iosVideoHint}
               </p>
             ) : null}
-            <div className="mt-3 grid shrink-0 gap-2 sm:grid-cols-3 sm:gap-3">
+            <div className="mt-3 grid shrink-0 gap-2 sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
                 onClick={handleSaveIosVideo}
                 className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm"
               >
                 Bewaar video
-              </button>
-              <button
-                type="button"
-                onClick={handleOpenTikTok}
-                className="dr-secondary-button min-h-12 w-full px-6 py-3 text-sm"
-              >
-                Open TikTok
               </button>
               <button
                 type="button"
