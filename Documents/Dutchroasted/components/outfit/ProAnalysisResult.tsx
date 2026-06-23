@@ -1,6 +1,8 @@
 import { analytics } from "@/lib/analytics";
 import type { ProAnalysisResult as ProAnalysisResultData } from "@/lib/outfitTypes";
 
+const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
+
 type ProAnalysisResultProps = {
   result: ProAnalysisResultData;
   onNewCheck: () => void;
@@ -17,7 +19,7 @@ export function ProAnalysisResult({ result, onNewCheck }: ProAnalysisResultProps
     <section className="dr-fade-in space-y-5">
       <div className="rounded-[2rem] border border-violet-300/25 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.24),transparent_38%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(0,0,0,0.3))] p-5 sm:p-7">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
-          💎 Premium Pro Analyse
+          💎 {PREMIUM_BETA_ENABLED ? "Premium Verdict Beta" : "Premium Pro Analyse"}
         </p>
         <div className="mt-4 flex items-end justify-between gap-4">
           <div>

@@ -1,5 +1,7 @@
 import type { OutfitCheckMode } from "@/lib/outfitTypes";
 
+const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
+
 type ModeSelectorProps = {
   value: OutfitCheckMode;
   onChange: (value: OutfitCheckMode) => void;
@@ -37,14 +39,18 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
           }`}
         >
           <span className="absolute right-3 top-3 rounded-full border border-violet-300/20 bg-violet-400/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-violet-200">
-            Premium
+            {PREMIUM_BETA_ENABLED ? "Beta" : "Premium"}
           </span>
-          <span className="block pr-20 text-lg font-black text-white">💎 Pro Analyse</span>
+          <span className="block pr-20 text-lg font-black text-white">
+            💎 {PREMIUM_BETA_ENABLED ? "Premium Verdict Beta" : "Pro Analyse"}
+          </span>
           <span className="mt-2 block text-sm leading-5 text-zinc-400">
             Diepe stijlanalyse met kleur, pasvorm, samenhang en trendcheck.
           </span>
           <span className="mt-3 inline-flex rounded-xl border border-violet-300/20 bg-violet-400/10 px-3 py-2 text-xs font-black text-violet-100">
-            Actief abonnement vereist
+            {PREMIUM_BETA_ENABLED
+              ? "Tijdelijk gratis te testen"
+              : "Actief abonnement vereist"}
           </span>
         </button>
       </div>

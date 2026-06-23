@@ -18,6 +18,7 @@ import {
 } from "@/lib/outfitTypes";
 
 const MODEL = "gpt-4o-mini";
+const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Casual: "School",
   Feest: "Party",
@@ -986,7 +987,7 @@ export async function POST(request: Request) {
     );
     const profile = normalizeProfile(body.profile);
 
-    if (mode === "pro-analysis") {
+    if (mode === "pro-analysis" && !PREMIUM_BETA_ENABLED) {
       const user = await getCurrentUser(request);
       if (!user) {
         return Response.json(

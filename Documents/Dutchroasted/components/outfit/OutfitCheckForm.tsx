@@ -25,6 +25,7 @@ import { ProAnalysisResult } from "./ProAnalysisResult";
 import { RoastLevelSelect } from "./RoastLevelSelect";
 
 const FREE_CHECK_LIMIT = 5;
+const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
@@ -187,11 +188,16 @@ export function OutfitCheckForm() {
         <ModeSelector
           value={mode}
           onChange={(nextMode) => {
-            if (nextMode === "pro-analysis" && !auth.isAuthenticated) {
+            if (
+              !PREMIUM_BETA_ENABLED &&
+              nextMode === "pro-analysis" &&
+              !auth.isAuthenticated
+            ) {
               window.location.assign("/account?login=required");
               return;
             }
             if (
+              !PREMIUM_BETA_ENABLED &&
               nextMode === "pro-analysis" &&
               auth.profile?.subscription_status !== "active"
             ) {
@@ -214,7 +220,9 @@ export function OutfitCheckForm() {
           />
         ) : (
           <div className="mb-5 rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm font-bold text-violet-100">
-            Premium actief · Pro Analyse is alleen beschikbaar met een actief abonnement.
+            {PREMIUM_BETA_ENABLED
+              ? "Beta: tijdelijk gratis te testen. Later onderdeel van Premium."
+              : "Premium actief · Pro Analyse is alleen beschikbaar met een actief abonnement."}
           </div>
         )}
 
@@ -263,7 +271,9 @@ export function OutfitCheckForm() {
           {isLoading
             ? "Even kijken..."
             : mode === "pro-analysis"
-              ? "Start Pro Analyse"
+              ? PREMIUM_BETA_ENABLED
+                ? "Start Premium Verdict Beta"
+                : "Start Pro Analyse"
               : isLimitReached
                 ? "5 gratis roasts gebruikt"
                 : "Roast mijn outfit"}
@@ -415,7 +425,7 @@ async function requestOutfitCheck(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(mode === "pro-analysis" && accessToken
+        ...(!PREMIUM_BETA_ENABLED && mode === "pro-analysis" && accessToken
           ? { Authorization: `Bearer ${accessToken}` }
           : {}),
       },
