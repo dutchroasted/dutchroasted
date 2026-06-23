@@ -121,8 +121,8 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         result.score,
         selectedQuote || result.roast.split("\n")[0] || result.shareQuote,
       );
-      downloadBlob(video.blob, `outfitroaster-tiktok.${video.extension}`);
-      showFeedback(`Video gedownload als ${video.extension.toUpperCase()}.`);
+      downloadVideoBlob(video.blob);
+      showFeedback("TikTok-video gedownload ✅");
     } catch (error) {
       console.error("Outfit video generation failed:", error);
       showFeedback("Video maken lukt niet, probeer opnieuw.");
@@ -936,6 +936,22 @@ function downloadBlob(blob: Blob, fileName: string) {
 
   link.href = url;
   link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}
+
+function downloadVideoBlob(blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `outfitroaster-${Date.now()}.mp4`;
+  link.rel = "noopener";
+  link.style.display = "none";
+
   document.body.appendChild(link);
   link.click();
   link.remove();
