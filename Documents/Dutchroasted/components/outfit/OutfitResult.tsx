@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { jsPDF } from "jspdf";
 import { analytics } from "@/lib/analytics";
 import type { OutfitResultData } from "@/lib/outfitTypes";
@@ -31,6 +31,8 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   const [isSharing, setIsSharing] = useState(false);
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
   const [pendingVideo, setPendingVideo] = useState<PendingVideoDownload | null>(null);
+  const [iosVideoHint, setIosVideoHint] = useState("");
+  const originalBodyOverflow = useRef<string | null>(null);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
   const quoteOptions = useMemo(
@@ -47,6 +49,20 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       if (pendingVideo) {
         URL.revokeObjectURL(pendingVideo.url);
       }
+    };
+  }, [pendingVideo]);
+
+  useEffect(() => {
+    if (!pendingVideo) {
+      return;
+    }
+
+    originalBodyOverflow.current = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow.current ?? "";
+      originalBodyOverflow.current = null;
     };
   }, [pendingVideo]);
 
@@ -144,7 +160,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         downloadStarted: false,
       });
 
-      if (browserInfo.isIosSafari) {
+      if (browserInfo.isIos) {
         const url = URL.createObjectURL(video.blob);
         setPendingVideo((currentVideo) => {
           if (currentVideo) {
@@ -152,6 +168,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           }
           return { blob: video.blob, fileName, url };
         });
+        setIosVideoHint("");
         setFeedback("");
         return;
       }
@@ -200,7 +217,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
         return;
       }
 
-      showFeedback("Bewaren lukt niet automatisch. Gebruik de deelknop van Safari.");
+      setIosVideoHint("Houd de video ingedrukt en kies Bewaar video");
       logVideoDownload({
         browserType: browserInfo.browserType,
         isIos: browserInfo.isIos,
@@ -224,6 +241,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       }
       return null;
     });
+    setIosVideoHint("");
   }
 
   function handleDownloadPdf() {
@@ -262,26 +280,31 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       ) : null}
 
       {pendingVideo ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/72 px-4 py-5 backdrop-blur-md sm:items-center">
-          <div className="w-full max-w-md rounded-[2rem] border border-orange-300/25 bg-zinc-950 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.65)]">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/78 px-4 py-4 backdrop-blur-md">
+          <div className="w-full max-w-md rounded-[2rem] border border-orange-300/25 bg-zinc-950 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.65)] sm:p-5">
             <div className="mb-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
               <video
                 src={pendingVideo.url}
                 controls
                 playsInline
-                className="aspect-[9/16] max-h-[54vh] w-full object-cover"
+                className="aspect-[9/16] max-h-[48dvh] w-full object-contain sm:max-h-[70vh]"
               />
             </div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
               Video klaar 🎉
             </p>
-            <h3 className="mt-2 text-2xl font-black tracking-[-0.03em] text-white">
+            <h3 className="mt-1 text-2xl font-black tracking-[-0.03em] text-white">
               Bewaar je TikTok-video
             </h3>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
               Tik op bewaren om de iOS deelopties te openen. Je blijft gewoon op OutfitRoaster.
             </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {iosVideoHint ? (
+              <p className="mt-3 rounded-2xl border border-orange-300/20 bg-orange-400/10 px-4 py-3 text-sm font-bold text-orange-100">
+                {iosVideoHint}
+              </p>
+            ) : null}
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
                 onClick={handleSaveIosVideo}
