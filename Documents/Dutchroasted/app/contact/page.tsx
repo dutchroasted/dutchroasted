@@ -1,10 +1,12 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Contact",
+export const metadata = createPageMetadata({
+  title: "Contact | Outfit Roaster",
   description: "Neem contact op met Outfit Roaster.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

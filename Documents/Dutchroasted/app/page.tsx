@@ -1,21 +1,21 @@
 import { CTASection } from "@/components/CTASection";
 import { ExampleRoast } from "@/components/ExampleRoast";
 import { Footer } from "@/components/Footer";
+import { FAQSection } from "@/components/FAQSection";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { PricingTeaser } from "@/components/PricingTeaser";
 import { RoastCategories } from "@/components/RoastCategories";
 import { WhyOutfitRoaster } from "@/components/WhyOutfitRoaster";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Nederlandse AI-outfitcheck met humor",
+export const metadata = createPageMetadata({
+  title: "Outfit Roaster | Nederlandse AI-outfitcheck met humor",
   description:
     "Upload je outfit en krijg een eerlijk verdict over stijl, pasvorm, kleur en vibe. Scherp, grappig en zonder bodyshaming.",
-  alternates: {
-    canonical: "/",
-  },
-};
+  path: "",
+});
 
 export default function Home() {
   return (
@@ -26,6 +26,7 @@ export default function Home() {
       <RoastCategories />
       <HowItWorks />
       <WhyOutfitRoaster />
+      <FAQSection />
       <PricingTeaser />
       <CTASection />
       <Footer />

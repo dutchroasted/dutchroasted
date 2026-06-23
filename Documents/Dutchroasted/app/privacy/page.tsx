@@ -1,9 +1,11 @@
 import { LegalPage } from "@/components/LegalPage";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Privacyverklaring",
+export const metadata = createPageMetadata({
+  title: "Privacyverklaring | Outfit Roaster",
   description: "Privacyverklaring van Outfit Roaster.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

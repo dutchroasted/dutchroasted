@@ -1,15 +1,14 @@
 import { PricingCards } from "@/components/pricing/PricingCards";
 import { EarlyAccessForm } from "@/components/outfit/EarlyAccessForm";
 import { Logo } from "@/components/Logo";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Premium Verdict Beta",
+export const metadata = createPageMetadata({
+  title: "Premium Verdict Beta | Outfit Roaster",
   description:
     "Vergelijk de gratis Outfit Roast met Premium Verdict Beta, tijdelijk gratis te testen.",
-  alternates: {
-    canonical: "/pricing",
-  },
-};
+  path: "/pricing",
+});
 
 export default function PricingPage() {
   return (

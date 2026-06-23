@@ -1,9 +1,11 @@
 import { LegalPage } from "@/components/LegalPage";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Voorwaarden",
+export const metadata = createPageMetadata({
+  title: "Voorwaarden | Outfit Roaster",
   description: "Voorwaarden van Outfit Roaster.",
-};
+  path: "/voorwaarden",
+});
 
 export default function TermsPage() {
   return (

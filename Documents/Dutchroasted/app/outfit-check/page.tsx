@@ -1,13 +1,13 @@
 import { OutfitCheckForm } from "@/components/outfit/OutfitCheckForm";
 import { Logo } from "@/components/Logo";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Outfit check",
-  description: "Upload je outfitfoto en krijg eerlijke Nederlandse AI-stylingfeedback.",
-  alternates: {
-    canonical: "/outfit-check",
-  },
-};
+export const metadata = createPageMetadata({
+  title: "Outfit check | Outfit Roaster",
+  description:
+    "Upload je outfitfoto en krijg een Nederlandse AI-outfitcheck met roast, score, stylingtips of Premium Verdict Beta.",
+  path: "/outfit-check",
+});
 
 export default function OutfitCheckPage() {
   return (

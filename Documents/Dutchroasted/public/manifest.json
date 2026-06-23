@@ -1,7 +1,7 @@
 {
   "name": "Outfit Roaster",
   "short_name": "Outfit Roaster",
-  "description": "Laat je outfit roasten door een AI-stylist.",
+  "description": "Nederlandse AI-outfitcheck met humor, score, stylingtips en Premium Verdict Beta.",
   "start_url": "/outfit-check",
   "scope": "/",
   "display": "standalone",
