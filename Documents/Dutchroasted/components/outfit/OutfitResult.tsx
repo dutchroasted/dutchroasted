@@ -23,6 +23,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   const [feedback, setFeedback] = useState("");
   const [selectedQuote, setSelectedQuote] = useState<string>(result.shareQuote);
   const [isSharing, setIsSharing] = useState(false);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
 
   const adviceText = useMemo(() => formatAdvice(result), [result]);
   const quoteOptions = useMemo(
@@ -49,7 +50,13 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
   }
 
   async function handleShare() {
-    if (disabled || isSharing || !result || !isProcessedOutfitImage(originalImage)) {
+    if (
+      disabled ||
+      isSharing ||
+      isCreatingVideo ||
+      !result ||
+      !isProcessedOutfitImage(originalImage)
+    ) {
       showFeedback("De deelkaart is nog niet klaar. Wacht tot foto en analyse volledig geladen zijn.");
       return;
     }
@@ -94,6 +101,36 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
     }
   }
 
+  async function handleCreateVideo() {
+    if (
+      disabled ||
+      isSharing ||
+      isCreatingVideo ||
+      !isProcessedOutfitImage(originalImage)
+    ) {
+      showFeedback("De video is nog niet klaar. Wacht tot foto en analyse volledig geladen zijn.");
+      return;
+    }
+
+    setIsCreatingVideo(true);
+    setFeedback("Video wordt gemaakt…");
+
+    try {
+      const video = await createOutfitVideo(
+        originalImage,
+        result.score,
+        selectedQuote || result.roast.split("\n")[0] || result.shareQuote,
+      );
+      downloadBlob(video.blob, `outfitroaster-tiktok.${video.extension}`);
+      showFeedback(`Video gedownload als ${video.extension.toUpperCase()}.`);
+    } catch (error) {
+      console.error("Outfit video generation failed:", error);
+      showFeedback("Video maken lukt niet, probeer opnieuw.");
+    } finally {
+      setIsCreatingVideo(false);
+    }
+  }
+
   function handleDownloadPdf() {
     try {
       showFeedback("PDF wordt gemaakt");
@@ -135,14 +172,32 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           quote={selectedQuote}
           originalImage={originalImage}
         />
-        <div className="flex justify-end">
+        <div className="grid gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={handleShare}
-            disabled={disabled || isSharing || !isProcessedOutfitImage(originalImage)}
-            className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm sm:w-auto"
+            disabled={
+              disabled ||
+              isSharing ||
+              isCreatingVideo ||
+              !isProcessedOutfitImage(originalImage)
+            }
+            className="dr-primary-button min-h-12 w-full px-6 py-3 text-sm"
           >
             {isSharing ? "Deelkaart maken..." : "Deel deze roast"}
+          </button>
+          <button
+            type="button"
+            onClick={handleCreateVideo}
+            disabled={
+              disabled ||
+              isSharing ||
+              isCreatingVideo ||
+              !isProcessedOutfitImage(originalImage)
+            }
+            className="dr-secondary-button min-h-12 w-full px-6 py-3 text-sm"
+          >
+            {isCreatingVideo ? "Video wordt gemaakt…" : "Maak TikTok-video"}
           </button>
         </div>
       </div>
@@ -522,6 +577,278 @@ async function createShareImage(
       1,
     );
   });
+}
+
+const VIDEO_WIDTH = 1080;
+const VIDEO_HEIGHT = 1920;
+const VIDEO_DURATION_MS = 9500;
+
+async function createOutfitVideo(
+  originalImage: string,
+  score: number,
+  quote: string,
+) {
+  if (
+    typeof MediaRecorder === "undefined" ||
+    typeof HTMLCanvasElement.prototype.captureStream !== "function"
+  ) {
+    throw new Error("Video export is not supported in this browser");
+  }
+
+  const photo = await loadShareImage(originalImage);
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas is not available");
+  }
+
+  canvas.width = VIDEO_WIDTH;
+  canvas.height = VIDEO_HEIGHT;
+
+  const stream = canvas.captureStream(30);
+  const format = getSupportedVideoFormat();
+  const chunks: Blob[] = [];
+  const recorder = new MediaRecorder(stream, {
+    mimeType: format.mimeType,
+    videoBitsPerSecond: 8_000_000,
+  });
+
+  const recording = new Promise<Blob>((resolve, reject) => {
+    recorder.addEventListener("dataavailable", (event) => {
+      if (event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    });
+    recorder.addEventListener("stop", () => {
+      const blob = new Blob(chunks, { type: format.mimeType });
+      if (blob.size === 0) {
+        reject(new Error("Video recorder returned an empty file"));
+        return;
+      }
+      resolve(blob);
+    });
+    recorder.addEventListener("error", () => {
+      reject(new Error("Video recorder failed"));
+    });
+  });
+
+  recorder.start(250);
+  const startedAt = performance.now();
+
+  await new Promise<void>((resolve) => {
+    function renderFrame(now: number) {
+      const elapsed = Math.min(now - startedAt, VIDEO_DURATION_MS);
+      drawOutfitVideoFrame(context!, photo, score, quote, elapsed);
+
+      if (elapsed >= VIDEO_DURATION_MS) {
+        resolve();
+        return;
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    requestAnimationFrame(renderFrame);
+  });
+
+  recorder.stop();
+  const blob = await recording;
+  stream.getTracks().forEach((track) => track.stop());
+
+  return {
+    blob,
+    extension: format.extension,
+  };
+}
+
+function getSupportedVideoFormat() {
+  const formats = [
+    { mimeType: "video/mp4;codecs=h264", extension: "mp4" },
+    { mimeType: "video/mp4", extension: "mp4" },
+    { mimeType: "video/webm;codecs=vp9", extension: "webm" },
+    { mimeType: "video/webm;codecs=vp8", extension: "webm" },
+    { mimeType: "video/webm", extension: "webm" },
+  ];
+  const supported = formats.find((format) =>
+    MediaRecorder.isTypeSupported(format.mimeType),
+  );
+
+  if (!supported) {
+    throw new Error("No supported video format is available");
+  }
+
+  return supported;
+}
+
+function drawOutfitVideoFrame(
+  context: CanvasRenderingContext2D,
+  photo: HTMLImageElement,
+  score: number,
+  quote: string,
+  elapsedMs: number,
+) {
+  const elapsedSeconds = elapsedMs / 1000;
+  const zoom = 1 + (elapsedMs / VIDEO_DURATION_MS) * 0.045;
+
+  context.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+  context.fillStyle = "#050505";
+  context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+  drawImageCoverWithZoom(context, photo, VIDEO_WIDTH, VIDEO_HEIGHT, zoom);
+
+  const fullShade = context.createLinearGradient(0, 0, 0, VIDEO_HEIGHT);
+  fullShade.addColorStop(0, "rgba(0,0,0,0.48)");
+  fullShade.addColorStop(0.45, "rgba(0,0,0,0.10)");
+  fullShade.addColorStop(1, "rgba(0,0,0,0.78)");
+  context.fillStyle = fullShade;
+  context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+  context.fillStyle = "#ffffff";
+  context.font = "900 38px Arial, sans-serif";
+  context.fillText("Outfit", 72, 154);
+  context.fillStyle = "#ff6a00";
+  context.fillText("Roaster", 188, 154);
+
+  context.textAlign = "right";
+  context.fillStyle = "rgba(255,255,255,0.82)";
+  context.font = "900 20px Arial, sans-serif";
+  context.fillText("OUTFITROASTER.COM", 1008, 150);
+  context.textAlign = "left";
+
+  if (elapsedSeconds >= 1.5 && elapsedSeconds < 3) {
+    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 1.5, 3));
+    drawCenteredVideoText(
+      context,
+      "OutfitRoaster checkt…",
+      960,
+      78,
+      870,
+      1,
+      "#ffffff",
+    );
+  } else if (elapsedSeconds >= 3 && elapsedSeconds < 5) {
+    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 3, 5));
+    context.textAlign = "center";
+    context.fillStyle = "#ff6a00";
+    context.font = "900 190px Arial, sans-serif";
+    context.fillText(`${score}/10`, VIDEO_WIDTH / 2, 1000);
+    context.fillStyle = "#ffffff";
+    context.font = "900 30px Arial, sans-serif";
+    context.fillText("JOUW OUTFIT VERDICT", VIDEO_WIDTH / 2, 1070);
+    context.textAlign = "left";
+  } else if (elapsedSeconds >= 5 && elapsedSeconds < 8.5) {
+    drawVideoPanel(context, phaseOpacity(elapsedSeconds, 5, 8.5));
+    drawCenteredVideoText(context, `“${quote}”`, 870, 70, 860, 5, "#ffffff");
+    context.textAlign = "center";
+    context.fillStyle = "#ff9a4f";
+    context.font = "900 27px Arial, sans-serif";
+    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1260);
+    context.textAlign = "left";
+  } else if (elapsedSeconds >= 8.5) {
+    context.fillStyle = `rgba(5,5,5,${0.82 * phaseOpacity(elapsedSeconds, 8.5, 9.5)})`;
+    context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+    context.textAlign = "center";
+    context.fillStyle = "#ff6a00";
+    context.font = "900 34px Arial, sans-serif";
+    context.fillText("OUTFIT ROASTER", VIDEO_WIDTH / 2, 790);
+    drawCenteredVideoText(
+      context,
+      "Roast jouw outfit op OutfitRoaster.com",
+      900,
+      68,
+      870,
+      3,
+      "#ffffff",
+    );
+    context.textAlign = "left";
+  }
+
+  context.fillStyle = "rgba(0,0,0,0.58)";
+  roundRect(context, 60, 1720, 960, 104, 28);
+  context.fill();
+  context.fillStyle = "#ffffff";
+  context.font = "900 26px Arial, sans-serif";
+  context.fillText("OutfitRoaster.com", 98, 1785);
+  context.textAlign = "right";
+  context.fillStyle = "#ff9a4f";
+  context.fillText("#outfitroaster", 982, 1785);
+  context.textAlign = "left";
+}
+
+function drawVideoPanel(context: CanvasRenderingContext2D, opacity: number) {
+  context.fillStyle = `rgba(5,5,5,${0.72 * opacity})`;
+  roundRect(context, 55, 650, 970, 650, 48);
+  context.fill();
+  context.strokeStyle = `rgba(255,255,255,${0.18 * opacity})`;
+  context.lineWidth = 2;
+  context.stroke();
+}
+
+function drawCenteredVideoText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  centerY: number,
+  fontSize: number,
+  maxWidth: number,
+  maxLines: number,
+  color: string,
+) {
+  context.font = `900 ${fontSize}px Arial, sans-serif`;
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let line = "";
+
+  words.forEach((word) => {
+    const candidate = line ? `${line} ${word}` : word;
+    if (context.measureText(candidate).width <= maxWidth || !line) {
+      line = candidate;
+      return;
+    }
+    lines.push(line);
+    line = word;
+  });
+  if (line) {
+    lines.push(line);
+  }
+
+  const visibleLines = lines.slice(0, maxLines);
+  const lineHeight = fontSize * 1.15;
+  const startY = centerY - ((visibleLines.length - 1) * lineHeight) / 2;
+  context.textAlign = "center";
+  context.fillStyle = color;
+  visibleLines.forEach((visibleLine, index) => {
+    context.fillText(visibleLine, VIDEO_WIDTH / 2, startY + index * lineHeight);
+  });
+  context.textAlign = "left";
+}
+
+function drawImageCoverWithZoom(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+  zoom: number,
+) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight) * zoom;
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  context.drawImage(
+    image,
+    (width - drawWidth) / 2,
+    (height - drawHeight) / 2,
+    drawWidth,
+    drawHeight,
+  );
+}
+
+function phaseOpacity(current: number, start: number, end: number) {
+  const fadeDuration = Math.min(0.35, (end - start) / 3);
+  if (current < start + fadeDuration) {
+    return Math.max(0, (current - start) / fadeDuration);
+  }
+  if (current > end - fadeDuration) {
+    return Math.max(0, (end - current) / fadeDuration);
+  }
+  return 1;
 }
 
 function loadShareImage(source: string) {
