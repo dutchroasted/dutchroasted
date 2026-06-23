@@ -280,31 +280,43 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       ) : null}
 
       {pendingVideo ? (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/78 px-4 py-4 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-[2rem] border border-orange-300/25 bg-zinc-950 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.65)] sm:p-5">
-            <div className="mb-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
+        <div
+          className="fixed inset-0 z-[1000] flex h-[100dvh] items-start justify-center overflow-hidden bg-black/78 px-4 backdrop-blur-md"
+          style={{
+            paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)",
+            paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)",
+          }}
+        >
+          <div
+            className="flex w-full max-w-md flex-col overflow-hidden rounded-[1.75rem] border border-orange-300/25 bg-zinc-950 p-3 shadow-[0_24px_90px_rgba(0,0,0,0.65)] sm:p-5"
+            style={{
+              maxHeight:
+                "calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 1.5rem)",
+            }}
+          >
+            <div className="mb-3 shrink-0 overflow-hidden rounded-[1.25rem] border border-white/10 bg-black">
               <video
                 src={pendingVideo.url}
                 controls
                 playsInline
-                className="aspect-[9/16] max-h-[48dvh] w-full object-contain sm:max-h-[70vh]"
+                className="aspect-[9/16] max-h-[34dvh] w-full object-contain sm:max-h-[62vh]"
               />
             </div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-300">
               Video klaar 🎉
             </p>
-            <h3 className="mt-1 text-2xl font-black tracking-[-0.03em] text-white">
+            <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">
               Bewaar je TikTok-video
             </h3>
-            <p className="mt-2 text-sm leading-6 text-zinc-300">
+            <p className="mt-2 text-sm leading-5 text-zinc-300">
               Tik op bewaren om de iOS deelopties te openen. Je blijft gewoon op OutfitRoaster.
             </p>
             {iosVideoHint ? (
-              <p className="mt-3 rounded-2xl border border-orange-300/20 bg-orange-400/10 px-4 py-3 text-sm font-bold text-orange-100">
+              <p className="mt-3 rounded-2xl border border-orange-300/20 bg-orange-400/10 px-4 py-2 text-sm font-bold text-orange-100">
                 {iosVideoHint}
               </p>
             ) : null}
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-3 grid shrink-0 gap-2 sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
                 onClick={handleSaveIosVideo}
