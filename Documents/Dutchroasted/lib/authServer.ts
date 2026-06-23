@@ -101,11 +101,11 @@ export async function getUserProfile(user: CurrentUser): Promise<UserProfile> {
 
   const profiles = (await response.json()) as UserProfile[];
   if (profiles[0]) {
-    return normalizeDailyCount(normalizeProfile(profiles[0]));
+    return normalizeDailyCountForRead(normalizeProfile(profiles[0]));
   }
 
   const created = await createUserProfile(user);
-  return normalizeDailyCount(normalizeProfile(created));
+  return normalizeDailyCountForRead(normalizeProfile(created));
 }
 
 async function createUserProfile(user: CurrentUser): Promise<UserProfile> {
@@ -199,6 +199,18 @@ async function normalizeDailyCount(profile: UserProfile) {
     daily_roast_count: 0,
     daily_roast_date: today(),
   });
+}
+
+function normalizeDailyCountForRead(profile: UserProfile): UserProfile {
+  if (profile.daily_roast_date === today()) {
+    return profile;
+  }
+
+  return {
+    ...profile,
+    daily_roast_count: 0,
+    daily_roast_date: today(),
+  };
 }
 
 export function canUserRoast(profile: UserProfile) {

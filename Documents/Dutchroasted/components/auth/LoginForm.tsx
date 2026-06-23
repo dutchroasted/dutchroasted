@@ -25,7 +25,7 @@ export function LoginForm() {
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: {
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: "https://www.outfitroaster.com/auth/callback",
       },
     });
 
