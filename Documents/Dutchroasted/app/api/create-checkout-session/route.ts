@@ -1,7 +1,16 @@
 import { getPremiumPriceId, getSiteUrl, getStripe } from "@/lib/stripe";
+import { getCurrentUser } from "@/lib/authServer";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return Response.json(
+        { error: "Log eerst in om Premium te activeren." },
+        { status: 401 },
+      );
+    }
+
     const stripe = getStripe();
     const siteUrl = getSiteUrl();
 
@@ -16,6 +25,11 @@ export async function POST() {
       success_url: `${siteUrl}/account?checkout=success`,
       cancel_url: `${siteUrl}/pricing?checkout=cancelled`,
       allow_promotion_codes: true,
+      customer_email: user.email ?? undefined,
+      metadata: { userId: user.id },
+      subscription_data: {
+        metadata: { userId: user.id },
+      },
     });
 
     if (!session.url) {

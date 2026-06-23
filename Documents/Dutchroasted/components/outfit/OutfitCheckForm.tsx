@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { compressImageToJpegDataUrl } from "@/lib/clientImageCompression";
 import { analytics } from "@/lib/analytics";
+import { useAuthProfile } from "@/hooks/useAuthProfile";
 import type {
   OutfitCheckMode,
   OutfitOccasion,
@@ -47,6 +48,7 @@ type DailyLimitState = {
 };
 
 export function OutfitCheckForm() {
+  const auth = useAuthProfile();
   const [mode, setMode] = useState<OutfitCheckMode>("roast");
   const [selectedPreviewImage, setSelectedPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
@@ -92,7 +94,7 @@ export function OutfitCheckForm() {
     setError("");
     analytics.outfitCheckStarted(
       occasion,
-      mode === "pro-analysis" ? "Premium bèta – Pro Analyse" : roastLevel,
+      mode === "pro-analysis" ? "Premium Pro Analyse" : roastLevel,
       profile,
     );
 
@@ -103,6 +105,7 @@ export function OutfitCheckForm() {
         occasion,
         roastLevel,
         profile,
+        auth.accessToken,
       );
 
       let data: OutfitResultData | { proAnalysis: ProAnalysisResultData };
@@ -120,7 +123,7 @@ export function OutfitCheckForm() {
         setResult(null);
         analytics.outfitCheckCompleted(
           occasion,
-          "Premium bèta – Pro Analyse",
+          "Premium Pro Analyse",
           data.proAnalysis.overallScore,
         );
       } else {
@@ -184,6 +187,17 @@ export function OutfitCheckForm() {
         <ModeSelector
           value={mode}
           onChange={(nextMode) => {
+            if (nextMode === "pro-analysis" && !auth.isAuthenticated) {
+              window.location.assign("/account?login=required");
+              return;
+            }
+            if (
+              nextMode === "pro-analysis" &&
+              auth.profile?.subscription_status !== "active"
+            ) {
+              window.location.assign("/pricing");
+              return;
+            }
             setMode(nextMode);
             setResult(null);
             setProAnalysis(null);
@@ -200,8 +214,7 @@ export function OutfitCheckForm() {
           />
         ) : (
           <div className="mb-5 rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm font-bold text-violet-100">
-            Premium bèta – Pro Analyse tijdelijk gratis testen. Deze analyse telt niet mee voor je
-            5 gratis roasts.
+            Premium actief · Pro Analyse is alleen beschikbaar met een actief abonnement.
           </div>
         )}
 
@@ -250,7 +263,7 @@ export function OutfitCheckForm() {
           {isLoading
             ? "Even kijken..."
             : mode === "pro-analysis"
-              ? "Pro Analyse tijdelijk gratis testen"
+              ? "Start Pro Analyse"
               : isLimitReached
                 ? "5 gratis roasts gebruikt"
                 : "Roast mijn outfit"}
@@ -330,6 +343,7 @@ async function runOutfitCheckWithRetry(
   occasion: OutfitOccasion,
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
+  accessToken: string | null,
 ) {
   let requestImage = selectedPreviewImage;
   let didRetryAfter413 = false;
@@ -343,6 +357,7 @@ async function runOutfitCheckWithRetry(
       occasion,
       roastLevel,
       profile,
+      accessToken,
       `poging ${attempt}`,
     );
 
@@ -387,6 +402,7 @@ async function requestOutfitCheck(
   occasion: OutfitOccasion,
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
+  accessToken: string | null,
   attempt: string,
 ) {
   const controller = new AbortController();
@@ -399,6 +415,9 @@ async function requestOutfitCheck(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(mode === "pro-analysis" && accessToken
+          ? { Authorization: `Bearer ${accessToken}` }
+          : {}),
       },
       body: JSON.stringify({ image, mode, occasion, roastLevel, profile }),
       signal: controller.signal,
@@ -416,6 +435,12 @@ async function requestOutfitCheck(
 }
 
 function getApiErrorMessage(status: number) {
+  if (status === 401) {
+    return "Log eerst in om Pro Analyse te gebruiken.";
+  }
+  if (status === 403) {
+    return "Je hebt een actief Premium-abonnement nodig voor Pro Analyse.";
+  }
   if (status === 413) {
     return "De foto is nog steeds te groot voor de outfitcheck. Kies een kleinere foto.";
   }

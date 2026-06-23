@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useAuthProfile } from "@/hooks/useAuthProfile";
 
 export function CheckoutButton() {
+  const auth = useAuthProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function startCheckout() {
-    if (isLoading) {
+    if (isLoading || !auth.isReady) {
+      return;
+    }
+
+    if (!auth.isAuthenticated || !auth.accessToken) {
+      window.location.assign("/account?login=required");
       return;
     }
 
@@ -17,6 +24,9 @@ export function CheckoutButton() {
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+        },
       });
       const data = (await response.json().catch(() => null)) as
         | { url?: string; error?: string }
@@ -42,10 +52,14 @@ export function CheckoutButton() {
       <button
         type="button"
         onClick={startCheckout}
-        disabled={isLoading}
+        disabled={isLoading || !auth.isReady}
         className="min-h-12 w-full rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400 disabled:cursor-wait disabled:opacity-60"
       >
-        {isLoading ? "Checkout openen..." : "Start Premium"}
+        {!auth.isReady
+          ? "Account controleren..."
+          : isLoading
+            ? "Checkout openen..."
+            : "Start Premium"}
       </button>
       {error ? <p className="mt-3 text-sm font-bold text-red-300">{error}</p> : null}
     </div>

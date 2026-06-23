@@ -11,6 +11,9 @@ export type UserProfile = {
   id: string;
   email: string | null;
   plan: Plan;
+  subscription_status: "active" | "inactive";
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   daily_roast_count: number;
   daily_roast_date: string | null;
   created_at: string;
@@ -98,11 +101,11 @@ export async function getUserProfile(user: CurrentUser): Promise<UserProfile> {
 
   const profiles = (await response.json()) as UserProfile[];
   if (profiles[0]) {
-    return normalizeDailyCount(profiles[0]);
+    return normalizeDailyCount(normalizeProfile(profiles[0]));
   }
 
   const created = await createUserProfile(user);
-  return normalizeDailyCount(created);
+  return normalizeDailyCount(normalizeProfile(created));
 }
 
 async function createUserProfile(user: CurrentUser): Promise<UserProfile> {
@@ -140,6 +143,17 @@ async function createUserProfile(user: CurrentUser): Promise<UserProfile> {
   }
 
   return profiles[0];
+}
+
+function normalizeProfile(profile: UserProfile): UserProfile {
+  return {
+    ...profile,
+    plan: profile.plan ?? "free",
+    subscription_status:
+      profile.subscription_status === "active" ? "active" : "inactive",
+    stripe_customer_id: profile.stripe_customer_id ?? null,
+    stripe_subscription_id: profile.stripe_subscription_id ?? null,
+  };
 }
 
 async function updateProfile(userId: string, patch: Partial<UserProfile>) {
@@ -188,7 +202,7 @@ async function normalizeDailyCount(profile: UserProfile) {
 }
 
 export function canUserRoast(profile: UserProfile) {
-  if (profile.plan === "premium" || profile.plan === "pro") {
+  if (hasActivePremium(profile)) {
     return true;
   }
 
@@ -196,7 +210,7 @@ export function canUserRoast(profile: UserProfile) {
 }
 
 export async function incrementRoastCount(profile: UserProfile) {
-  if (profile.plan === "premium" || profile.plan === "pro") {
+  if (hasActivePremium(profile)) {
     return normalizeDailyCount(profile);
   }
 
@@ -208,7 +222,7 @@ export async function incrementRoastCount(profile: UserProfile) {
 }
 
 export function toRoastUsage(profile: UserProfile): RoastUsage {
-  const unlimited = profile.plan === "premium" || profile.plan === "pro";
+  const unlimited = hasActivePremium(profile);
 
   return {
     authenticated: true,
@@ -217,4 +231,8 @@ export function toRoastUsage(profile: UserProfile): RoastUsage {
     limit: unlimited ? null : FREE_DAILY_ROAST_LIMIT,
     unlimited,
   };
+}
+
+export function hasActivePremium(profile: UserProfile) {
+  return profile.subscription_status === "active";
 }

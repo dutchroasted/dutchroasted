@@ -7,7 +7,7 @@ export function PricingTeaser() {
             Pricing
           </p>
           <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-            Gratis starten met 5 Outfit Roasts per dag. Pro Analyse komt eraan.
+            Gratis starten met 5 Outfit Roasts per dag. Pro Analyse is onderdeel van Premium.
           </h2>
         </div>
         <a

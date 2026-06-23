@@ -46,7 +46,7 @@ export function FreeLimitNotice({
           ) : null}
           {isLimitReached ? (
             <p className="mt-3 font-bold leading-7 text-orange-200">
-              Je gratis roasts voor vandaag zijn op. Pro Analyse komt binnenkort beschikbaar.
+              Je gratis roasts voor vandaag zijn op. Met actief Premium krijg je Pro Analyse.
             </p>
           ) : null}
         </div>

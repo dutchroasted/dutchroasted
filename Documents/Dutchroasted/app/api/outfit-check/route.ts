@@ -1,6 +1,11 @@
 import OpenAI from "openai";
 import { buildProAnalysisPrompt } from "@/lib/proAnalysisPrompt";
 import {
+  getCurrentUser,
+  getUserProfile,
+  hasActivePremium,
+} from "@/lib/authServer";
+import {
   type OutfitCheckMode,
   OUTFIT_OCCASIONS,
   OUTFIT_PROFILES,
@@ -980,6 +985,24 @@ export async function POST(request: Request) {
       body.persona,
     );
     const profile = normalizeProfile(body.profile);
+
+    if (mode === "pro-analysis") {
+      const user = await getCurrentUser(request);
+      if (!user) {
+        return Response.json(
+          { error: "Log eerst in om Pro Analyse te gebruiken." },
+          { status: 401 },
+        );
+      }
+
+      const userProfile = await getUserProfile(user);
+      if (!hasActivePremium(userProfile)) {
+        return Response.json(
+          { error: "Een actief Premium-abonnement is vereist." },
+          { status: 403 },
+        );
+      }
+    }
 
     if (!isValidImage(body.image) || !occasion) {
       return Response.json({ error: "Invalid input" }, { status: 400 });

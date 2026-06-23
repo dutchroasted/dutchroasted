@@ -4,7 +4,7 @@ import { Logo } from "@/components/Logo";
 
 export const metadata = {
   title: "Pricing | Outfit Roaster",
-  description: "Start gratis of meld je aan voor de Outfit Roaster Premium bèta.",
+  description: "Start gratis of activeer Outfit Roaster Premium.",
 };
 
 export default function PricingPage() {
@@ -38,7 +38,7 @@ export default function PricingPage() {
 
         <section className="max-w-4xl pt-8 sm:pt-14">
           <p className="inline-flex rounded-md border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-sm font-bold text-orange-300">
-            Premium bèta
+            Premium
           </p>
           <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-6xl lg:text-7xl">
             Kies hoe uitgebreid je stylingrapport wordt.
@@ -58,7 +58,7 @@ export default function PricingPage() {
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-300">
-                Premium bèta
+                Premium wachtlijst
               </p>
               <h2
                 id="premium-wachtlijst-titel"
@@ -67,7 +67,7 @@ export default function PricingPage() {
                 Nog niet klaar om te betalen?
               </h2>
               <p className="mt-4 max-w-xl leading-7 text-zinc-300">
-                Zet je op de wachtlijst en ontvang updates over de Premium bèta.
+                Zet je op de wachtlijst en ontvang updates over Premium.
               </p>
               <ul className="mt-6 space-y-3 text-sm font-bold text-zinc-200">
                 <li>✦ 1 maand gratis Premium bij lancering</li>

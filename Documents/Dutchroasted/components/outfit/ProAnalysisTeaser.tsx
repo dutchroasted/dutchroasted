@@ -16,7 +16,7 @@ export function ProAnalysisTeaser() {
         Wil je een echte stijlanalyse?
       </h3>
       <p className="mt-3 leading-7 text-zinc-300">
-        Ontvang binnenkort een diepe analyse van je pasvorm, kleuren, stijl, samenhang en trends.
+        Activeer Premium voor een diepe analyse van je pasvorm, kleuren, stijl, samenhang en trends.
       </p>
       <ul className="mt-5 grid gap-2 sm:grid-cols-2">
         {features.map((feature) => (
@@ -26,13 +26,12 @@ export function ProAnalysisTeaser() {
           </li>
         ))}
       </ul>
-      <button
-        type="button"
-        disabled
-        className="mt-6 min-h-12 w-full rounded-2xl border border-violet-300/20 bg-violet-400/10 px-5 py-3 text-sm font-black text-violet-100 sm:w-auto"
+      <a
+        href="/pricing"
+        className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl border border-violet-300/20 bg-violet-400/10 px-5 py-3 text-sm font-black text-violet-100 sm:w-auto"
       >
-        Pro Analyse binnenkort
-      </button>
+        Start Premium
+      </a>
     </article>
   );
 }
