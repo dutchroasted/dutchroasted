@@ -1,3 +1,5 @@
+import { CheckoutButton } from "@/components/billing/CheckoutButton";
+
 const plans = [
   {
     name: "Gratis",
@@ -28,7 +30,7 @@ const plans = [
     cta: "Binnenkort beschikbaar",
     href: "#",
     highlighted: true,
-    disabled: true,
+    disabled: false,
   },
   {
     name: "Pro",
@@ -85,7 +87,9 @@ export function PricingCards() {
 
             <div className="mt-8 flex-1" />
 
-            {plan.disabled ? (
+            {plan.name === "Premium" ? (
+              <CheckoutButton />
+            ) : plan.disabled ? (
               <button
                 type="button"
                 disabled

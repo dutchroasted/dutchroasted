@@ -16,7 +16,8 @@
     "next": "^16.2.9",
     "openai": "^6.42.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "stripe": "^22.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.10",

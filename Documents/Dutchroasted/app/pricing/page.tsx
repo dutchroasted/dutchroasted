@@ -44,8 +44,7 @@ export default function PricingPage() {
             Kies hoe uitgebreid je stylingrapport wordt.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-            Start gratis met 5 Outfit Roasts per dag. Pro Analyse tijdelijk gratis testen tijdens
-            de Premium bèta. Premium wordt straks €4,99 per maand.
+            Start gratis met 5 Outfit Roasts per dag of activeer Premium voor €4,99 per maand.
           </p>
         </section>
 
@@ -65,11 +64,10 @@ export default function PricingPage() {
                 id="premium-wachtlijst-titel"
                 className="mt-3 text-3xl font-black text-white sm:text-4xl"
               >
-                Wil je Premium als eerste testen?
+                Nog niet klaar om te betalen?
               </h2>
               <p className="mt-4 max-w-xl leading-7 text-zinc-300">
-                Laat je e-mailadres achter. Je krijgt toegang tot de Premium bèta zodra we de
-                eerste testers toelaten.
+                Zet je op de wachtlijst en ontvang updates over de Premium bèta.
               </p>
               <ul className="mt-6 space-y-3 text-sm font-bold text-zinc-200">
                 <li>✦ 1 maand gratis Premium bij lancering</li>
