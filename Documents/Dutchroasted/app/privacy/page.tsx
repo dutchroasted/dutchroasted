@@ -61,13 +61,23 @@ export default function PrivacyPage() {
           body: [
             "Outfitfoto’s bewaren we niet permanent. Early access e-mails bewaren we zolang Outfit Roaster in ontwikkeling is of totdat je vraagt om verwijdering.",
             "Resultaten en gratis limieten kunnen tijdelijk in je browser staan voor gebruiksgemak, bijvoorbeeld via localStorage. Je kunt dit wissen via je browserinstellingen.",
+            "Je cookievoorkeur bewaren we lokaal in je browser totdat je deze via Cookievoorkeuren wijzigt of je browsergegevens wist.",
+          ],
+        },
+        {
+          title: "Cookies en gebruiksmeting",
+          body: [
+            "Google Analytics 4 en Microsoft Clarity worden pas geladen nadat je hiervoor expliciet toestemming geeft. Als je weigert, blijven de outfitcheck, roasts, deelkaarten en video-export gewoon werken.",
+            "Google Analytics gebruiken we voor geaggregeerde paginaweergaven en productinteracties. Microsoft Clarity gebruiken we voor geaggregeerde gebruikspatronen, foutopsporing en het verbeteren van de interface. Outfitfoto’s zijn in de interface gemaskeerd voor Clarity.",
+            "Na toestemming kunnen Google en Microsoft analytische cookies plaatsen, waaronder cookies met namen die beginnen met _ga, _clck en _clsk. De precieze bewaartermijn hangt af van de cookie en de ingestelde dienstconfiguratie.",
+            "Je kunt toestemming op ieder moment intrekken via Cookievoorkeuren onderaan de website. OutfitRoaster stopt dan verdere analytische tracking en verwijdert waar mogelijk de bijbehorende first-party cookies.",
           ],
         },
         {
           title: "Met welke diensten werken we?",
           body: [
             "We gebruiken OpenAI voor AI-analyse, Supabase voor het bewaren van early access leads en Vercel voor hosting.",
-            "Outfit Roaster gebruikt Google Analytics 4 om paginaweergaven en productinteracties te meten, zoals uploads, outfitchecks, deelacties en klikken op shopsuggesties.",
+            "Na toestemming gebruikt Outfit Roaster Google Analytics 4 om paginaweergaven en productinteracties te meten, zoals uploads, outfitchecks, deelacties en klikken op shopsuggesties. Microsoft Clarity wordt na toestemming gebruikt om geaggregeerde gebruikspatronen en technische problemen te begrijpen.",
           ],
         },
         {

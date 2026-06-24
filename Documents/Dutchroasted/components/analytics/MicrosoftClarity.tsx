@@ -10,18 +10,20 @@ type MicrosoftClarityProps = {
 
 export function MicrosoftClarity({ projectId }: MicrosoftClarityProps) {
   useEffect(() => {
-    if (isInitialized || !projectId) {
+    if (!projectId) {
       return;
     }
 
     const initialize = async () => {
-      if (isInitialized) {
-        return;
-      }
-
-      isInitialized = true;
       const { default: Clarity } = await import("@microsoft/clarity");
-      Clarity.init(projectId);
+      if (!isInitialized) {
+        isInitialized = true;
+        Clarity.init(projectId);
+      }
+      Clarity.consentV2({
+        ad_Storage: "denied",
+        analytics_Storage: "granted",
+      });
     };
 
     if ("requestIdleCallback" in window) {

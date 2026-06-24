@@ -1,4 +1,5 @@
 import { Logo } from "./Logo";
+import { CookiePreferencesButton } from "./analytics/CookiePreferencesButton";
 
 const footerLinks = [
   { label: "Privacy", href: "/privacy" },
@@ -23,6 +24,7 @@ export function Footer() {
               {link.label}
             </a>
           ))}
+          <CookiePreferencesButton />
         </nav>
       </div>
     </footer>

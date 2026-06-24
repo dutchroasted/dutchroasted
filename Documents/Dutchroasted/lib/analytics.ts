@@ -1,5 +1,7 @@
 "use client";
 
+import { hasAnalyticsConsent } from "./cookieConsent";
+
 export type AnalyticsEventName =
   | "outfit_upload"
   | "outfit_check_started"
@@ -17,6 +19,7 @@ declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...arguments_: unknown[]) => void;
+    clarity?: (...arguments_: unknown[]) => void;
   }
 }
 
@@ -33,7 +36,11 @@ export function trackAnalyticsEvent(
   eventName: AnalyticsEventName,
   parameters: AnalyticsParameters = {},
 ) {
-  if (!measurementId || typeof window === "undefined") {
+  if (
+    !measurementId ||
+    typeof window === "undefined" ||
+    !hasAnalyticsConsent()
+  ) {
     return;
   }
 
@@ -91,7 +98,7 @@ function removeUndefinedValues(parameters: AnalyticsParameters) {
 }
 
 function sendGoogleAnalyticsCommand(...command: unknown[]) {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || !hasAnalyticsConsent()) {
     return;
   }
 

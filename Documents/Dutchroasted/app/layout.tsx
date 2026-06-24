@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
-import { MicrosoftClarity } from "@/components/analytics/MicrosoftClarity";
+import { CookieConsentManager } from "@/components/analytics/CookieConsentManager";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { StructuredData } from "@/components/StructuredData";
 import "./globals.css";
@@ -131,8 +130,10 @@ export default function RootLayout({
         <StructuredData data={structuredData} />
         <ServiceWorkerRegister />
         {children}
-        {measurementId ? <GoogleAnalytics measurementId={measurementId} /> : null}
-        {clarityProjectId ? <MicrosoftClarity projectId={clarityProjectId} /> : null}
+        <CookieConsentManager
+          measurementId={measurementId}
+          clarityProjectId={clarityProjectId ?? undefined}
+        />
       </body>
     </html>
   );
