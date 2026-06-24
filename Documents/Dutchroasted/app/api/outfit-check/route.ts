@@ -38,19 +38,19 @@ const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Sportschool: "Gym",
 };
 const FALLBACK_SHARE_QUOTES = [
-  "Hier is vergaderd, maar duidelijk nog niet besloten.",
-  "Deze outfit zit zichtbaar nog in de conceptfase.",
-  "Je kledingstukken werken vandaag blijkbaar volledig hybride.",
+  "Deze outfit heeft drie persoonlijkheden en geen leider.",
+  "Je kledingkast heeft vandaag op willekeurig gedrukt.",
+  "Deze outfit is een software-update die niemand wilde.",
 ];
 const FALLBACK_ALTERNATIVE_QUOTES = [
-  "De outfit maakt lawaai, maar vergeet een duidelijke boodschap.",
-  "Deze combinatie heeft ambitie en nog dringend een eindredacteur nodig.",
-  "De styling staat klaar, alleen het plan is zoek.",
+  "Zelfs Google Maps weet niet waar deze outfit heen wil.",
+  "Deze kleurencombinatie is een diplomatieke crisis.",
+  "Zelfs de paskamer dacht: succes ermee.",
 ];
 const FALLBACK_ROAST = [
-  "Je outfit heeft een plan, maar de kledingstukken hebben de vergadering gemist.",
-  "De basis staat, alleen de styling zoekt nog naar een duidelijke richting.",
-  "Met één sterke kleur of accessoire stopt deze look met twijfelen.",
+  "Deze outfit kwam binnen zonder plan en bleef uit koppigheid.",
+  "De kleuren voeren overleg, maar niemand heeft de agenda gelezen.",
+  "De styling is een groepsproject waar iedereen zichzelf een tien gaf.",
 ].join("\n");
 const ROAST_LEVEL_FALLBACKS: Record<
   OutfitRoastLevel,
@@ -70,25 +70,28 @@ const ROAST_LEVEL_FALLBACKS: Record<
   },
   Pittig: {
     roast: FALLBACK_ROAST,
-    shareQuote: "Deze outfit heeft meer twijfel dan een volle groepsapp.",
+    shareQuote: "Deze outfit heeft drie persoonlijkheden en geen leider.",
     alternativeQuotes: [
-      "De outfit maakt lawaai, maar vergeet een duidelijke boodschap.",
-      "De styling staat klaar, alleen het plan is zoek.",
+      "Je kledingkast heeft vandaag op willekeurig gedrukt.",
+      "Deze kleurencombinatie is een diplomatieke crisis.",
     ],
   },
   Genadeloos: {
     roast: [
-      "Deze outfit heeft een plan, maar niemand durfde het uit te voeren.",
-      "De styling schreeuwt om aandacht en fluistert vervolgens niets.",
-      "Deze combinatie heeft ambitie, alleen smaak miste de vergadering.",
+      "Deze outfit is gevonden in de map concepten.",
+      "De kleuren hebben ruzie en de styling filmt het gevecht.",
+      "Zelfs de paskamer keek weg uit plaatsvervangende schaamte.",
     ].join("\n"),
-    shareQuote: "Deze outfit heeft ambitie en dringend een volwassen besluit nodig.",
+    shareQuote: "Je spiegel heeft vandaag officieel ontslag genomen.",
     alternativeQuotes: [
-      "De styling kwam opdagen, maar samenhang bleef blijkbaar thuis.",
-      "Deze combinatie maakt lawaai en vergeet de punchline.",
+      "Deze outfit is een PowerPoint zonder inhoud.",
+      "Deze fit kwam binnen zonder toestemming.",
     ],
   },
 };
+const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|kan|kunnen|zou|zouden|probeer|advies|verbeter|meer samenhang|past niet helemaal|leuke look|simpele look|goede balans)\b/i;
+const FORBIDDEN_PERSON_TERMS = /\b(lichaam|gewicht|dik|dun|mager|gezicht|leeftijd|oud|jong|afkomst|etniciteit|ras|genderidentiteit|seksualiteit|homoseksueel|handicap|beperking|gezondheid|ziek|religie|geloof|aantrekkelijk|lelijk|knap)\b/i;
+const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop)\b/i;
 const ROAST_DETAIL_TERMS = [
   "schoenen",
   "sneakers",
@@ -198,7 +201,7 @@ Actuele modecontext:
 `;
 
 const systemPrompt = `
-Je bent OutfitRoaster. Je klinkt niet als een AI, docent of mode-expert met moeilijke woorden. Je bent die scherpe Nederlandse vriend die binnen drie seconden ziet wat kleding, kleuren, pasvorm of gelegenheid met elkaar doen en daar iets raak-grappigs over zegt. Je bent direct, creatief en nooit gemeen. Je roast uitsluitend de outfit, nooit de persoon.
+Je bent OutfitRoaster. Je klinkt niet als een AI, docent of mode-expert met moeilijke woorden. Je bent die scherpe Nederlandse vriend die binnen drie seconden ziet wat kleding, kleuren, pasvorm of gelegenheid met elkaar doen en daar TikTok-roast comedy van maakt. Je bent snel, brutaal, sarcastisch, onverwacht en nooit gemeen. Je roast uitsluitend de outfit, nooit de persoon.
 
 De gewenste reactie is: "Hahaha, verdomme... daar heeft ie wel gelijk in."
 
@@ -206,24 +209,25 @@ Gouden regel:
 - Eerst een concrete zichtbare observatie, daarna humor. Nooit andersom.
 - Humor komt uitsluitend uit zichtbare kleuren, schoenen, pasvorm, accessoires, botsende stijlen, gelegenheid of uitstraling.
 - Een sterke roastregel bevat waar mogelijk observatie, contrast, vergelijking en punchline.
-- Gebruik veel rake vergelijkingen. Nederlandse referenties zoals Action, HEMA, IKEA, VrijMiBo, Koningsdag, Lowlands, Pinkpop, bedrijfsuitje, voetbalteam, barbecue, verjaardag, tankstation, kringloop, Marktplaats, groepsapp, buurtfeest of teamoverleg mogen alleen wanneer ze logisch uit de zichtbare outfit volgen.
+- Gebruik rake onverwachte vergelijkingen en absurde metaforen die onmiddellijk begrijpelijk zijn. Nederlandse referenties zoals Action, HEMA, IKEA, VrijMiBo, Koningsdag, Lowlands, Pinkpop, bedrijfsuitje, voetbalteam, barbecue, verjaardag, tankstation, kringloop, Marktplaats, groepsapp, buurtfeest of teamoverleg mogen alleen wanneer ze logisch uit de zichtbare outfit volgen.
 - Vermijd willekeurige metaforen die niets met de zichtbare outfit te maken hebben.
+- Humor gaat vóór uitgebreide modecorrectheid. Een roast is geen stylingles.
 
 ${currentFashionContext}
 
 Belangrijke grenzen:
 - Focus alleen op kleding, styling, kleuren, pasvorm van kleding, silhouet, accessoires en de gekozen gelegenheid.
-- Beoordeel nooit iemands lichaam, gewicht, lichaamsvorm, aantrekkelijkheid, leeftijd, gender, afkomst, gezondheid of seksuele uitstraling.
+- Beoordeel nooit iemands lichaam, gewicht, lichaamsvorm, gezicht, aantrekkelijkheid, leeftijd, afkomst, gender, genderidentiteit, seksualiteit, handicap, gezondheid of religie.
 - Leid gender nooit af uit de foto, kleding, lichaamsbouw, gezicht, haar of andere zichtbare kenmerken.
 - Gebruik uitsluitend de expliciet meegegeven gender voorkeur voor mannelijke, vrouwelijke of neutrale modebewoording.
 - Geen seksuele opmerkingen, geen bodyshaming, geen discriminatie.
-- De roast mag scherp en grappig zijn, maar nooit gemeen of persoonlijk kwetsend.
+- De roast mag hard zijn voor de outfit, maar nooit gemeen of persoonlijk kwetsend voor de drager.
 - Schrijf uitsluitend Nederlands. Gebruik geen Engelse zinnen en meng geen Nederlands met Engels.
 - Schrijf het veld roast als exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
 - Bij Pittig en Genadeloos zijn dit roastregels; bij Stijlcoach zijn dit eerlijke coachingsregels.
-- Iedere feedbackzin heeft een duidelijke clou en moet zelfstandig deelbaar zijn.
+- Iedere feedbackzin is kort, punchy en heeft een duidelijke clou.
 - Pas de toon strikt aan het gekozen roastniveau aan; Stijlcoach blijft positief, eerlijk en praktisch.
-- Maak de roast vermakelijk, modebewust en citeerbaar, met een originele stem.
+- Maak de roast sneller, harder en grappiger dan normale modefeedback.
 - Gebruik nooit de AI-achtige formuleringen "interessante keuze", "stijlvolle uitstraling", "modieuze look", "leuke combinatie", "persoonlijk vind ik", "esthetisch", "fashion-forward", "trendy uitstraling", "uitgebalanceerd" of "harmonisch".
 - Gebruik uitsluitend kledingstukken uit de vooraf aangeleverde kledinginventaris.
 - Noem nooit een specifiek kledingstuk dat niet in die inventaris staat.
@@ -243,12 +247,19 @@ Belangrijke grenzen:
 - Alle quotes dupliceren elkaar niet.
 - De shareQuote is belangrijker dan de volledige roast: schrijf de sterkste meme-waardige zin als shareQuote.
 - De shareQuote bevat geen uitleg en moet direct begrijpelijk zijn in een screenshot.
-- Schrijf quotes in de sfeer van: "Je schoenen hebben dit niet vooraf besproken.", "Hier is vergaderd maar niet besloten.", "Deze outfit zit nog in de conceptfase.", "Je look heeft meerdere projectleiders." Gebruik deze voorbeelden nooit letterlijk.
+- Bedenk intern eerst 5 verschillende kandidaat-shareQuotes. Rangschik ze op scherpte, verrassing, humor en deelbaarheid. Zet uitsluitend de beste kandidaat in shareQuote en gebruik de twee beste overgebleven unieke kandidaten als alternativeQuotes. Toon de overige kandidaten nergens.
+- Gebruik in quotes nooit verzachtende woorden zoals misschien, beetje, redelijk, best, kan of zou.
+- Een quote die klinkt als normale modefeedback is ongeldig.
+- Schrijf quotes in de sfeer van: "Deze outfit heeft drie persoonlijkheden en geen leider.", "Je kledingkast heeft vandaag op willekeurig gedrukt.", "Deze fit is een PowerPoint zonder inhoud.", "Zelfs de paskamer dacht: succes ermee.", "Deze kleurencombinatie is een diplomatieke crisis." Gebruik deze voorbeelden nooit letterlijk.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
-- Laat intensiteit en woordkeuze bepalen door het gekozen roastniveau.
-- Scorekalibratie op 10: 7+ is goed met kleine verbeterpunten, 8+ is sterk, 9+ is social-mediawaardig en 10 is uitzonderlijk. Geef niet automatisch hoge scores.
+- Laat intensiteit en woordkeuze bepalen door het gekozen roastniveau én de score.
+- Score 1-3: genadeloos grappig; de outfit krijgt de volle punchline.
+- Score 4-6: scherp en sarcastisch; roast de twijfel en mismatch.
+- Score 7-8: geef een compliment met humor; de outfit wint zonder slijmerige taal.
+- Score 9-10: hype de outfit alsof die de kamer binnenloopt en huur betaalt.
+- Scorekalibratie op 10: 7+ is goed, 8+ is sterk, 9+ is social-mediawaardig en 10 is uitzonderlijk. Geef niet automatisch hoge scores.
 
 Output altijd als geldige JSON:
 {
@@ -353,7 +364,8 @@ function normalizeOutfitResult(
   roastLevel: OutfitRoastLevel = "Genadeloos",
   profile: OutfitProfile = "Zeg ik liever niet",
 ): OutfitResultData {
-  const levelFallback = ROAST_LEVEL_FALLBACKS[roastLevel];
+  const score = normalizeScore(source.score ?? source.rating);
+  const levelFallback = getScoreAwareFallback(roastLevel, score);
   const isStyleCoach = roastLevel === "Stijlcoach";
   const normalizedRoastText = isStyleCoach
     ? extractRoastSentences(roastText).filter(isPositiveStyleCoachText).join("\n")
@@ -362,6 +374,7 @@ function normalizeOutfitResult(
     normalizedRoastText || levelFallback.roast,
     inventory,
     levelFallback.roast,
+    roastLevel,
   );
   const providedQuotes = toStringArray(source.alternativeQuotes);
   const shareQuote = selectValidQuote(
@@ -376,6 +389,7 @@ function normalizeOutfitResult(
     ],
     inventory,
     [levelFallback.shareQuote, ...FALLBACK_SHARE_QUOTES],
+    isStyleCoach,
   );
   const stylingTips = isStyleCoach
     ? []
@@ -411,7 +425,7 @@ function normalizeOutfitResult(
       source.shoppingSuggestions,
       inventory,
     ),
-    score: normalizeScore(source.score ?? source.rating),
+    score,
   };
 
   if (profile === "Vrouw") {
@@ -467,9 +481,15 @@ function normalizeRoast(
   value: string,
   inventory: ClothingInventoryItem[],
   fallbackRoast: string,
+  roastLevel: OutfitRoastLevel,
 ) {
-  const candidates = extractRoastSentences(value).filter((sentence) =>
-    referencesOnlyDetectedClothing(sentence, inventory),
+  const candidates = extractRoastSentences(value).filter(
+    (sentence) =>
+      referencesOnlyDetectedClothing(sentence, inventory) &&
+      isSafeOutfitOnlyText(sentence) &&
+      sentence.split(/\s+/).length <= 22 &&
+      !SOFT_FEEDBACK_TERMS.test(sentence) &&
+      (roastLevel === "Stijlcoach" || COMEDY_SIGNALS.test(sentence)),
   );
   const rankedCandidates = candidates
     .map((sentence, index) => ({
@@ -505,8 +525,78 @@ function getRoastSentenceScore(sentence: string) {
   const normalized = sentence.toLowerCase();
   const detailScore = ROAST_DETAIL_TERMS.filter((term) => normalized.includes(term)).length * 3;
   const punchlineScore = /[,;:—-]/.test(sentence) ? 2 : 0;
+  const comedyScore = COMEDY_SIGNALS.test(sentence) ? 4 : 0;
+  const blandPenalty = SOFT_FEEDBACK_TERMS.test(sentence) ? -6 : 0;
+  const unsafePenalty = FORBIDDEN_PERSON_TERMS.test(sentence) ? -100 : 0;
   const conciseScore = sentence.split(/\s+/).length <= 20 ? 1 : 0;
-  return detailScore + punchlineScore + conciseScore;
+  return detailScore + punchlineScore + comedyScore + blandPenalty + unsafePenalty + conciseScore;
+}
+
+function getScoreAwareFallback(
+  roastLevel: OutfitRoastLevel,
+  score: number,
+) {
+  if (roastLevel === "Stijlcoach") {
+    return ROAST_LEVEL_FALLBACKS.Stijlcoach;
+  }
+
+  if (score <= 3) {
+    return {
+      roast: [
+        "Deze outfit is gevonden in de map concepten.",
+        "De kleuren hebben ruzie en de styling filmt het gevecht.",
+        "Zelfs de paskamer keek weg uit plaatsvervangende schaamte.",
+      ].join("\n"),
+      shareQuote: "Deze outfit is een software-update die niemand wilde.",
+      alternativeQuotes: [
+        "Je spiegel heeft vandaag officieel ontslag genomen.",
+        "Zelfs de paskamer dacht: succes ermee.",
+      ],
+    };
+  }
+
+  if (score <= 6) {
+    return {
+      roast: [
+        "Deze outfit heeft drie richtingen en mist alle afslagen.",
+        "De kleuren voeren overleg, maar niemand heeft de agenda gelezen.",
+        "Niet rampzalig, maar de sfeer staat wel bij gevonden voorwerpen.",
+      ].join("\n"),
+      shareQuote: "Deze outfit heeft drie persoonlijkheden en geen leider.",
+      alternativeQuotes: [
+        "Zelfs Google Maps weet niet waar deze outfit heen wil.",
+        "Deze kleurencombinatie is een diplomatieke crisis.",
+      ],
+    };
+  }
+
+  if (score <= 8) {
+    return {
+      roast: [
+        "Deze outfit doet alsof hij niks probeert en wint daarmee.",
+        "De styling kwam rustig binnen en nam meteen de beste stoel.",
+        "Zelfs de spiegel moest toegeven dat dit irritant goed werkt.",
+      ].join("\n"),
+      shareQuote: "Deze outfit probeert niks en wint alsnog de groepsapp.",
+      alternativeQuotes: [
+        "De styling kwam rustig binnen en pakte meteen applaus.",
+        "Deze outfit doet moeiteloos waar anderen een moodboard voor nodig hebben.",
+      ],
+    };
+  }
+
+  return {
+    roast: [
+      "Deze outfit loopt binnen alsof hij huur betaalt.",
+      "De styling heeft geen uitleg nodig en weet dat zelf.",
+      "Zelfs de spiegel vraagt vandaag om een handtekening.",
+    ].join("\n"),
+    shareQuote: "Deze outfit loopt binnen alsof hij huur betaalt.",
+    alternativeQuotes: [
+      "De styling kwam opdagen en de rest werd figurant.",
+      "Zelfs de spiegel vraagt vandaag om een handtekening.",
+    ],
+  };
 }
 
 function toNonEmptyString(value: unknown) {
@@ -759,7 +849,9 @@ function fillAlternativeQuotes(
     (quote) =>
       isValidShareQuote(quote) &&
       referencesOnlyDetectedClothing(quote, inventory) &&
-      (!positiveOnly || isPositiveStyleCoachText(quote)),
+      (positiveOnly
+        ? isPositiveStyleCoachText(quote)
+        : isTikTokWorthyQuote(quote)),
   );
   const uniqueQuotes = [
     ...validQuotes,
@@ -788,11 +880,15 @@ function selectValidQuote(
   candidates: Array<string | null>,
   inventory: ClothingInventoryItem[],
   fallbacks: string[],
+  positiveOnly = false,
 ) {
   return [...candidates, ...fallbacks].find(
     (quote): quote is string =>
       typeof quote === "string" &&
       isValidShareQuote(quote) &&
+      (positiveOnly
+        ? isPositiveStyleCoachText(quote)
+        : isTikTokWorthyQuote(quote)) &&
       referencesOnlyDetectedClothing(quote, inventory),
   ) ?? FALLBACK_SHARE_QUOTES[0];
 }
@@ -810,8 +906,41 @@ function isValidShareQuote(value: string) {
     /[.!?]$/.test(quote) &&
     !/(?:\.\.\.|…|:|;)$/.test(quote) &&
     !DANGLING_QUOTE_ENDINGS.has(lastWord) &&
+    !SOFT_FEEDBACK_TERMS.test(quote) &&
+    isSafeOutfitOnlyText(quote) &&
     !containsLikelyEnglish(quote, 1)
   );
+}
+
+function isTikTokWorthyQuote(value: string) {
+  return isValidShareQuote(value) &&
+    COMEDY_SIGNALS.test(value) &&
+    !SOFT_FEEDBACK_TERMS.test(value);
+}
+
+function isSafeOutfitOnlyText(value: string) {
+  return !FORBIDDEN_PERSON_TERMS.test(value);
+}
+
+function isPunchyRoast(value: string, roastLevel: OutfitRoastLevel) {
+  const sentences = extractRoastSentences(value);
+  if (
+    sentences.length !== 3 ||
+    sentences.some(
+      (sentence) =>
+        sentence.split(/\s+/).length > 22 ||
+        !isSafeOutfitOnlyText(sentence) ||
+        SOFT_FEEDBACK_TERMS.test(sentence),
+    )
+  ) {
+    return false;
+  }
+
+  if (roastLevel === "Stijlcoach") {
+    return sentences.every(isPositiveStyleCoachText);
+  }
+
+  return sentences.filter((sentence) => COMEDY_SIGNALS.test(sentence)).length >= 2;
 }
 
 function filterInventoryConsistentText(
@@ -918,10 +1047,16 @@ function formatClothingInventory(inventory: ClothingInventoryItem[]) {
 function generatedResultNeedsCorrection(
   value: unknown,
   inventory: ClothingInventoryItem[],
+  roastLevel: OutfitRoastLevel,
 ) {
   const source = getResultObject(value);
   const roast = getRoastText(value);
-  if (!source || !roast || containsLikelyEnglish(roast)) {
+  if (
+    !source ||
+    !roast ||
+    containsLikelyEnglish(roast) ||
+    !isPunchyRoast(roast, roastLevel)
+  ) {
     return true;
   }
 
@@ -937,11 +1072,15 @@ function generatedResultNeedsCorrection(
   return (
     !shareQuote ||
     !isValidShareQuote(shareQuote) ||
+    (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(shareQuote)) ||
+    (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(shareQuote)) ||
     !referencesOnlyDetectedClothing(shareQuote, inventory) ||
     alternatives.length !== 2 ||
     alternatives.some(
       (quote) =>
         !isValidShareQuote(quote) ||
+        (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(quote)) ||
+        (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(quote)) ||
         !referencesOnlyDetectedClothing(quote, inventory),
     ) ||
     analysisText.some((text) => !referencesOnlyDetectedClothing(text, inventory))
@@ -1210,7 +1349,9 @@ Regels:
 - Het veld roast bevat exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
 - Bij Stijlcoach zijn dit positieve confidence-regels over sterke punten en stijlwinsten.
 - Bij Pittig en Genadeloos zijn roastregels toegestaan.
-- Iedere feedbackregel heeft een duidelijke clou en is zelfstandig deelbaar.
+- Iedere feedbackregel is kort, snel en heeft een duidelijke clou.
+- Schrijf geen lange modeanalyse of stylingles in roast.
+- Humor gaat vóór nuance: gebruik scherpe observaties, onverwachte vergelijkingen en absurde maar logische metaforen.
 - Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief, zelfverzekerd en niet-corrigerend; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
@@ -1222,9 +1363,11 @@ Regels:
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
-- Genereer altijd een apart veld shareQuote.
-- Genereer daarnaast exact 2 verschillende alternativeQuotes.
-- Kies de sterkste en meest deelbare quote als shareQuote.
+- Bedenk intern eerst 5 verschillende shareQuote-kandidaten.
+- Rangschik die vijf intern op scherpte, verrassing, humor en screenshotwaarde.
+- Zet alleen de beste kandidaat in shareQuote.
+- Zet de twee beste overgebleven unieke kandidaten in alternativeQuotes.
+- Toon de andere twee kandidaten nergens en voeg geen extra JSON-veld toe.
 - Iedere quote is één complete, natuurlijk klinkende Nederlandse zin van 6 tot 12 woorden.
 - Eindig iedere quote met één punt, vraagteken of uitroepteken.
 - Eindig nooit met ..., …, een dubbele punt, puntkomma of een onafgemaakte bijzin.
@@ -1236,12 +1379,14 @@ Regels:
 - shareQuote is een korte, harde one-liner voor het deelbeeld.
 - shareQuote is maximaal 12 woorden, precies 1 zin en bevat geen tweede zin.
 - shareQuote bevat geen uitleg, geen advies, geen bullets en geen vriendelijke AI-taal.
+- Gebruik in shareQuote en alternativeQuotes nooit misschien, beetje, redelijk, best, kan of zou.
+- Een quote die klinkt als gewone modefeedback is ongeldig en moet vóór output worden herschreven.
 - shareQuote volgt duidelijk het gekozen roastniveau en is memorabel.
 - Bij Stijlcoach is shareQuote zelfverzekerd, positief en goed deelbaar.
 - Bij Stijlcoach mogen shareQuote en alternativeQuotes nooit kritiek, correcties of roasttaal bevatten.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - shareQuote is meme-waardig, direct begrijpelijk en belangrijker dan de volledige roast.
-- Voorbeelden shareQuote, alleen als stijlrichting: "Je schoenen hebben dit niet vooraf besproken.", "Deze outfit zit nog in de conceptfase.", "Hier is vergaderd maar niet besloten.", "Je look heeft meerdere projectleiders.", "Dit oogt als een groepsproject."
+- Voorbeelden shareQuote, alleen als stijlrichting: "Deze outfit heeft drie persoonlijkheden en geen leider.", "Je kledingkast heeft vandaag op willekeurig gedrukt.", "Deze fit is een PowerPoint zonder inhoud.", "Zelfs de paskamer dacht: succes ermee.", "Deze outfit is een software-update die niemand wilde.", "De broek en schoenen hebben elkaar net ontmoet.", "Deze kleurencombinatie is een diplomatieke crisis.", "Zelfs Google Maps weet niet waar deze outfit heen wil.", "Deze fit kwam binnen zonder toestemming.", "Je spiegel heeft vandaag ontslag genomen."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
@@ -1260,7 +1405,12 @@ Regels:
 - Geen bodyshaming
 - Geen beoordeling van uiterlijk
 - Alleen outfit beoordelen
-- Scorekalibratie: 7 of hoger betekent goed met kleine verbeterpunten; 8 of hoger is sterk; 9 of hoger is uitzonderlijk deelbaar; 10 alleen bij een oprecht uitzonderlijke outfit. Geef geen overdreven hoge score.
+- Noem nooit lichaam, gewicht, gezicht, leeftijd, afkomst, genderidentiteit, seksualiteit, handicap, gezondheid, religie of aantrekkelijkheid.
+- Score 1-3: roast genadeloos grappig.
+- Score 4-6: schrijf scherp en sarcastisch.
+- Score 7-8: geef een compliment met humor.
+- Score 9-10: hype de outfit alsof die de kamer binnenloopt.
+- Scorekalibratie: 7 of hoger betekent goed; 8 of hoger is sterk; 9 of hoger is uitzonderlijk deelbaar; 10 alleen bij een oprecht uitzonderlijke outfit. Geef geen overdreven hoge score.
 - Output altijd als geldige JSON volgens exact dit format:
 {
   "roast": "string",
@@ -1325,6 +1475,7 @@ Regels:
     const needsDutchRewrite = generatedResultNeedsCorrection(
       parsed,
       clothingInventory,
+      roastLevel,
     );
 
     if (needsDutchRewrite) {
@@ -1337,7 +1488,13 @@ Regels:
 Gebruik uitsluitend deze kledinginventaris:
 ${formatClothingInventory(clothingInventory)}
 
-Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands. Behoud het exacte JSON-format. Maak shareQuote één complete zin van 6 tot 12 woorden. Voeg exact 2 unieke alternativeQuotes toe, ook complete Nederlandse zinnen van 6 tot 12 woorden. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin. Maak het veld roast exact 3 korte feedbackzinnen, elk op een eigen regel en met een duidelijke clou. Bij Stijlcoach zijn alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
+Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze "Voor wie": ${profile}. Leid gender nooit af uit de foto. Noem geen enkel ander kledingstuk en herclassificeer niets. Gebruik bij twijfel alleen een generieke term die letterlijk in de inventaris staat. Schrijf natuurlijk Nederlands en behoud het exacte JSON-format.
+
+De vorige versie was te braaf, te lang, onvoldoende grappig, onveilig of niet deelbaar genoeg. Herschrijf daarom als snelle Nederlandse TikTok-roast comedy. Roast uitsluitend kleding, styling, kleuren, schoenen, accessoires en de mismatch met de gelegenheid. Noem nooit lichaam, gewicht, gezicht, leeftijd, afkomst, genderidentiteit, seksualiteit, handicap, gezondheid, religie of aantrekkelijkheid.
+
+Bedenk intern 5 nieuwe shareQuote-kandidaten en kies de scherpste als shareQuote. Gebruik de twee beste overgebleven kandidaten als alternativeQuotes. Toon geen overige kandidaten en voeg geen velden toe. Alle drie zijn complete zinnen van 6 tot 12 woorden, screenshotwaardig, onverwacht en zonder uitleg of advies. Gebruik nooit misschien, beetje, redelijk, best, kan of zou. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin.
+
+Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
