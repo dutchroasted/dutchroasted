@@ -89,9 +89,39 @@ const ROAST_LEVEL_FALLBACKS: Record<
     ],
   },
 };
-const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|kan|kunnen|zou|zouden|probeer|advies|verbeter|meer samenhang|past niet helemaal|leuke look|simpele look|goede balans)\b/i;
+const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|aardig|lijkt|lijken|kan|kunnen|zou|zouden|probeer|advies|verbeter|meer samenhang|mist samenhang|kan beter|past niet helemaal|leuke look|simpele look|interessante keuze|goede balans)\b/i;
 const FORBIDDEN_PERSON_TERMS = /\b(lichaam|gewicht|dik|dun|mager|gezicht|leeftijd|oud|jong|afkomst|etniciteit|ras|genderidentiteit|seksualiteit|homoseksueel|handicap|beperking|gezondheid|ziek|religie|geloof|aantrekkelijk|lelijk|knap)\b/i;
-const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop)\b/i;
+const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop|scheidsrechter|wedstrijd|competitie|champions league|finale|film|filmtrailer|hoofdrol|figurant|reality|seizoen|storing|internetstoring|moodboard|dresscode|publiek|applaus|deadline|laptop|handtekening|huur)\b/i;
+const HUMOR_ANGLES = [
+  "droog sarcasme",
+  "absurde metafoor",
+  "kantoorhumor",
+  "sportcommentaar",
+  "technologievergelijking",
+  "reality-tv-energie",
+  "filmtrailer",
+  "dagelijkse situatie",
+  "internetcultuur",
+  "overdramatische crisis",
+] as const;
+const QUOTE_OPENING_PATTERNS = [
+  "Begin met een botsing tussen twee zichtbare kledingonderdelen.",
+  "Begin met: Dit heeft de energie van...",
+  "Begin met: Alsof...",
+  "Begin met een actie van iemand: Iemand heeft...",
+  "Begin met een gevolg: Ergens huilt...",
+  "Begin als sportcommentator of wedstrijdverslag.",
+  "Begin als kantoor-, project- of vergaderobservatie.",
+  "Begin als technologie-, app- of softwarevergelijking.",
+  "Begin als reality-tv- of filmtrailercommentaar.",
+  "Begin met een overdreven conclusie zonder 'Deze outfit'.",
+] as const;
+type RoastVariation = {
+  id: string;
+  angles: string[];
+  openingPatterns: string[];
+  fallbackOffset: number;
+};
 const ROAST_DETAIL_TERMS = [
   "schoenen",
   "sneakers",
@@ -247,7 +277,9 @@ Belangrijke grenzen:
 - Alle quotes dupliceren elkaar niet.
 - De shareQuote is belangrijker dan de volledige roast: schrijf de sterkste meme-waardige zin als shareQuote.
 - De shareQuote bevat geen uitleg en moet direct begrijpelijk zijn in een screenshot.
-- Bedenk intern eerst 5 verschillende kandidaat-shareQuotes. Rangschik ze op scherpte, verrassing, humor en deelbaarheid. Zet uitsluitend de beste kandidaat in shareQuote en gebruik de twee beste overgebleven unieke kandidaten als alternativeQuotes. Toon de overige kandidaten nergens.
+- Bedenk intern eerst minimaal 10 verschillende kandidaat-shareQuotes vanuit minstens 5 verschillende humorhoeken. Rangschik ze op scherpte, verrassing, humor, originaliteit en deelbaarheid. Zet uitsluitend de beste kandidaat in shareQuote en gebruik twee duidelijk anders opgebouwde kandidaten als alternativeQuotes. Toon de overige kandidaten nergens.
+- De drie teruggegeven quotes mogen niet met hetzelfde zinsformat beginnen en mogen niet dezelfde metafoor herhalen.
+- Vermijd dominante vaste openingen. Gebruik niet automatisch steeds "Deze outfit", "Je kledingkast" of "Zelfs de spiegel".
 - Gebruik in quotes nooit verzachtende woorden zoals misschien, beetje, redelijk, best, kan of zou.
 - Een quote die klinkt als normale modefeedback is ongeldig.
 - Schrijf quotes in de sfeer van: "Deze outfit heeft drie persoonlijkheden en geen leider.", "Je kledingkast heeft vandaag op willekeurig gedrukt.", "Deze fit is een PowerPoint zonder inhoud.", "Zelfs de paskamer dacht: succes ermee.", "Deze kleurencombinatie is een diplomatieke crisis." Gebruik deze voorbeelden nooit letterlijk.
@@ -332,6 +364,41 @@ function normalizeProfile(value: unknown): OutfitProfile {
     : "Zeg ik liever niet";
 }
 
+function createRoastVariation(): RoastVariation {
+  const id = crypto.randomUUID();
+  const fallbackOffset = hashString(`${id}:${Date.now()}`);
+
+  return {
+    id,
+    angles: pickRotatedItems(HUMOR_ANGLES, fallbackOffset, 5),
+    openingPatterns: pickRotatedItems(
+      QUOTE_OPENING_PATTERNS,
+      Math.floor(fallbackOffset / 7),
+      5,
+    ),
+    fallbackOffset,
+  };
+}
+
+function pickRotatedItems<T>(
+  items: readonly T[],
+  offset: number,
+  count: number,
+) {
+  return Array.from(
+    { length: Math.min(count, items.length) },
+    (_, index) => items[(offset + index * 3) % items.length],
+  );
+}
+
+function hashString(value: string) {
+  let hash = 0;
+  for (const character of value) {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }
+  return hash;
+}
+
 function isValidImage(value: unknown): value is string {
   return typeof value === "string" &&
     /^data:image\/jpeg;base64,/.test(value) &&
@@ -363,9 +430,11 @@ function normalizeOutfitResult(
   inventory: ClothingInventoryItem[] = [],
   roastLevel: OutfitRoastLevel = "Genadeloos",
   profile: OutfitProfile = "Zeg ik liever niet",
+  variationOffset = 0,
+  recentQuotes: string[] = [],
 ): OutfitResultData {
   const score = normalizeScore(source.score ?? source.rating);
-  const levelFallback = getScoreAwareFallback(roastLevel, score);
+  const levelFallback = getScoreAwareFallback(roastLevel, score, variationOffset);
   const isStyleCoach = roastLevel === "Stijlcoach";
   const normalizedRoastText = isStyleCoach
     ? extractRoastSentences(roastText).filter(isPositiveStyleCoachText).join("\n")
@@ -390,6 +459,7 @@ function normalizeOutfitResult(
     inventory,
     [levelFallback.shareQuote, ...FALLBACK_SHARE_QUOTES],
     isStyleCoach,
+    recentQuotes,
   );
   const stylingTips = isStyleCoach
     ? []
@@ -404,6 +474,7 @@ function normalizeOutfitResult(
       inventory,
       levelFallback.alternativeQuotes,
       isStyleCoach,
+      recentQuotes,
     ),
     worksWell: withFallback(
       filterInventoryConsistentText(toStringArray(source.worksWell), inventory),
@@ -535,68 +606,138 @@ function getRoastSentenceScore(sentence: string) {
 function getScoreAwareFallback(
   roastLevel: OutfitRoastLevel,
   score: number,
+  variationOffset: number,
 ) {
   if (roastLevel === "Stijlcoach") {
-    return ROAST_LEVEL_FALLBACKS.Stijlcoach;
+    const quotes = rotateFallbacks([
+      "Rustig binnenkomen en alsnog de hele kamer winnen.",
+      "Alsof zelfvertrouwen vandaag gewoon in de styling zat.",
+      "De spiegel heeft dit zonder discussie goedgekeurd.",
+      "Iemand heeft eenvoud vandaag onverwacht hoofdrolspeler gemaakt.",
+      "Dit heeft de energie van moeiteloos gelijk krijgen.",
+      "De styling speelt thuis en het publiek weet dat.",
+    ], variationOffset);
+    const roastLines = rotateFallbacks([
+      "De styling speelt thuis en kent elke hoek van het veld.",
+      "Alsof alle kledingstukken vooraf eindelijk dezelfde groepsapp lazen.",
+      "De kleuren kwamen rustig binnen en pakten alsnog de hoofdrol.",
+      "Iemand heeft eenvoud hier verrassend veel zelfvertrouwen gegeven.",
+      "De spiegel hoeft vandaag werkelijk geen second opinion.",
+      "Dit heeft de energie van winnen zonder zichtbaar te zweten.",
+    ], variationOffset + 2);
+    return {
+      roast: roastLines.slice(0, 3).join("\n"),
+      shareQuote: quotes[0],
+      alternativeQuotes: quotes.slice(1, 3),
+    };
   }
 
   if (score <= 3) {
+    const quotes = rotateFallbacks([
+      "Deze outfit is een software-update die niemand wilde.",
+      "Ergens huilt een paskamer zachtjes om deze beslissing.",
+      "Niet eens Google Maps vindt hier een stijlrichting.",
+      "Alsof drie kledingkasten tegelijk op verzenden drukten.",
+      "De kleuren spelen vandaag een wedstrijd zonder scheidsrechter.",
+      "Iemand heeft de styling live tijdens de storing afgerond.",
+      "Dit heeft de energie van een mislukte seizoensfinale.",
+      "De broek en schoenen zitten duidelijk in rivaliserende teams.",
+    ], variationOffset);
+    const roastLines = rotateFallbacks([
+      "Ergens huilt een paskamer en niemand durft te vragen waarom.",
+      "Alsof drie kledingkasten tegelijk hun nooduitgang zochten.",
+      "De kleuren spelen een finale zonder regels of scheidsrechter.",
+      "Iemand heeft deze styling tijdens een internetstoring afgerond.",
+      "Dit kwam binnen als filmtrailer en eindigde als storing.",
+      "De kledingonderdelen zitten samen, maar duidelijk niet vrijwillig.",
+    ], variationOffset + 3);
     return {
-      roast: [
-        "Deze outfit is gevonden in de map concepten.",
-        "De kleuren hebben ruzie en de styling filmt het gevecht.",
-        "Zelfs de paskamer keek weg uit plaatsvervangende schaamte.",
-      ].join("\n"),
-      shareQuote: "Deze outfit is een software-update die niemand wilde.",
-      alternativeQuotes: [
-        "Je spiegel heeft vandaag officieel ontslag genomen.",
-        "Zelfs de paskamer dacht: succes ermee.",
-      ],
+      roast: roastLines.slice(0, 3).join("\n"),
+      shareQuote: quotes[0],
+      alternativeQuotes: quotes.slice(1, 3),
     };
   }
 
   if (score <= 6) {
+    const quotes = rotateFallbacks([
+      "Deze outfit heeft drie persoonlijkheden en geen leider.",
+      "De kleuren houden teamoverleg zonder een agenda.",
+      "Alsof een moodboard halverwege ontslag heeft genomen.",
+      "Iemand heeft twijfel hier tot dresscode gepromoveerd.",
+      "Dit heeft de energie van een groepsproject zonder manager.",
+      "De schoenen en broek spelen duidelijk verschillende competities.",
+      "Ergens wacht een stylist nog steeds op uitleg.",
+      "Niet eens de groepsapp begrijpt wie hier stuurt.",
+    ], variationOffset);
+    const roastLines = rotateFallbacks([
+      "De kleuren houden overleg, maar niemand noteert de besluiten.",
+      "Alsof de styling halverwege naar een ander feest vertrok.",
+      "Iemand heeft twijfel hier verrassend overtuigend aangekleed.",
+      "De kleding speelt samen, alleen wel in verschillende competities.",
+      "Dit heeft groepsprojectenergie en niemand beheert de deadline.",
+      "Ergens wacht een paskamer nog steeds op de plotwending.",
+    ], variationOffset + 4);
     return {
-      roast: [
-        "Deze outfit heeft drie richtingen en mist alle afslagen.",
-        "De kleuren voeren overleg, maar niemand heeft de agenda gelezen.",
-        "Niet rampzalig, maar de sfeer staat wel bij gevonden voorwerpen.",
-      ].join("\n"),
-      shareQuote: "Deze outfit heeft drie persoonlijkheden en geen leider.",
-      alternativeQuotes: [
-        "Zelfs Google Maps weet niet waar deze outfit heen wil.",
-        "Deze kleurencombinatie is een diplomatieke crisis.",
-      ],
+      roast: roastLines.slice(0, 3).join("\n"),
+      shareQuote: quotes[0],
+      alternativeQuotes: quotes.slice(1, 3),
     };
   }
 
   if (score <= 8) {
+    const quotes = rotateFallbacks([
+      "Deze outfit probeert niks en wint alsnog de groepsapp.",
+      "Alsof moeiteloos vandaag gewoon een officiële dresscode werd.",
+      "De styling speelt thuis en kent elke publieksfavoriet.",
+      "Iemand heeft eenvoud hier een verrassend sterke finale gegeven.",
+      "Dit kwam binnen als bijrol en stal de film.",
+      "Zelfs het teamoverleg stemt unaniem vóór deze styling.",
+      "De kleuren doen rustig en pakken alsnog alle aandacht.",
+      "Ergens schrijft een moodboard jaloers deze combinatie over.",
+    ], variationOffset);
+    const roastLines = rotateFallbacks([
+      "Alsof de outfit niks probeert en precies daarom wint.",
+      "De styling speelt thuis en het publiek kent het refrein.",
+      "Iemand heeft eenvoud hier onverwacht de hoofdrol gegeven.",
+      "Dit kwam binnen als bijrol en stal zonder moeite de film.",
+      "De kleuren praten zacht en krijgen alsnog alle aandacht.",
+      "Ergens maakt een moodboard haastig aantekeningen van deze combinatie.",
+    ], variationOffset + 1);
     return {
-      roast: [
-        "Deze outfit doet alsof hij niks probeert en wint daarmee.",
-        "De styling kwam rustig binnen en nam meteen de beste stoel.",
-        "Zelfs de spiegel moest toegeven dat dit irritant goed werkt.",
-      ].join("\n"),
-      shareQuote: "Deze outfit probeert niks en wint alsnog de groepsapp.",
-      alternativeQuotes: [
-        "De styling kwam rustig binnen en pakte meteen applaus.",
-        "Deze outfit doet moeiteloos waar anderen een moodboard voor nodig hebben.",
-      ],
+      roast: roastLines.slice(0, 3).join("\n"),
+      shareQuote: quotes[0],
+      alternativeQuotes: quotes.slice(1, 3),
     };
   }
 
+  const quotes = rotateFallbacks([
+    "Deze outfit loopt binnen alsof hij huur betaalt.",
+    "Alsof de rode loper vandaag persoonlijk werd uitgenodigd.",
+    "De styling heeft hoofdrolenergie en weigert auditie te doen.",
+    "Iemand heeft zelfvertrouwen hier perfect op maat geleverd.",
+    "Dit kwam binnen en maakte de rest figurant.",
+    "Zelfs de spiegel vraagt vandaag om een handtekening.",
+    "De kleuren spelen Champions League zonder zichtbaar te zweten.",
+    "Ergens annuleert een stylist de concurrentie uit respect.",
+  ], variationOffset);
+  const roastLines = rotateFallbacks([
+    "Alsof de outfit de locatie bezit en iedereen huur vraagt.",
+    "De styling heeft hoofdrolenergie zonder auditie of toestemming.",
+    "Iemand heeft zelfvertrouwen hier akelig precies op maat geleverd.",
+    "Dit kwam binnen en degradeerde de rest direct tot figurant.",
+    "De kleuren spelen Champions League en vieren al de finale.",
+    "Ergens sluit een stylist de laptop uit pure tevredenheid.",
+  ], variationOffset + 5);
   return {
-    roast: [
-      "Deze outfit loopt binnen alsof hij huur betaalt.",
-      "De styling heeft geen uitleg nodig en weet dat zelf.",
-      "Zelfs de spiegel vraagt vandaag om een handtekening.",
-    ].join("\n"),
-    shareQuote: "Deze outfit loopt binnen alsof hij huur betaalt.",
-    alternativeQuotes: [
-      "De styling kwam opdagen en de rest werd figurant.",
-      "Zelfs de spiegel vraagt vandaag om een handtekening.",
-    ],
+    roast: roastLines.slice(0, 3).join("\n"),
+    shareQuote: quotes[0],
+    alternativeQuotes: quotes.slice(1, 3),
   };
+}
+
+function rotateFallbacks(items: string[], offset: number) {
+  const start = offset % items.length;
+  return [...items.slice(start), ...items.slice(0, start)];
 }
 
 function toNonEmptyString(value: unknown) {
@@ -844,6 +985,7 @@ function fillAlternativeQuotes(
   inventory: ClothingInventoryItem[],
   styleFallbacks: string[],
   positiveOnly = false,
+  excludedQuotes: string[] = [],
 ) {
   const validQuotes = quotes.filter(
     (quote) =>
@@ -863,7 +1005,75 @@ function fillAlternativeQuotes(
       allQuotes.findIndex((item) => item.toLowerCase() === quote.toLowerCase()) === index,
   );
 
-  return uniqueQuotes.slice(0, 2);
+  const freshQuotes = uniqueQuotes.filter(
+    (quote) => !excludedQuotes.some((excluded) => areQuotesTooSimilar(quote, excluded)),
+  );
+
+  return selectDiverseQuotes(
+    freshQuotes.length >= 2 ? freshQuotes : uniqueQuotes,
+    [shareQuote],
+    2,
+  );
+}
+
+function selectDiverseQuotes(
+  candidates: string[],
+  selected: string[],
+  limit: number,
+) {
+  const result: string[] = [];
+
+  for (const candidate of candidates) {
+    const comparisons = [...selected, ...result];
+    if (comparisons.every((quote) => !areQuotesTooSimilar(candidate, quote))) {
+      result.push(candidate);
+    }
+    if (result.length === limit) {
+      return result;
+    }
+  }
+
+  for (const candidate of candidates) {
+    if (
+      !result.includes(candidate) &&
+      !selected.some((quote) => quote.toLowerCase() === candidate.toLowerCase())
+    ) {
+      result.push(candidate);
+    }
+    if (result.length === limit) {
+      break;
+    }
+  }
+
+  return result;
+}
+
+function areQuotesTooSimilar(left: string, right: string) {
+  const leftWords = normalizeQuoteWords(left);
+  const rightWords = normalizeQuoteWords(right);
+  const sharedWords = leftWords.filter((word) => rightWords.includes(word));
+  const unionSize = new Set([...leftWords, ...rightWords]).size;
+  const similarity = unionSize === 0 ? 1 : sharedWords.length / unionSize;
+  const sameOpening =
+    leftWords.slice(0, 2).join(" ") === rightWords.slice(0, 2).join(" ");
+
+  return sameOpening || similarity >= 0.42;
+}
+
+function normalizeQuoteWords(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-zà-ÿ0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 2);
+}
+
+function areResponseQuotesDiverse(quotes: string[]) {
+  return quotes.every((quote, index) =>
+    quotes.slice(index + 1).every((otherQuote) =>
+      !areQuotesTooSimilar(quote, otherQuote),
+    ),
+  );
 }
 
 function positiveStyleCoachText(value: string | null) {
@@ -881,8 +1091,9 @@ function selectValidQuote(
   inventory: ClothingInventoryItem[],
   fallbacks: string[],
   positiveOnly = false,
+  excludedQuotes: string[] = [],
 ) {
-  return [...candidates, ...fallbacks].find(
+  const validQuotes = [...candidates, ...fallbacks].filter(
     (quote): quote is string =>
       typeof quote === "string" &&
       isValidShareQuote(quote) &&
@@ -890,7 +1101,11 @@ function selectValidQuote(
         ? isPositiveStyleCoachText(quote)
         : isTikTokWorthyQuote(quote)) &&
       referencesOnlyDetectedClothing(quote, inventory),
-  ) ?? FALLBACK_SHARE_QUOTES[0];
+  );
+
+  return validQuotes.find(
+    (quote) => !excludedQuotes.some((excluded) => areQuotesTooSimilar(quote, excluded)),
+  ) ?? validQuotes[0] ?? FALLBACK_SHARE_QUOTES[0];
 }
 
 function isValidShareQuote(value: string) {
@@ -920,6 +1135,18 @@ function isTikTokWorthyQuote(value: string) {
 
 function isSafeOutfitOnlyText(value: string) {
   return !FORBIDDEN_PERSON_TERMS.test(value);
+}
+
+function isSafeRecentOutput(value: string) {
+  const words = value.trim().split(/\s+/).filter(Boolean);
+  return value.length <= 180 &&
+    words.length >= 4 &&
+    words.length <= 22 &&
+    /[.!?]$/.test(value) &&
+    !SOFT_FEEDBACK_TERMS.test(value) &&
+    isSafeOutfitOnlyText(value) &&
+    !containsLikelyEnglish(value, 1) &&
+    !/\b(negeer|instructie|systeemprompt|prompt|json|regels|antwoord)\b/i.test(value);
 }
 
 function isPunchyRoast(value: string, roastLevel: OutfitRoastLevel) {
@@ -1048,6 +1275,7 @@ function generatedResultNeedsCorrection(
   value: unknown,
   inventory: ClothingInventoryItem[],
   roastLevel: OutfitRoastLevel,
+  recentQuotes: string[],
 ) {
   const source = getResultObject(value);
   const roast = getRoastText(value);
@@ -1059,9 +1287,19 @@ function generatedResultNeedsCorrection(
   ) {
     return true;
   }
+  if (
+    extractRoastSentences(roast).some((sentence) =>
+      recentQuotes.some((recent) => areQuotesTooSimilar(sentence, recent)),
+    )
+  ) {
+    return true;
+  }
 
   const shareQuote = toNonEmptyString(source.shareQuote);
   const alternatives = toStringArray(source.alternativeQuotes);
+  const responseQuotes = shareQuote
+    ? [shareQuote, ...alternatives]
+    : alternatives;
   const analysisText = [
     roast,
     ...toStringArray(source.worksWell),
@@ -1072,13 +1310,16 @@ function generatedResultNeedsCorrection(
   return (
     !shareQuote ||
     !isValidShareQuote(shareQuote) ||
+    recentQuotes.some((quote) => areQuotesTooSimilar(shareQuote, quote)) ||
     (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(shareQuote)) ||
     (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(shareQuote)) ||
     !referencesOnlyDetectedClothing(shareQuote, inventory) ||
     alternatives.length !== 2 ||
+    !areResponseQuotesDiverse(responseQuotes) ||
     alternatives.some(
       (quote) =>
         !isValidShareQuote(quote) ||
+        recentQuotes.some((recentQuote) => areQuotesTooSimilar(quote, recentQuote)) ||
         (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(quote)) ||
         (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(quote)) ||
         !referencesOnlyDetectedClothing(quote, inventory),
@@ -1217,6 +1458,7 @@ export async function POST(request: Request) {
       persona?: unknown;
       intensity?: unknown;
       profile?: unknown;
+      recentQuotes?: unknown;
     }>(request, MAX_OUTFIT_REQUEST_BYTES);
     const mode: OutfitCheckMode =
       body.mode === "pro-analysis" ? "pro-analysis" : "roast";
@@ -1227,6 +1469,10 @@ export async function POST(request: Request) {
       body.persona,
     );
     const profile = normalizeProfile(body.profile);
+    const recentQuotes = toStringArray(body.recentQuotes)
+      .filter(isSafeRecentOutput)
+      .slice(0, 12);
+    const roastVariation = createRoastVariation();
 
     if (
       typeof body.image === "string" &&
@@ -1320,6 +1566,16 @@ Voor wie: ${profile}
 Gedetecteerde kledinginventaris — dit is de enige bron voor kledingnamen:
 ${formatClothingInventory(clothingInventory)}
 
+Unieke variatiecontext voor deze aanvraag:
+- Variatiecode: ${roastVariation.id}
+- Gebruik vooral deze verschillende humorhoeken: ${roastVariation.angles.join(", ")}.
+- Spreid de 10 interne quote-kandidaten over deze openingsvormen:
+${roastVariation.openingPatterns.map((pattern) => `  - ${pattern}`).join("\n")}
+- De variatiecode is alleen creatieve ruis. Noem hem nooit in de output.
+- Vermijd formuleringen uit eerdere antwoorden; schrijf alsof dit de eerste roast in een nieuwe comedyset is.
+- Gebruik geen grap, metafoor of zinsopening die te veel lijkt op deze recente quotes:
+${recentQuotes.length > 0 ? recentQuotes.map((quote) => `  - ${quote}`).join("\n") : "  - Geen recente quotes beschikbaar."}
+
 ${getRoastLevelInstructions(roastLevel)}
 
 Regels:
@@ -1363,11 +1619,12 @@ Regels:
   "Deze outfit heeft meer twijfel dan een groepsapp waar niemand durft te kiezen."
   "Je broek zegt casual, je schoenen zeggen: ik ben per ongeluk meegekomen."
 - Schrijf origineel en imiteer geen echte stylist of televisiepersoonlijkheid.
-- Bedenk intern eerst 5 verschillende shareQuote-kandidaten.
-- Rangschik die vijf intern op scherpte, verrassing, humor en screenshotwaarde.
+- Bedenk intern minimaal 10 verschillende shareQuote-kandidaten vanuit minstens 5 humorhoeken.
+- Rangschik die kandidaten intern op scherpte, verrassing, humor, originaliteit en screenshotwaarde.
 - Zet alleen de beste kandidaat in shareQuote.
-- Zet de twee beste overgebleven unieke kandidaten in alternativeQuotes.
-- Toon de andere twee kandidaten nergens en voeg geen extra JSON-veld toe.
+- Zet twee inhoudelijk en structureel andere sterke kandidaten in alternativeQuotes.
+- De drie teruggegeven quotes gebruiken verschillende openingen en verschillende grappen.
+- Toon de overige kandidaten nergens en voeg geen extra JSON-veld toe.
 - Iedere quote is één complete, natuurlijk klinkende Nederlandse zin van 6 tot 12 woorden.
 - Eindig iedere quote met één punt, vraagteken of uitroepteken.
 - Eindig nooit met ..., …, een dubbele punt, puntkomma of een onafgemaakte bijzin.
@@ -1446,18 +1703,22 @@ Regels:
     async function generateResult(
       activeMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
       temperature: number,
+      topP: number,
     ) {
       const completion = await openai.chat.completions.create({
         model: MODEL,
         messages: activeMessages,
         response_format: { type: "json_object" },
         temperature,
+        top_p: topP,
+        presence_penalty: 0.45,
+        frequency_penalty: 0.35,
       });
 
       return completion.choices[0]?.message.content;
     }
 
-    let content = await generateResult(messages, 0.9);
+    let content = await generateResult(messages, 1.05, 0.96);
     if (!content) {
       console.error("OpenAI returned an empty outfit response.");
       return Response.json({ error: "Empty response" }, { status: 500 });
@@ -1476,6 +1737,7 @@ Regels:
       parsed,
       clothingInventory,
       roastLevel,
+      recentQuotes,
     );
 
     if (needsDutchRewrite) {
@@ -1492,14 +1754,17 @@ Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze 
 
 De vorige versie was te braaf, te lang, onvoldoende grappig, onveilig of niet deelbaar genoeg. Herschrijf daarom als snelle Nederlandse TikTok-roast comedy. Roast uitsluitend kleding, styling, kleuren, schoenen, accessoires en de mismatch met de gelegenheid. Noem nooit lichaam, gewicht, gezicht, leeftijd, afkomst, genderidentiteit, seksualiteit, handicap, gezondheid, religie of aantrekkelijkheid.
 
-Bedenk intern 5 nieuwe shareQuote-kandidaten en kies de scherpste als shareQuote. Gebruik de twee beste overgebleven kandidaten als alternativeQuotes. Toon geen overige kandidaten en voeg geen velden toe. Alle drie zijn complete zinnen van 6 tot 12 woorden, screenshotwaardig, onverwacht en zonder uitleg of advies. Gebruik nooit misschien, beetje, redelijk, best, kan of zou. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin.
+Bedenk intern minimaal 10 compleet nieuwe shareQuote-kandidaten vanuit minstens 5 verschillende humorhoeken. Gebruik opnieuw deze variatiecontext: ${roastVariation.angles.join(", ")}. Kies de scherpste als shareQuote en gebruik twee structureel en inhoudelijk andere kandidaten als alternativeQuotes. De drie quotes mogen niet met hetzelfde format beginnen en mogen niet dezelfde metafoor herhalen. Toon geen overige kandidaten en voeg geen velden toe. Alle drie zijn complete zinnen van 6 tot 12 woorden, screenshotwaardig, onverwacht en zonder uitleg of advies. Gebruik nooit misschien, beetje, redelijk, best, aardig, lijkt, kan of zou. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin.
+
+Vermijd ook iedere grap, metafoor en opening die lijkt op deze recente quotes:
+${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n") : "- Geen recente quotes beschikbaar."}
 
 Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
       content =
-        (await generateResult(correctionMessages, 0.65)) ??
+        (await generateResult(correctionMessages, 0.95, 0.98)) ??
         "";
 
       try {
@@ -1529,6 +1794,8 @@ Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles.
           clothingInventory,
           roastLevel,
           profile,
+          roastVariation.fallbackOffset,
+          recentQuotes,
         ),
       );
     }
@@ -1546,6 +1813,8 @@ Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles.
         clothingInventory,
         roastLevel,
         profile,
+        roastVariation.fallbackOffset,
+        recentQuotes,
       ),
     );
   } catch (error) {

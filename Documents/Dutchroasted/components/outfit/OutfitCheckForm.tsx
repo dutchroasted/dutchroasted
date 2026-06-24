@@ -27,6 +27,7 @@ import { RoastLevelSelect } from "./RoastLevelSelect";
 const FREE_CHECK_LIMIT = 5;
 const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
+const RECENT_QUOTES_STORAGE_KEY = "outfitroaster_recent_quotes";
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
 const RETRYABLE_API_STATUSES = new Set([429, 500, 502, 503, 504]);
@@ -107,6 +108,7 @@ export function OutfitCheckForm() {
         roastLevel,
         profile,
         auth.accessToken,
+        readRecentQuotes(),
       );
 
       let data: OutfitResultData | { proAnalysis: ProAnalysisResultData };
@@ -133,6 +135,11 @@ export function OutfitCheckForm() {
         }
         setResult(data);
         setProAnalysis(null);
+        rememberRecentQuotes([
+          data.shareQuote,
+          ...data.alternativeQuotes,
+          ...data.roast.split("\n"),
+        ]);
         setDailyLimit(incrementDailyLimit());
         analytics.outfitCheckCompleted(occasion, roastLevel, data.score);
       }
@@ -354,6 +361,7 @@ async function runOutfitCheckWithRetry(
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
   accessToken: string | null,
+  recentQuotes: string[],
 ) {
   let requestImage = selectedPreviewImage;
   let didRetryAfter413 = false;
@@ -368,6 +376,7 @@ async function runOutfitCheckWithRetry(
       roastLevel,
       profile,
       accessToken,
+      recentQuotes,
       `poging ${attempt}`,
     );
 
@@ -413,6 +422,7 @@ async function requestOutfitCheck(
   roastLevel: OutfitRoastLevel,
   profile: OutfitProfile,
   accessToken: string | null,
+  recentQuotes: string[],
   attempt: string,
 ) {
   const controller = new AbortController();
@@ -429,7 +439,14 @@ async function requestOutfitCheck(
           ? { Authorization: `Bearer ${accessToken}` }
           : {}),
       },
-      body: JSON.stringify({ image, mode, occasion, roastLevel, profile }),
+      body: JSON.stringify({
+        image,
+        mode,
+        occasion,
+        roastLevel,
+        profile,
+        recentQuotes,
+      }),
       signal: controller.signal,
     });
     console.info(`[Outfit check] API response status (${attempt}):`, response.status);
@@ -442,6 +459,35 @@ async function requestOutfitCheck(
   } finally {
     window.clearTimeout(timeoutId);
   }
+}
+
+function readRecentQuotes() {
+  try {
+    const parsed = JSON.parse(
+      window.localStorage.getItem(RECENT_QUOTES_STORAGE_KEY) ?? "[]",
+    ) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((quote): quote is string => typeof quote === "string").slice(0, 12)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberRecentQuotes(quotes: string[]) {
+  const recentQuotes = [...quotes, ...readRecentQuotes()]
+    .filter(
+      (quote, index, allQuotes) =>
+        allQuotes.findIndex(
+          (candidate) => candidate.toLowerCase() === quote.toLowerCase(),
+        ) === index,
+    )
+    .slice(0, 12);
+
+  window.localStorage.setItem(
+    RECENT_QUOTES_STORAGE_KEY,
+    JSON.stringify(recentQuotes),
+  );
 }
 
 function getApiErrorMessage(status: number) {
