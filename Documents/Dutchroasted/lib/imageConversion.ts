@@ -6,6 +6,26 @@ export function isHeicDataUrl(dataUrl: string) {
   return dataUrl.startsWith("data:image/heic") || dataUrl.startsWith("data:image/heif");
 }
 
+export function hasHeicSignature(dataUrl: string) {
+  const match = dataUrl.match(dataUrlPattern);
+  if (!match) {
+    return false;
+  }
+
+  try {
+    const header = Buffer.from(match[2].slice(0, 32), "base64");
+    if (header.length < 12 || header.toString("ascii", 4, 8) !== "ftyp") {
+      return false;
+    }
+
+    const brand = header.toString("ascii", 8, 12);
+    return ["heic", "heix", "hevc", "hevx", "heim", "heis", "mif1", "msf1"]
+      .includes(brand);
+  } catch {
+    return false;
+  }
+}
+
 export async function convertHeicDataUrlToJpeg(dataUrl: string) {
   const match = dataUrl.match(dataUrlPattern);
   if (!match) {

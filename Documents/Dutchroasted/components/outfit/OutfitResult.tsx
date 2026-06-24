@@ -493,12 +493,13 @@ function SharePreviewCard({
     <div
       className="relative aspect-[4/5] overflow-hidden rounded-[1.65rem] border border-white/10 bg-[#080808] shadow-[0_32px_100px_rgba(0,0,0,0.55)]"
     >
-      <img
-        src={originalImage}
-        alt="Outfitfoto in de deelkaart"
-        data-share-photo="true"
-        className="absolute inset-0 size-full object-cover opacity-95"
-      />
+        <img
+          src={originalImage}
+          alt="Outfitfoto in de deelkaart"
+          data-share-photo="true"
+          data-clarity-mask="true"
+          className="absolute inset-0 size-full object-cover opacity-95"
+        />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.36),rgba(0,0,0,0.02)_45%,rgba(0,0,0,0.92))]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,rgba(255,106,0,0.22),transparent_30%)]" />
       <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">

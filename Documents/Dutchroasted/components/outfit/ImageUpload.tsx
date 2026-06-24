@@ -176,7 +176,7 @@ export function ImageUpload({
             </p>
           </div>
         ) : previewUrl ? (
-          <div className="relative w-full">
+          <div className="relative w-full" data-clarity-mask="true">
             <img
               src={previewUrl}
               alt="Preview van je outfit"

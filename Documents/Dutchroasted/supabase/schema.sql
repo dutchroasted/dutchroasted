@@ -33,3 +33,12 @@ create unique index if not exists profiles_stripe_customer_id_idx
 create unique index if not exists profiles_stripe_subscription_id_idx
   on public.profiles (stripe_subscription_id)
   where stripe_subscription_id is not null;
+
+alter table public.leads enable row level security;
+alter table public.profiles enable row level security;
+
+revoke all on table public.leads from anon, authenticated;
+revoke all on table public.profiles from anon, authenticated;
+
+grant all on table public.leads to service_role;
+grant all on table public.profiles to service_role;

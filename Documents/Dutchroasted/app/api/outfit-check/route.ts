@@ -1,4 +1,13 @@
 import OpenAI from "openai";
+import {
+  ApiRequestError,
+  enforceRateLimit,
+  enforceSameOrigin,
+  getDataUrlByteSize,
+  hasJpegSignature,
+  jsonNoStore,
+  readJsonWithLimit,
+} from "@/lib/apiSecurity";
 import { buildProAnalysisPrompt } from "@/lib/proAnalysisPrompt";
 import {
   getCurrentUser,
@@ -19,6 +28,8 @@ import {
 
 const MODEL = "gpt-4o-mini";
 const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
+const MAX_OUTFIT_IMAGE_BYTES = 6 * 1024 * 1024;
+const MAX_OUTFIT_REQUEST_BYTES = 9 * 1024 * 1024;
 const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Casual: "School",
   Bruiloft: "Date",
@@ -311,7 +322,10 @@ function normalizeProfile(value: unknown): OutfitProfile {
 }
 
 function isValidImage(value: unknown): value is string {
-  return typeof value === "string" && /^data:image\/jpeg;base64,/.test(value);
+  return typeof value === "string" &&
+    /^data:image\/jpeg;base64,/.test(value) &&
+    getDataUrlByteSize(value) <= MAX_OUTFIT_IMAGE_BYTES &&
+    hasJpegSignature(value);
 }
 
 function hasValidRoast(value: unknown): value is { roast: string } {
@@ -1053,7 +1067,9 @@ Roastniveau: Pittig
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as {
+    enforceSameOrigin(request);
+    enforceRateLimit(request, "outfit-check", 10, 10 * 60_000);
+    const body = await readJsonWithLimit<{
       image?: unknown;
       mode?: unknown;
       occasion?: unknown;
@@ -1062,7 +1078,7 @@ export async function POST(request: Request) {
       persona?: unknown;
       intensity?: unknown;
       profile?: unknown;
-    };
+    }>(request, MAX_OUTFIT_REQUEST_BYTES);
     const mode: OutfitCheckMode =
       body.mode === "pro-analysis" ? "pro-analysis" : "roast";
     const occasion = normalizeOccasion(body.occasion);
@@ -1072,6 +1088,16 @@ export async function POST(request: Request) {
       body.persona,
     );
     const profile = normalizeProfile(body.profile);
+
+    if (
+      typeof body.image === "string" &&
+      getDataUrlByteSize(body.image) > MAX_OUTFIT_IMAGE_BYTES
+    ) {
+      return jsonNoStore(
+        { error: "De foto is te groot voor de outfitcheck." },
+        { status: 413 },
+      );
+    }
 
     if (mode === "pro-analysis" && !PREMIUM_BETA_ENABLED) {
       const user = await getCurrentUser(request);
@@ -1366,6 +1392,10 @@ Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze 
       ),
     );
   } catch (error) {
+    if (error instanceof ApiRequestError) {
+      return jsonNoStore({ error: error.message }, { status: error.status });
+    }
+
     console.error("Outfit check API error:", error);
     return Response.json({ error: "Outfit check failed" }, { status: 500 });
   }

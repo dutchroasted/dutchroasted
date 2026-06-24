@@ -2,15 +2,21 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
+import { jsonNoStore } from "@/lib/apiSecurity";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const contentLength = Number(request.headers.get("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > 1024 * 1024) {
+    return jsonNoStore({ error: "Webhook is te groot." }, { status: 413 });
+  }
+
   const signature = request.headers.get("stripe-signature");
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
-    return Response.json(
+    return jsonNoStore(
       { error: "Stripe webhook is niet geconfigureerd." },
       { status: 400 },
     );
@@ -26,7 +32,7 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Stripe webhook signature verification failed:", error);
-    return Response.json(
+    return jsonNoStore(
       { error: "Ongeldige Stripe webhook." },
       { status: 400 },
     );
@@ -35,7 +41,7 @@ export async function POST(request: Request) {
   const supabase = createSupabaseServiceClient();
 
   if (!supabase) {
-    return Response.json(
+    return jsonNoStore(
       { error: "Supabase is niet geconfigureerd." },
       { status: 500 },
     );
@@ -64,13 +70,13 @@ export async function POST(request: Request) {
       error,
     );
 
-    return Response.json(
+    return jsonNoStore(
       { error: "Webhook verwerken mislukt." },
       { status: 500 },
     );
   }
 
-  return Response.json({ received: true });
+  return jsonNoStore({ received: true });
 }
 
 async function activateCheckout(

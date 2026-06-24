@@ -1,4 +1,11 @@
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
+import {
+  ApiRequestError,
+  enforceRateLimit,
+  enforceSameOrigin,
+  jsonNoStore,
+  readJsonWithLimit,
+} from "@/lib/apiSecurity";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -14,7 +21,9 @@ type LeadRequestBody = {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as LeadRequestBody;
+    enforceSameOrigin(request);
+    enforceRateLimit(request, "leads", 5, 10 * 60_000);
+    const body = await readJsonWithLimit<LeadRequestBody>(request, 16 * 1024);
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const source = optionalString(body.source) || "outfit_check";
     const occasion = optionalString(body.occasion);
@@ -23,23 +32,23 @@ export async function POST(request: Request) {
     const score = optionalScore(body.score);
 
     if (!email || !emailPattern.test(email)) {
-      return Response.json({ error: "Vul een geldig e-mailadres in." }, { status: 400 });
+      return jsonNoStore({ error: "Vul een geldig e-mailadres in." }, { status: 400 });
     }
 
     if (body.marketingConsent !== true) {
-      return Response.json(
+      return jsonNoStore(
         { error: "Vink toestemming aan als je updates wilt ontvangen." },
         { status: 400 },
       );
     }
 
     if (!consentText) {
-      return Response.json({ error: "Toestemmingstekst ontbreekt." }, { status: 400 });
+      return jsonNoStore({ error: "Toestemmingstekst ontbreekt." }, { status: 400 });
     }
 
     const supabase = createSupabaseServiceClient();
     if (!supabase) {
-      return Response.json(
+      return jsonNoStore(
         { error: "Opslaan lukt niet. Probeer het later opnieuw." },
         { status: 500 },
       );
@@ -57,16 +66,20 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Supabase lead insert failed:", error.message);
-      return Response.json(
+      return jsonNoStore(
         { error: "Opslaan lukt niet. Probeer het opnieuw." },
         { status: 500 },
       );
     }
 
-    return Response.json({ success: true });
+    return jsonNoStore({ success: true });
   } catch (error) {
+    if (error instanceof ApiRequestError) {
+      return jsonNoStore({ error: error.message }, { status: error.status });
+    }
+
     console.error("Lead API error:", error);
-    return Response.json({ error: "Opslaan lukt niet. Probeer het opnieuw." }, { status: 500 });
+    return jsonNoStore({ error: "Opslaan lukt niet. Probeer het opnieuw." }, { status: 500 });
   }
 }
 

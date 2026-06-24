@@ -1,11 +1,19 @@
 import { getPremiumPriceId, getSiteUrl, getStripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/authServer";
+import {
+  ApiRequestError,
+  enforceRateLimit,
+  enforceSameOrigin,
+  jsonNoStore,
+} from "@/lib/apiSecurity";
 
 export async function POST(request: Request) {
   try {
+    enforceSameOrigin(request);
+    enforceRateLimit(request, "checkout", 5, 10 * 60_000);
     const user = await getCurrentUser(request);
     if (!user) {
-      return Response.json(
+      return jsonNoStore(
         { error: "Log eerst in om Premium te activeren." },
         { status: 401 },
       );
@@ -36,10 +44,14 @@ export async function POST(request: Request) {
       throw new Error("Stripe Checkout gaf geen URL terug.");
     }
 
-    return Response.json({ url: session.url });
+    return jsonNoStore({ url: session.url });
   } catch (error) {
+    if (error instanceof ApiRequestError) {
+      return jsonNoStore({ error: error.message }, { status: error.status });
+    }
+
     console.error("Stripe Checkout Session failed:", error);
-    return Response.json(
+    return jsonNoStore(
       { error: "Stripe Checkout starten lukt niet. Probeer het opnieuw." },
       { status: 500 },
     );
