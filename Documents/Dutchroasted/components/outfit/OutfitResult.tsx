@@ -521,7 +521,7 @@ function SharePreviewCard({
             <div className="rounded-2xl bg-orange-500 px-3 py-2 text-black">
               <p className="text-[9px] font-black uppercase tracking-[0.16em]">Score</p>
               <p className="mt-1 whitespace-nowrap text-2xl font-black leading-none sm:text-3xl">
-                {score}/10
+                {formatScore(score)}/10
               </p>
             </div>
             <div>
@@ -677,6 +677,10 @@ function getScoreVerdict(score: number) {
   return "Catwalkwaardig";
 }
 
+function formatScore(score: number) {
+  return Number.isFinite(score) ? score.toFixed(1) : "5.0";
+}
+
 function isProcessedOutfitImage(image: string) {
   return image.startsWith("data:image/jpeg;base64,") && image.length > 100;
 }
@@ -746,7 +750,7 @@ async function createShareImage(
   context.font = "900 20px Arial, sans-serif";
   context.fillText("SCORE", 122, 1388);
   context.font = "900 62px Arial, sans-serif";
-  context.fillText(`${score}/10`, 122, 1475);
+  context.fillText(`${formatScore(score)}/10`, 122, 1475);
 
   context.fillStyle = "#ffffff";
   context.font = "900 46px Arial, sans-serif";
@@ -932,7 +936,7 @@ function drawOutfitVideoFrame(
     context.textAlign = "center";
     context.fillStyle = "#ff6a00";
     context.font = "900 220px Arial, sans-serif";
-    context.fillText(`${score}/10`, VIDEO_WIDTH / 2, 1000);
+    context.fillText(`${formatScore(score)}/10`, VIDEO_WIDTH / 2, 1000);
     context.fillStyle = "#ffffff";
     context.font = "900 30px Arial, sans-serif";
     context.fillText("JOUW OUTFIT VERDICT", VIDEO_WIDTH / 2, 1070);
@@ -1216,7 +1220,7 @@ function formatAdvice(result: OutfitResultData) {
   return [
     "Mijn Outfit Roaster outfitcheck:",
     "",
-    `⭐ Outfit score: ${result.score}/10`,
+    `⭐ Outfit score: ${formatScore(result.score)}/10`,
     "",
     "🔥 De roast",
     result.roast,
@@ -1289,7 +1293,7 @@ function downloadResultPdf(result: OutfitResultData) {
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
-  doc.text(`${result.score}/10`, pageWidth - 42, 27);
+  doc.text(`${formatScore(result.score)}/10`, pageWidth - 42, 27);
   doc.setTextColor(0, 0, 0);
   y = 42;
 

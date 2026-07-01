@@ -435,7 +435,7 @@ function normalizeOutfitResult(
   recentScores: number[] = [],
 ): OutfitResultData {
   const score = calibrateRoastScore(
-    normalizeScore(source.score ?? source.rating),
+    normalizeRoastScore(source.score ?? source.rating),
     recentScores,
     roastLevel,
   );
@@ -772,7 +772,7 @@ function toScoreArray(value: unknown) {
   return value
     .map((item) => (typeof item === "number" ? item : Number(item)))
     .filter((score) => Number.isFinite(score) && score >= 1 && score <= 10)
-    .map((score) => Math.round(score))
+    .map((score) => Math.round(score * 10) / 10)
     .slice(0, 20);
 }
 
@@ -801,6 +801,38 @@ function normalizeScore(value: unknown) {
   return Number.isFinite(parsed) ? Math.min(10, Math.max(1, Math.round(parsed))) : 5;
 }
 
+function normalizeRoastScore(value: unknown) {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number.parseFloat(value.replace(",", "."))
+        : Number.NaN;
+
+  const baseScore = Number.isFinite(parsed)
+    ? Math.min(10, Math.max(1, parsed))
+    : 5.4;
+  const roundedScore = Math.round(baseScore * 10) / 10;
+
+  if (!Number.isInteger(roundedScore) || roundedScore >= 10) {
+    return roundedScore;
+  }
+
+  const decimalByScore: Record<number, number> = {
+    1: 0.1,
+    2: 0.2,
+    3: 0.4,
+    4: 0.6,
+    5: 0.3,
+    6: 0.7,
+    7: 0.4,
+    8: 0.2,
+    9: 0.1,
+  };
+
+  return Math.round((roundedScore + (decimalByScore[roundedScore] ?? 0.3)) * 10) / 10;
+}
+
 function calibrateRoastScore(
   score: number,
   recentScores: number[],
@@ -818,7 +850,7 @@ function calibrateRoastScore(
     return score;
   }
 
-  return Math.max(score, 4);
+  return Math.max(score, 4.2);
 }
 
 function normalizeShoppingSuggestions(
@@ -1485,7 +1517,8 @@ Roastniveau: Genadeloos
 - Gebruik nooit een willekeurige metafoor die niet logisch uit de outfit volgt.
 - Controleer intern: als de grap ook op een totaal andere outfit zou passen, herschrijf hem specifieker op basis van de zichtbare outfit.
 - Een roast hoeft geen lage score te hebben. Ook een sterke 8/10 of 9/10 krijgt een grappige roast.
-- Gebruik de volledige scoreschaal: 0-1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect.
+- Gebruik de volledige scoreschaal met één decimaal: 2.2, 4.8, 6.7, 8.3 of 9.1. Gebruik geen vaste hele cijfers zoals 2, 3 of 4.
+- Score 0-1 is alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect.
 - Als meer dan 40% van de recente scores 0-3 is, herkalibreer automatisch en gebruik de volledige schaal realistischer.
 - De score moet geloofwaardig aansluiten bij wat zichtbaar is, niet bij hoe hard de grap klinkt.
 - Score 0-3: genadeloos grappig. Score 4-6: sarcastisch. Score 7-8: compliment met humor. Score 9-10: alsof de outfit de hoofdrol speelt.
@@ -1664,7 +1697,8 @@ Regels:
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
-- Score is 1 t/m 10 en gebruikt de volledige schaal.
+- Score is een getal van 1 t/m 10, gebruikt de volledige schaal en heeft bij voorkeur één decimaal.
+- Geef scores zoals 2.2, 4.8, 6.7, 8.3 of 9.1; vermijd vaste hele cijfers zoals 2, 3 of 4.
 - Score 1 is alleen voor extreem slechte outfits; 2-3 is slecht; 4-5 gemiddeld; 6-7 goed; 8 sterk; 9 heel stijlvol; 10 bijna perfect.
 - Een grappige roast betekent niet automatisch een lage score. Een 8/10 of 9/10 mag nog steeds hard en grappig worden geroast.
 - Als meer dan 40% van de recente scores 1-3 is, herkalibreer automatisch zodat je niet opnieuw onterecht laag scoort.
@@ -1833,7 +1867,7 @@ ${roastLevel === "Genadeloos" ? `Omdat roastniveau Genadeloos is: behandel dit a
 Vermijd ook iedere grap, metafoor en opening die lijkt op deze recente quotes:
 ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n") : "- Geen recente quotes beschikbaar."}
 
-Recente scores op dit apparaat: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}. Gebruik de volledige schaal: 1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect. Als meer dan 40% recent 1-3 is, herkalibreer realistischer. Een grappige roast hoeft geen lage score te hebben.
+Recente scores op dit apparaat: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}. Gebruik de volledige schaal met één decimaal: 1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect. Vermijd vaste hele cijfers zoals 2, 3 of 4. Als meer dan 40% recent 1-3 is, herkalibreer realistischer. Een grappige roast hoeft geen lage score te hebben.
 
 Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
