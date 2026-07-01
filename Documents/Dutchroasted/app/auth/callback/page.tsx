@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackAnalyticsEventOnce } from "@/lib/analytics";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 export default function AuthCallbackPage() {
@@ -42,6 +43,12 @@ export default function AuthCallbackPage() {
         return;
       }
 
+      const userId = data.session.user.id;
+      trackAnalyticsEventOnce(`login_completed_${userId}`, "login_completed");
+      if (isRecentSignup(data.session.user.created_at)) {
+        trackAnalyticsEventOnce(`signup_completed_${userId}`, "signup_completed");
+      }
+
       if (!isCancelled) {
         window.location.replace("/account");
       }
@@ -76,4 +83,12 @@ export default function AuthCallbackPage() {
       </section>
     </main>
   );
+}
+
+function isRecentSignup(createdAt?: string) {
+  if (!createdAt) {
+    return false;
+  }
+
+  return Date.now() - new Date(createdAt).getTime() < 5 * 60 * 1000;
 }

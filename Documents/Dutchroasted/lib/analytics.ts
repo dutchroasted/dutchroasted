@@ -3,11 +3,18 @@
 import { hasAnalyticsConsent } from "./cookieConsent";
 
 export type AnalyticsEventName =
-  | "outfit_upload"
-  | "outfit_check_started"
-  | "outfit_check_completed"
+  | "photo_uploaded"
+  | "roast_started"
+  | "roast_completed"
   | "share_card_downloaded"
   | "share_card_shared"
+  | "tiktok_video_downloaded"
+  | "premium_clicked"
+  | "checkout_started"
+  | "checkout_completed"
+  | "login_started"
+  | "login_completed"
+  | "signup_completed"
   | "quote_changed"
   | "shop_item_clicked";
 
@@ -52,24 +59,49 @@ export function trackAnalyticsEvent(
 }
 
 export const analytics = {
-  outfitUpload(fileType: string, fileSizeBytes: number) {
-    trackAnalyticsEvent("outfit_upload", {
+  photoUploaded({
+    fileType,
+    deviceType,
+    loggedIn,
+  }: {
+    fileType: string;
+    deviceType: string;
+    loggedIn: boolean;
+  }) {
+    trackAnalyticsEvent("photo_uploaded", {
       file_type: fileType || "unknown",
-      file_size_bytes: fileSizeBytes,
+      device_type: deviceType,
+      logged_in: loggedIn,
     });
   },
-  outfitCheckStarted(occasion: string, roastLevel: string, profile: string) {
-    trackAnalyticsEvent("outfit_check_started", {
+  roastStarted({
+    gender,
+    occasion,
+    tone,
+  }: {
+    gender: string;
+    occasion: string;
+    tone: string;
+  }) {
+    trackAnalyticsEvent("roast_started", {
+      gender,
       occasion,
-      roast_level: roastLevel,
-      profile,
+      tone,
     });
   },
-  outfitCheckCompleted(occasion: string, roastLevel: string, score: number) {
-    trackAnalyticsEvent("outfit_check_completed", {
-      occasion,
-      roast_level: roastLevel,
+  roastCompleted({
+    score,
+    tone,
+    processingTime,
+  }: {
+    score: number;
+    tone: string;
+    processingTime: number;
+  }) {
+    trackAnalyticsEvent("roast_completed", {
       score,
+      tone,
+      processing_time: processingTime,
     });
   },
   shareCardDownloaded(score: number) {
@@ -81,6 +113,27 @@ export const analytics = {
   quoteChanged(quoteIndex: number) {
     trackAnalyticsEvent("quote_changed", { quote_index: quoteIndex });
   },
+  tiktokVideoDownloaded(score: number) {
+    trackAnalyticsEvent("tiktok_video_downloaded", { score });
+  },
+  premiumClicked(location: "homepage" | "pricing" | "modal" | "resultaatpagina") {
+    trackAnalyticsEvent("premium_clicked", { location });
+  },
+  checkoutStarted() {
+    trackAnalyticsEvent("checkout_started");
+  },
+  checkoutCompleted() {
+    trackAnalyticsEvent("checkout_completed");
+  },
+  loginStarted() {
+    trackAnalyticsEvent("login_started");
+  },
+  loginCompleted() {
+    trackAnalyticsEvent("login_completed");
+  },
+  signupCompleted() {
+    trackAnalyticsEvent("signup_completed");
+  },
   shopItemClicked(category: string, searchQuery: string) {
     trackAnalyticsEvent("shop_item_clicked", {
       category,
@@ -88,6 +141,41 @@ export const analytics = {
     });
   },
 };
+
+export function trackAnalyticsEventOnce(
+  dedupeKey: string,
+  eventName: AnalyticsEventName,
+  parameters: AnalyticsParameters = {},
+) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const storageKey = `outfitroaster_analytics_${dedupeKey}`;
+  if (window.sessionStorage.getItem(storageKey)) {
+    return;
+  }
+
+  window.sessionStorage.setItem(storageKey, "true");
+  trackAnalyticsEvent(eventName, parameters);
+}
+
+export function getAnalyticsDeviceType() {
+  if (typeof window === "undefined") {
+    return "unknown";
+  }
+
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  if (/ipad|tablet/.test(userAgent)) {
+    return "tablet";
+  }
+
+  if (/mobi|iphone|android/.test(userAgent)) {
+    return "mobile";
+  }
+
+  return "desktop";
+}
 
 function removeUndefinedValues(parameters: AnalyticsParameters) {
   return Object.fromEntries(

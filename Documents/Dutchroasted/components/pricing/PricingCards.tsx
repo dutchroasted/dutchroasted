@@ -1,3 +1,7 @@
+"use client";
+
+import { analytics } from "@/lib/analytics";
+
 const plans = [
   {
     name: "Outfit Roast",
@@ -68,6 +72,11 @@ export function PricingCards() {
             <div className="mt-8 flex-1" />
             <a
               href={plan.href}
+              onClick={() => {
+                if (plan.highlighted) {
+                  analytics.premiumClicked("pricing");
+                }
+              }}
               className="mt-8 inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-orange-500 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-orange-400 hover:shadow-[0_16px_50px_rgba(255,106,0,0.18)]"
             >
               {plan.cta}

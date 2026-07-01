@@ -1,3 +1,7 @@
+"use client";
+
+import { analytics } from "@/lib/analytics";
+
 export function CTASection() {
   return (
     <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
@@ -18,6 +22,7 @@ export function CTASection() {
             </a>
             <a
               href="mailto:info@outfitroaster.nl?subject=Premium%20update%20OutfitRoaster"
+              onClick={() => analytics.premiumClicked("homepage")}
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-6 py-4 text-center text-base font-black text-white transition hover:border-white/30 hover:bg-white/10"
             >
               Ontvang premium update

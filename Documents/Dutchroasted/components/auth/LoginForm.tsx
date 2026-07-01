@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { analytics } from "@/lib/analytics";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 export function LoginForm() {
@@ -14,6 +15,7 @@ export function LoginForm() {
     setIsLoading(true);
     setError("");
     setMessage("");
+    analytics.loginStarted();
 
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {

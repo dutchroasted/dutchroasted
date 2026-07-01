@@ -92,13 +92,15 @@ export function OutfitCheckForm() {
 
     submitLockRef.current = true;
     setIsLoading(true);
+    const checkStartedAt = performance.now();
     setLoadingMessage((currentMessage) => getRandomLoadingMessage(currentMessage));
     setError("");
-    analytics.outfitCheckStarted(
+    const analyticsTone = mode === "pro-analysis" ? "Premium Verdict Beta" : roastLevel;
+    analytics.roastStarted({
+      gender: profile,
       occasion,
-      mode === "pro-analysis" ? "Premium Verdict Beta" : roastLevel,
-      profile,
-    );
+      tone: analyticsTone,
+    });
 
     try {
       const response = await runOutfitCheckWithRetry(
@@ -124,11 +126,11 @@ export function OutfitCheckForm() {
         }
         setProAnalysis(data.proAnalysis);
         setResult(null);
-        analytics.outfitCheckCompleted(
-          occasion,
-          "Premium Verdict Beta",
-          data.proAnalysis.overallScore,
-        );
+        analytics.roastCompleted({
+          score: data.proAnalysis.overallScore,
+          tone: analyticsTone,
+          processingTime: getProcessingTimeSeconds(checkStartedAt),
+        });
       } else {
         if ("proAnalysis" in data) {
           throw new Error("De outfit roast gaf een onverwacht resultaat terug.");
@@ -141,7 +143,11 @@ export function OutfitCheckForm() {
           ...data.roast.split("\n"),
         ]);
         setDailyLimit(incrementDailyLimit());
-        analytics.outfitCheckCompleted(occasion, roastLevel, data.score);
+        analytics.roastCompleted({
+          score: data.score,
+          tone: analyticsTone,
+          processingTime: getProcessingTimeSeconds(checkStartedAt),
+        });
       }
       setResultImage(selectedPreviewImage);
       setResultMeta({ occasion });
@@ -195,6 +201,9 @@ export function OutfitCheckForm() {
         <ModeSelector
           value={mode}
           onChange={(nextMode) => {
+            if (nextMode === "pro-analysis") {
+              analytics.premiumClicked("modal");
+            }
             if (
               !PREMIUM_BETA_ENABLED &&
               nextMode === "pro-analysis" &&
@@ -247,6 +256,7 @@ export function OutfitCheckForm() {
           }}
           onError={setError}
           onProcessingChange={setIsUploadProcessing}
+          loggedIn={auth.isAuthenticated}
         />
 
         {fileName ? (
@@ -472,6 +482,10 @@ function readRecentQuotes() {
   } catch {
     return [];
   }
+}
+
+function getProcessingTimeSeconds(startedAt: number) {
+  return Number(((performance.now() - startedAt) / 1000).toFixed(2));
 }
 
 function rememberRecentQuotes(quotes: string[]) {

@@ -1,3 +1,7 @@
+"use client";
+
+import { analytics } from "@/lib/analytics";
+
 const features = [
   "Kleuranalyse",
   "Pasvormanalyse",
@@ -28,6 +32,7 @@ export function ProAnalysisTeaser() {
       </ul>
       <a
         href="/outfit-check"
+        onClick={() => analytics.premiumClicked("resultaatpagina")}
         className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl border border-violet-300/20 bg-violet-400/10 px-5 py-3 text-sm font-black text-violet-100 sm:w-auto"
       >
         Test Premium Verdict Beta

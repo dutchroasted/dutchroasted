@@ -174,6 +174,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
       }
 
       downloadVideoBlob(video.blob, fileName);
+      analytics.tiktokVideoDownloaded(result.score);
       logVideoDownload({
         browserType: browserInfo.browserType,
         isIos: browserInfo.isIos,
@@ -220,6 +221,7 @@ export function OutfitResult({ result, originalImage, disabled, onNewCheck }: Ou
           isIos: browserInfo.isIos,
           downloadStarted: true,
         });
+        analytics.tiktokVideoDownloaded(result.score);
         showFeedback(
           action === "share"
             ? "Deelopties geopend ✅"

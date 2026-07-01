@@ -1,3 +1,7 @@
+"use client";
+
+import { analytics } from "@/lib/analytics";
+
 export function PricingTeaser() {
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
@@ -12,6 +16,7 @@ export function PricingTeaser() {
         </div>
         <a
           href="/pricing"
+          onClick={() => analytics.premiumClicked("homepage")}
           className="rounded-md border border-white/15 bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-orange-500"
         >
           Bekijk Premium Beta

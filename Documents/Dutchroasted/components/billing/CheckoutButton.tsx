@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { analytics } from "@/lib/analytics";
 import { useAuthProfile } from "@/hooks/useAuthProfile";
 
 export function CheckoutButton() {
@@ -36,6 +37,7 @@ export function CheckoutButton() {
         throw new Error(data?.error || "Checkout starten lukt niet.");
       }
 
+      analytics.checkoutStarted();
       window.location.assign(data.url);
     } catch (caughtError) {
       setError(

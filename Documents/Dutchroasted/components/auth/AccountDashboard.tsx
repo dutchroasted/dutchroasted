@@ -1,10 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+import { trackAnalyticsEventOnce } from "@/lib/analytics";
 import { useAuthProfile } from "@/hooks/useAuthProfile";
 import { LoginForm } from "./LoginForm";
 
 export function AccountDashboard() {
   const auth = useAuthProfile();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("checkout") === "success") {
+      trackAnalyticsEventOnce("checkout_completed", "checkout_completed");
+    }
+  }, []);
 
   if (!auth.isReady) {
     return <p className="text-zinc-300">Account laden...</p>;
