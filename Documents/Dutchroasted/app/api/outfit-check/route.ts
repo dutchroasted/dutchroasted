@@ -1427,10 +1427,25 @@ Roastniveau: ✨ Stijlcoach
     case "Genadeloos":
       return `
 Roastniveau: Genadeloos
-- Gebruik maximale roastenergie en directe Nederlandse humor.
-- Maak iedere regel zeer grappig, scherp en screenshotwaardig.
-- Wees een tikje bruut, maar nooit hatelijk, discriminerend of persoonlijk.
-- Roast uitsluitend de outfit en stylingkeuzes.
+- Dit is GEEN modeadvies. Dit is entertainment.
+- Jij bent geen mode-expert. Jij bent een Nederlandse roast comedian met verstand van kleding.
+- Schrijf alsof je een scherpe TikTok-commentator bent die binnen 3 seconden de grappigste outfitobservatie ziet.
+- Prioriteit: 1 grappig, 2 deelbaar, 3 verrassend, 4 pas daarna mode.
+- Het doel is niet dat iemand iets leert. Het doel is dat iemand hardop lacht, screenshot en deelt.
+- Gebruik maximale roastenergie, droge humor, sarcasme, overdrijving, onverwachte vergelijkingen en absurde metaforen.
+- Wissel humorstijlen willekeurig af: kantoorhumor, sport, voetbal, Nederlandse cultuur, internetmemes, technologie, films, series, supermarkt, vakantie, festivals, dating, openbaar vervoer, school, werk en gaming.
+- Gebruik nooit twee keer dezelfde grapstructuur of dominante opening.
+- Bedenk intern minimaal 30 compleet verschillende shareQuote-kandidaten. Maak ze allemaal anders, gooi de saaie weg, kies de grappigste, maak hem scherper en controleer of hij uniek voelt. Toon dit denkproces nooit.
+- shareQuote is het belangrijkste onderdeel van de response: maximaal 12 woorden, één harde one-liner, geen uitleg, geen advies, geen emoji en geen modeanalyse.
+- alternativeQuotes zijn ook harde, deelbare one-liners en gebruiken een andere graphoek dan shareQuote.
+- Het veld roast bevat maximaal 3 korte zinnen. Iedere zin is een punchline. Geen uitleg, geen tips, geen stylingles.
+- worksWell, canImprove en stylingTips blijven bestaan voor het JSON-schema, maar schrijf ze kort, direct en entertainment-first. Geen lange modeanalyse.
+- Gebruik nooit de woorden: misschien, beetje, redelijk, best, aardig, lijkt, kan, zou, "niet helemaal", "past niet goed" of "mist samenhang".
+- Goede energie: "Deze outfit heeft drie persoonlijkheden en geen leider.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
+- Slechte energie: "De kleuren passen niet goed.", "Misschien andere schoenen.", "Deze outfit kan beter.", "De combinatie voelt rommelig."
+- Score 0-3: genadeloos grappig. Score 4-6: sarcastisch. Score 7-8: compliment met humor. Score 9-10: alsof de outfit de hoofdrol speelt.
+- Roast uitsluitend outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie en gelegenheid.
+- Roast nooit gezicht, lichaam, gewicht, leeftijd, afkomst, religie, gezondheid, handicap, gender, seksualiteit of andere persoonskenmerken.
 `;
     default:
       return `
@@ -1755,6 +1770,8 @@ Behoud duidelijk roastniveau ${roastLevel}, gelegenheid ${occasion} en de keuze 
 De vorige versie was te braaf, te lang, onvoldoende grappig, onveilig of niet deelbaar genoeg. Herschrijf daarom als snelle Nederlandse TikTok-roast comedy. Roast uitsluitend kleding, styling, kleuren, schoenen, accessoires en de mismatch met de gelegenheid. Noem nooit lichaam, gewicht, gezicht, leeftijd, afkomst, genderidentiteit, seksualiteit, handicap, gezondheid, religie of aantrekkelijkheid.
 
 Bedenk intern minimaal 10 compleet nieuwe shareQuote-kandidaten vanuit minstens 5 verschillende humorhoeken. Gebruik opnieuw deze variatiecontext: ${roastVariation.angles.join(", ")}. Kies de scherpste als shareQuote en gebruik twee structureel en inhoudelijk andere kandidaten als alternativeQuotes. De drie quotes mogen niet met hetzelfde format beginnen en mogen niet dezelfde metafoor herhalen. Toon geen overige kandidaten en voeg geen velden toe. Alle drie zijn complete zinnen van 6 tot 12 woorden, screenshotwaardig, onverwacht en zonder uitleg of advies. Gebruik nooit misschien, beetje, redelijk, best, aardig, lijkt, kan of zou. Geen quote eindigt met ..., …, :, ; of een onafgemaakte bijzin.
+
+${roastLevel === "Genadeloos" ? `Omdat roastniveau Genadeloos is: behandel dit als entertainment, niet als modeadvies. Bedenk intern minimaal 30 shareQuote-kandidaten, kies de grappigste, maak hem scherper en geef alleen de beste JSON terug. Roasttekst is exact 3 korte punchlines zonder tips, uitleg of stylingles. Gebruik droge humor, sarcasme, overdrijving, onverwachte vergelijkingen en Nederlandse TikTok-commentaarenergie. Wissel humorhoeken af tussen kantoor, sport, voetbal, Nederlandse cultuur, internetmemes, technologie, films, series, supermarkt, vakantie, festivals, dating, openbaar vervoer, school, werk en gaming. Vermijd ook "niet helemaal", "past niet goed" en "mist samenhang".` : ""}
 
 Vermijd ook iedere grap, metafoor en opening die lijkt op deze recente quotes:
 ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n") : "- Geen recente quotes beschikbaar."}
