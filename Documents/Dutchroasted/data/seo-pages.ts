@@ -678,6 +678,306 @@ export const seoPages = [
       },
     ],
   }),
+  page({
+    slug: "school-outfit-check",
+    title: "School Outfit Checker",
+    metaTitle: "School Outfit Checker – Check je outfit voor school",
+    metaDescription:
+      "Laat je school outfit beoordelen op comfort, stijl, kleuren, pasvorm en casual vibe. Gratis AI outfit checker voor school, college en les.",
+    h1: "School Outfit Checker",
+    eyebrow: "Voor school, college en campusdagen",
+    intro: [
+      "Een school outfit moet vooral makkelijk voelen, maar dat betekent niet dat alles willekeurig hoeft te zijn. Je wilt iets dragen dat comfortabel is, niet te hard probeert en toch genoeg stijl heeft om niet als automatische piloot te voelen. De School Outfit Checker van OutfitRoaster helpt je zien of je look die balans heeft.",
+      "Upload een duidelijke foto en krijg feedback over kleding, schoenen, kleuren, pasvorm en casual vibe. De beoordeling blijft bij je outfit. Geen oordeel over lichaam, gezicht of wie je bent; alleen een eerlijke blik op wat je draagt.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een goede school outfit?",
+        paragraphs: [
+          "Een sterke school outfit voelt ontspannen, praktisch en bewust. Je moet erin kunnen zitten, lopen, fietsen, hangen, overstappen, koffie morsen overleven en nog steeds niet ogen alsof je kledingkast ruzie had. Comfort is dus belangrijk, maar stijl zit juist in hoe je comfortabele items combineert.",
+          "OutfitRoaster kijkt of je outfit één duidelijke richting heeft. Een hoodie met jeans en sneakers kan prima zijn wanneer de pasvorm en kleuren samenwerken. Een nette bovenlaag met volledig sportieve schoenen kan ook werken, maar dan moet het expres voelen. Anders lijkt het alsof je agenda school zei en je schoenen gym hoorden.",
+        ],
+      },
+      {
+        title: "Comfort zonder slordig te worden",
+        paragraphs: [
+          "Voor school is comfort bijna altijd een pluspunt. Een te formele outfit kan overdreven voelen, terwijl een te losse outfit snel richting pyjamadag schuift. De kunst zit in één of twee items die de look net wat scherper maken: schone sneakers, een goede jas, een rustige kleurcombinatie of een bovenlaag die structuur geeft.",
+          "De checker benoemt waar comfort werkt en waar het te veel richting ‘ik had vijf minuten’ gaat. Dat hoeft geen groot probleem te zijn. Soms is één detail genoeg. Een betere schoen, minder botsende kleuren of een jas die de outfit afmaakt kan al zorgen dat de look bewuster voelt.",
+        ],
+      },
+      {
+        title: "Kleuren en lagen voor school",
+        paragraphs: [
+          "Schooloutfits gebruiken vaak basics: jeans, T-shirt, hoodie, trui, vest of sneakers. Juist daardoor vallen kleur en laagjes op. Neutrale kleuren kunnen rustig en clean zijn. Eén accentkleur kan de outfit interessanter maken. Maar wanneer meerdere kleuren tegelijk om aandacht vragen, voelt de look snel als een groepsproject zonder leider.",
+          "Lagen zijn handig voor lange dagen, fietsen, lokalen met rare temperatuur en onverwachte plannen na school. OutfitRoaster kijkt of die lagen samenwerken. Een overshirt, vest of jas kan veel doen voor de outfit, zolang het niet klinkt alsof elk kledingstuk naar een andere les moet.",
+        ],
+      },
+      {
+        title: "Schoenen en tas maken de vibe",
+        paragraphs: [
+          "Bij een school outfit sturen schoenen en tas vaak de eerste indruk. Sneakers kunnen de look fris maken, boots geven stevigheid en nette schoenen kunnen een simpele outfit serieuzer maken. Een tas of rugzak telt mee wanneer die zichtbaar is, vooral als hij qua kleur of stijl volledig een eigen verhaal begint.",
+          "De School Outfit Checker kijkt of schoenen en accessoires logisch meedoen. Als de schoenen de hele outfit sportiever maken, wordt dat benoemd. Als een tas de kleuren verbindt, is dat een pluspunt. Als de accessoires voelen alsof ze op Marktplaats uit een andere outfit zijn meegekomen, hoor je dat ook.",
+        ],
+      },
+      {
+        title: "Roast of Premium Verdict Beta voor school",
+        paragraphs: [
+          "Wil je snel weten of je fit werkt, kies dan de gewone Outfit Roast. Je krijgt een score, drie korte feedbackregels en een shareQuote. Ideaal voor een snelle check voordat je vertrekt. Wil je echt begrijpen waarom iets werkt, test dan Premium Verdict Beta.",
+          "Premium kijkt dieper naar kleur, pasvorm, stijlidentiteit, context en trendgevoel. Dat is handig als je schooloutfits wilt bouwen die makkelijk blijven, maar er niet uitzien alsof de kledingkast op shuffle stond. De feedback blijft praktisch: wat werkt, wat botst en welk onderdeel de look het meeste stuurt.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "gym-outfit-check",
+    title: "Gym Outfit Checker",
+    metaTitle: "Gym Outfit Checker – Check je sportschool outfit",
+    metaDescription:
+      "Check je gym outfit op sportieve vibe, pasvorm, comfort, schoenen en praktische uitstraling. Gratis AI outfit checker voor de sportschool.",
+    h1: "Gym Outfit Checker",
+    eyebrow: "Voor fits die de sportschool aankunnen",
+    intro: [
+      "Een gym outfit moet praktisch zijn, maar dat betekent niet dat hij geen stijl kan hebben. De Gym Outfit Checker van OutfitRoaster kijkt of je sportschoolfit logisch, comfortabel en sportief overkomt zonder dat het lijkt alsof elk item uit een andere sporttas komt.",
+      "De feedback gaat over zichtbare kleding: top, broek, schoenen, lagen en accessoires. Geen oordeel over lichaam, vorm, prestaties of gezondheid. Alleen de vraag: werkt deze outfit voor de gym en ziet het eruit alsof er een plan achter zit?",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een goede gym outfit?",
+        paragraphs: [
+          "Een goede gym outfit voelt functioneel. Je moet erin kunnen bewegen, zweten, tillen, rennen of rustig trainen zonder dat de kleding alle aandacht opeist. Tegelijk wil je niet dat de look eruitziet alsof je onderweg naar de wasmand per ongeluk een dumbbell tegenkwam.",
+          "OutfitRoaster kijkt naar sportieve samenhang. Een trainingstop, short, jogger, legging, hoodie of sneaker kan prima werken zolang de onderdelen hetzelfde doel lijken te hebben. Als de bovenlaag sportschool zegt maar de schoenen festivalterrein fluisteren, wordt dat duidelijk benoemd.",
+        ],
+      },
+      {
+        title: "Pasvorm en bewegingsruimte",
+        paragraphs: [
+          "Voor de gym draait pasvorm om bewegingsruimte en verhouding. Te ruim kan onhandig ogen, te strak kan afleiden, en een combinatie van beide kan lijken alsof de outfit niet wist welke training gepland stond. De checker beoordeelt hoe kleding zichtbaar valt zonder iets over je lichaam te zeggen.",
+          "Een ruimere hoodie kan goed werken met een smallere sportbroek. Een oversized shirt kan prima zijn wanneer de rest van de look bewust sportief blijft. Schoenen en broek bepalen vaak of de fit er atletisch uitziet of alsof hij nog moet beslissen tussen bankdrukken en boodschappen doen.",
+        ],
+      },
+      {
+        title: "Kleur en materiaalgevoel",
+        paragraphs: [
+          "Gym outfits zijn vaak zwart, grijs, wit of donkerblauw, maar kleur kan juist energie geven. Een accentkleur in schoenen of top werkt goed wanneer hij niet volledig losstaat van de rest. Te veel felle kleuren kunnen snel voelen als een sportdag waar niemand de teamkleur heeft afgesproken.",
+          "Materiaal is op een foto niet altijd perfect te herkennen, maar de uitstraling telt wel mee. Sportieve stoffen, strakke lijnen en praktische lagen geven een andere vibe dan zware jeans of nette schoenen. Als iets onpraktisch lijkt voor Gym, benoemt OutfitRoaster dat vanuit de outfit, niet vanuit jouw sportniveau.",
+        ],
+      },
+      {
+        title: "Schoenen zijn de basis",
+        paragraphs: [
+          "Voor Gym zijn schoenen belangrijker dan bijna elk ander zichtbaar item. Ze bepalen of de outfit sportief en praktisch overkomt. Sneakers kunnen perfect zijn, maar moeten wel passen bij het type fit. Te nette schoenen of schoenen met een volledig andere vibe trekken de outfit meteen uit de sportschoolcontext.",
+          "De checker kijkt of schoenen de sportieve richting ondersteunen. Als ze stevig, clean en passend ogen, is dat een pluspunt. Als ze lijken alsof ze per ongeluk mee zijn gekomen uit een kantooroutfit, krijgt de roast daar waarschijnlijk vrij snel lucht van.",
+        ],
+      },
+      {
+        title: "Wanneer Premium Verdict Beta handig is",
+        paragraphs: [
+          "De gewone Gym Outfit Check is snel en grappig. Je krijgt meteen een score en feedback die duidelijk maakt of de outfit praktisch en sportief voelt. Premium Verdict Beta is nuttig als je je sportieve stijl bewuster wilt maken, bijvoorbeeld met betere kleurkeuzes, lagen of shoprichtingen.",
+          "Premium kan uitleggen waarom een bepaalde broek beter werkt, welke schoenen de look sportiever maken en hoe je een hoodie of top combineert zonder dat de outfit rommelig wordt. Het blijft een outfitanalyse, geen fitnessadvies. Je kleding staat centraal, niet je training.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "feest-outfit-check",
+    title: "Feest Outfit Checker",
+    metaTitle: "Feest Outfit Checker – Check je outfit voor een feest",
+    metaDescription:
+      "Laat je feest outfit beoordelen op vibe, kleuren, pasvorm, schoenen en uitstraling. Gratis AI outfit checker voor verjaardag, borrel of avond uit.",
+    h1: "Feest Outfit Checker",
+    eyebrow: "Voor verjaardagen, borrels en avondplannen",
+    intro: [
+      "Een feest outfit moet energie hebben zonder eruit te zien alsof je hele kledingkast tegelijk mee wilde. De Feest Outfit Checker van OutfitRoaster kijkt of je look past bij verjaardagen, borrels, diners, huisfeesten en avonden waarop de groepsapp ineens plannen maakt.",
+      "De feedback is scherp, Nederlands en outfit-only. We kijken naar kleding, kleur, pasvorm, schoenen, accessoires en vibe. Niet naar lichaam, leeftijd, gezicht of aantrekkelijkheid. Je outfit mag commentaar krijgen; jij niet.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een outfit geschikt voor feest?",
+        paragraphs: [
+          "Een feest outfit mag iets meer hebben dan een normale daglook. Dat kan kleur zijn, een mooie jas, nette schoen, opvallend shirt, sterke tas of een combinatie die net wat meer avond voelt. Maar feestelijk betekent niet automatisch druk. De beste looks hebben één duidelijke bron van energie.",
+          "OutfitRoaster kijkt of de outfit weet waar hij heen gaat. Een look kan perfect zijn voor een verjaardag maar te casual voor een diner. Een outfit kan sterk starten, maar door schoenen ineens richting tankstation na middernacht gaan. De checker vertaalt dat naar een score, feedback en een quote.",
+        ],
+      },
+      {
+        title: "Vibe: relaxed, netjes of chaos?",
+        paragraphs: [
+          "Feestcontext is breed. Een borrel vraagt iets anders dan een clubavond, en een familiediner vraagt iets anders dan een huisfeest. Toch telt altijd de eerste indruk: ziet de outfit eruit alsof je moeite hebt gedaan zonder dat het toneelstuk wordt?",
+          "De Feest Outfit Checker benoemt de vibe. Is de look verzorgd? Is hij te veilig? Zijn er te veel stijlen tegelijk? Een outfit kan bijvoorbeeld zeggen: ‘ik kom gezellig langs’, terwijl de schoenen zeggen: ‘ik moest eigenlijk naar de supermarkt’. Zulke contrasten maken de feedback direct duidelijk.",
+        ],
+      },
+      {
+        title: "Kleuren en statement pieces",
+        paragraphs: [
+          "Voor een feest mag kleur meer ruimte krijgen. Een accentkleur, print of opvallend accessoire kan de outfit interessanter maken. Het gevaar is dat meerdere statement pieces tegelijk hoofdact willen zijn. Dan voelt de look eerder als een buurtfeest met drie dj’s dan als één sterke outfit.",
+          "OutfitRoaster kijkt daarom naar balans. Eén opvallend item kan heel goed werken wanneer de rest ondersteunt. Als kleuren botsen, wordt uitgelegd of dat leuk en feestelijk voelt of gewoon onrustig. Premium Verdict Beta gaat hier dieper op in met kleur- en samenhanganalyse.",
+        ],
+      },
+      {
+        title: "Schoenen bepalen hoe laat het is",
+        paragraphs: [
+          "Schoenen veranderen een feest outfit enorm. Nette schoenen maken de look direct verzorgder. Clean sneakers kunnen casual en modern voelen. Boots geven stevigheid. Maar schoenen die te sportief, te versleten of te praktisch ogen, kunnen een feestlook omlaag trekken.",
+          "De checker kijkt of de schoenen meedoen met de gelegenheid. Een goede schoen hoeft niet duur te zijn; hij moet kloppen met de rest. Als de broek en bovenlaag al feest zeggen, maar de schoenen eruitzien alsof ze geen uitnodiging hebben gekregen, maakt OutfitRoaster daar waarschijnlijk een punt van.",
+        ],
+      },
+      {
+        title: "Van snelle roast naar betere feestfit",
+        paragraphs: [
+          "Gebruik de gewone Outfit Roast wanneer je snel wilt weten of je look werkt. Je krijgt korte, grappige feedback en een deelbare quote. Dat is ideaal als je twijfelt vlak voor vertrek. Premium Verdict Beta is beter wanneer je meerdere opties vergelijkt of wilt begrijpen waarom een outfit sterker kan.",
+          "Premium geeft concretere verbeterpunten: andere schoencategorie, rustiger kleurgebruik, betere laag, sterker accessoire of meer samenhang tussen bovenlaag en broek. Zo wordt de feestfit geen compleet project, maar wel duidelijker dan ‘ziet er prima uit’.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "sollicitatie-outfit-check",
+    title: "Sollicitatie Outfit Checker",
+    metaTitle: "Sollicitatie Outfit Checker – Check je sollicitatie outfit",
+    metaDescription:
+      "Check of je sollicitatie outfit professioneel, verzorgd en geloofwaardig overkomt. AI-feedback over pasvorm, kleur, schoenen en eerste indruk.",
+    h1: "Sollicitatie Outfit Checker",
+    eyebrow: "Voor eerste indruk zonder paniek",
+    intro: [
+      "Een sollicitatie outfit hoeft niet altijd strak in pak te zijn, maar moet wel vertrouwen uitstralen. De Sollicitatie Outfit Checker van OutfitRoaster helpt je zien of je look professioneel, verzorgd en geloofwaardig overkomt voor het gesprek dat je hebt.",
+      "De beoordeling gaat over kleding en styling: pasvorm, kleur, schoenen, lagen en samenhang. Niet over jou als persoon. OutfitRoaster helpt je voorkomen dat je outfit een fantastisch cv binnenbrengt met schoenen die nog op weekendstand staan.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een sollicitatie outfit sterk?",
+        paragraphs: [
+          "Een sterke sollicitatie outfit geeft rust. Hij laat zien dat je de situatie serieus neemt zonder jezelf te verkleden als iemand anders. Afhankelijk van de functie kan dat formeel, smart casual of creatiever zijn. Belangrijk is dat de outfit bewust voelt en niet afleidt van wat je wilt vertellen.",
+          "OutfitRoaster kijkt naar professionaliteit, pasvorm, kleuren en schoenen. Een blazer kan helpen, maar is niet verplicht. Een sneaker kan soms prima, maar moet clean en passend zijn. Een overhemd, trui of bovenlaag moet samenwerken met de broek en schoenen zodat de look geloofwaardig blijft.",
+        ],
+      },
+      {
+        title: "Eerste indruk en geloofwaardigheid",
+        paragraphs: [
+          "Bij een sollicitatie telt de eerste indruk extra hard. Kleding hoeft niet perfect te zijn, maar moet geen onnodige vragen oproepen. Te casual kan overkomen alsof je het gesprek onderschat. Te formeel kan afstandelijk voelen wanneer het bedrijf juist informeel is. De juiste balans verschilt per rol.",
+          "De checker beoordeelt daarom niet op één ouderwetse regel. Hij kijkt naar de gekozen context Werk en naar de uitstraling van het geheel. Komt de outfit voorbereid over? Straalt hij rust uit? Of voelt hij als een vergadering waar de agenda ontbreekt?",
+        ],
+      },
+      {
+        title: "Kleurgebruik voor sollicitaties",
+        paragraphs: [
+          "Voor sollicitaties werken rustige kleuren vaak goed omdat ze weinig afleiden. Donkerblauw, zwart, grijs, wit, beige of aardetinten kunnen professioneel ogen. Dat betekent niet dat kleur verboden is. Eén subtiel accent kan juist karakter geven, zolang het niet alle aandacht opeist.",
+          "OutfitRoaster kijkt of kleuren geloofwaardig en samenhangend voelen. Een fel item kan prima zijn in een creatieve sector, maar minder logisch bij een formele rol. Premium Verdict Beta kan uitgebreider uitleggen welke kleuren vertrouwen geven en welke combinatie te druk oogt.",
+        ],
+      },
+      {
+        title: "Pasvorm en verzorging",
+        paragraphs: [
+          "Pasvorm is bij sollicitaties belangrijk omdat het direct invloed heeft op verzorgdheid. Een te ruime jas kan de look minder scherp maken. Een broek die niet logisch valt op de schoen kan rommelig ogen. Een bovenlaag met goede structuur kan juist meteen professioneler voelen.",
+          "De feedback blijft bij kledingstukken. Het gaat niet om lichaamsvorm, maar om hoe textiel zichtbaar valt. Als iets netter of sterker kan, benoemt OutfitRoaster dat praktisch: welke categorie, welke snit of welke combinatie waarschijnlijk beter werkt.",
+        ],
+      },
+      {
+        title: "Waarom vooraf checken slim is",
+        paragraphs: [
+          "Voor een sollicitatie wil je je hoofd vrij hebben voor het gesprek, niet voor twijfel over je outfit. Een snelle check kan bevestigen dat je goed zit of aanwijzen welk onderdeel de indruk verstoort. Vaak is dat geen grote verbouwing, maar één duidelijke keuze.",
+          "Gebruik de Sollicitatie Outfit Checker met Werk als gelegenheid. Kies Stijlcoach als je vooral nuttige feedback wilt of Pittig als je ook een scherpe realitycheck kunt hebben. Premium Verdict Beta geeft de meest uitgebreide voorbereiding met contextfit, stijlidentiteit en concrete verbeterpunten.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "eerste-date-outfit",
+    title: "Eerste Date Outfit",
+    metaTitle: "Eerste Date Outfit – Check je look voor een eerste date",
+    metaDescription:
+      "Twijfel je over je eerste date outfit? Laat AI je look checken op eerste indruk, confidence, kleuren, pasvorm en date vibe.",
+    h1: "Eerste Date Outfit",
+    eyebrow: "Voor die ene eerste indruk",
+    intro: [
+      "Een eerste date outfit moet precies genoeg zeggen. Verzorgd, maar niet wanhopig. Ontspannen, maar niet alsof je net de bank hebt verlaten. De Eerste Date Outfit checker van OutfitRoaster helpt je bepalen of je look datewaardig voelt.",
+      "De feedback gaat over zichtbare kleding: bovenlaag, broek, schoenen, kleuren, accessoires en vibe. Nooit over aantrekkelijkheid, lichaam of gezicht. Je krijgt een eerlijk verdict over de outfit, zodat jij met minder spiegelstress de deur uit kunt.",
+    ],
+    sections: [
+      {
+        title: "Wat draag je naar een eerste date?",
+        paragraphs: [
+          "Er is geen universele eerste date outfit. Een koffiedate vraagt iets anders dan diner, wandeling, museum of drankjes. Toch werkt meestal dezelfde basis: kleding die verzorgd voelt, bij jou past en niet te veel toneel speelt. Je wilt eruitzien alsof je moeite hebt gedaan, maar niet alsof de outfit een eigen PR-team heeft.",
+          "OutfitRoaster beoordeelt of je look die balans heeft. Een simpele outfit kan heel sterk zijn wanneer pasvorm, schoenen en kleuren kloppen. Een opvallende outfit kan ook werken, zolang hij niet alle ruimte in het gesprek opeist voordat jij iets hebt gezegd.",
+        ],
+      },
+      {
+        title: "Date vibe: zelfverzekerd of te veilig?",
+        paragraphs: [
+          "Bij een eerste date draait het niet alleen om netjes zijn. De outfit moet ook een beetje persoonlijkheid laten zien. Te veilig kan saai voelen. Te druk kan chaotisch worden. De beste date outfits hebben één duidelijk accent en een basis die rust geeft.",
+          "De checker benoemt of de outfit relaxed, zelfverzekerd, awkward, te casual of juist sterk overkomt. Dat gebeurt via kledingobservaties. Bijvoorbeeld: de bovenlaag probeert diner, maar de sneakers willen nog even langs de snackbar. Zulke feedback is grappig, maar ook meteen bruikbaar.",
+        ],
+      },
+      {
+        title: "Kleuren die werken voor een eerste indruk",
+        paragraphs: [
+          "Rustige kleuren geven vaak vertrouwen. Donkere tinten, wit, beige, denim of aardetinten kunnen makkelijk werken. Een accentkleur kan de look interessanter maken. Het gevaar zit in kleuren die los van elkaar lijken te bestaan. Dan krijgt je outfit het karakter van een groepsapp waarin niemand durft te kiezen.",
+          "OutfitRoaster kijkt of kleuren samenwerken en of ze passen bij Date als gelegenheid. Premium Verdict Beta kan precieser uitleggen welke kleuren sterk zijn, welke botsen en hoe je met kleine aanpassingen meer samenhang krijgt.",
+        ],
+      },
+      {
+        title: "Schoenen voor een eerste date",
+        paragraphs: [
+          "Schoenen zijn op een eerste date verraderlijk belangrijk. Ze maken een outfit direct netter, sportiever, relaxter of rommeliger. Clean sneakers zijn vaak prima. Nette schoenen kunnen sterker zijn bij diner of cocktails. Te afgetrapte of te sportieve schoenen kunnen de look omlaag trekken.",
+          "De checker kijkt of je schoenen het verhaal ondersteunen. Als de rest van de outfit moeite doet en de schoenen duidelijk niet zijn ingelicht, wordt dat benoemd. Andersom kunnen goede schoenen een simpele outfit precies genoeg date-energie geven.",
+        ],
+      },
+      {
+        title: "Snel checken voordat je vertrekt",
+        paragraphs: [
+          "De Eerste Date Outfit pagina is bedoeld voor snelle twijfel. Upload je foto, kies Date en bepaal hoe hard de feedback mag zijn. Stijlcoach geeft vooral vertrouwen en positieve feedback. Pittig is eerlijker. Genadeloos is voor wie de harde waarheid liever van een app hoort dan van de groepsapp.",
+          "Wil je meer dan een snelle roast, gebruik Premium Verdict Beta. Die analyse kijkt dieper naar kleur, pasvorm, stijlidentiteit en context. Handig als je tussen twee looks twijfelt en niet wil vertrekken in een outfit die onderweg drie keer van richting verandert.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "smart-casual-outfit-check",
+    title: "Smart Casual Outfit Checker",
+    metaTitle: "Smart Casual Outfit Checker – Check je smart casual look",
+    metaDescription:
+      "Laat je smart casual outfit beoordelen op balans tussen netjes en relaxed, kleur, pasvorm, schoenen en gelegenheid.",
+    h1: "Smart Casual Outfit Checker",
+    eyebrow: "Netjes zonder kantoorpaniek",
+    intro: [
+      "Smart casual klinkt makkelijk, maar is precies de dresscode waar outfits vaak verdwalen. Te netjes voelt stijf, te casual voelt alsof je de memo half hebt gelezen. De Smart Casual Outfit Checker van OutfitRoaster kijkt of jouw look de balans tussen verzorgd en relaxed goed raakt.",
+      "Upload je outfit en krijg feedback over bovenlaag, broek, schoenen, kleuren, pasvorm en context. De beoordeling gaat alleen over kleding. Geen bodyshaming, geen persoonlijke opmerkingen, wel een eerlijk verdict dat meteen duidelijk maakt waar de look staat.",
+    ],
+    sections: [
+      {
+        title: "Wat is smart casual eigenlijk?",
+        paragraphs: [
+          "Smart casual is de middenweg tussen formeel en ontspannen. Denk aan een nette trui met chino, blazer met clean sneakers, overhemd zonder das, of een verzorgde jeans met goede schoenen. Het gaat niet om één verplicht kledingstuk, maar om balans.",
+          "De valkuil is dat de ene helft van de outfit smart is en de andere helft casual, zonder dat ze elkaar ontmoeten. Dan krijg je een look die klinkt als LinkedIn met weekendplannen. OutfitRoaster kijkt of de twee kanten samenwerken of elkaar saboteren.",
+        ],
+      },
+      {
+        title: "Schoenen bepalen het niveau",
+        paragraphs: [
+          "In smart casual zijn schoenen vaak de knop waarmee je de outfit hoger of lager zet. Nette schoenen maken een casual basis meteen serieuzer. Clean sneakers kunnen een formele bovenlaag moderner maken. Maar sportieve sneakers of versleten schoenen kunnen het smart gedeelte volledig onderuit trekken.",
+          "De checker beoordeelt of je schoenen passen bij de rest. Een blazer met sneakers kan sterk zijn wanneer de sneakers strak en bewust ogen. Een nette broek met schoenen die naar de gym willen, voelt sneller alsof twee dresscodes om voorrang vragen.",
+        ],
+      },
+      {
+        title: "Kleur en materiaal",
+        paragraphs: [
+          "Smart casual werkt vaak goed met rustige kleuren: donkerblauw, grijs, zwart, wit, beige, bruin of groen. Eén accentkleur kan karakter geven. Te veel felle kleuren maken de look minder rustig. Materiaalgevoel telt ook mee: denim, wol, katoen, leerlook of sportieve stof sturen de vibe.",
+          "OutfitRoaster kan niet elk materiaal perfect herkennen, maar de uitstraling is zichtbaar genoeg voor nuttige feedback. Een sportieve hoodie kan onder een jas werken, maar moet dan bewust voelen. Een overhemd met verkeerde broek kan juist klinken alsof de outfit geen eindbesluit heeft genomen.",
+        ],
+      },
+      {
+        title: "Voor werk, date of feest",
+        paragraphs: [
+          "Smart casual is populair omdat het in veel situaties past: werk, date, diner, feest, borrel of presentatie. Toch verandert de ideale balans per context. Voor Werk mag het iets netter. Voor Date mag het relaxter en persoonlijker. Voor Feest mag er meer energie in kleur of accessoire zitten.",
+          "Kies daarom altijd de juiste gelegenheid in OutfitRoaster. Dezelfde jeans en blazer kunnen voor Date perfect zijn, maar voor een sollicitatie net te los. Context maakt het verschil tussen ‘goed gekleed’ en ‘goede outfit voor dit moment’.",
+        ],
+      },
+      {
+        title: "Waarom een check helpt",
+        paragraphs: [
+          "Smart casual is lastig omdat kleine details veel veranderen. Eén schoen, riem, jas of kleur kan de hele look verschuiven. Een check helpt om dat snel te zien. Je krijgt geen stijlles van twintig minuten, maar een helder verdict over wat werkt en wat wringt.",
+          "Voor een snelle beoordeling kies je de Outfit Roast. Voor een diepere analyse kies je Premium Verdict Beta. Dan krijg je kleur-, pasvorm-, samenhang- en contextfeedback, plus concrete verbeterpunten. Zo blijft smart casual geen dresscode met openstaande actiepunten.",
+        ],
+      },
+    ],
+  }),
 ] satisfies SeoPage[];
 
 export const seoPageSlugs = seoPages.map((seoPage) => seoPage.slug);
