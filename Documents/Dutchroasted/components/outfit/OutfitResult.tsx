@@ -777,7 +777,7 @@ async function createShareImage(
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const VIDEO_DURATION_MS = 10_000;
+const VIDEO_DURATION_MS = 12_500;
 
 async function createOutfitVideo(
   originalImage: string,
@@ -800,8 +800,10 @@ async function createOutfitVideo(
 
   canvas.width = VIDEO_WIDTH;
   canvas.height = VIDEO_HEIGHT;
+  drawOutfitVideoFrame(context, photo, score, quote, 0);
 
   const stream = canvas.captureStream(30);
+  requestCanvasStreamFrame(stream);
   const format = getSupportedVideoFormat();
   const chunks: Blob[] = [];
   const recorder = new MediaRecorder(stream, {
@@ -830,6 +832,8 @@ async function createOutfitVideo(
 
   recorder.start(250);
   const startedAt = performance.now();
+  drawOutfitVideoFrame(context, photo, score, quote, 0);
+  requestCanvasStreamFrame(stream);
 
   await new Promise<void>((resolve) => {
     function renderFrame(now: number) {
@@ -855,6 +859,15 @@ async function createOutfitVideo(
     blob,
     extension: format.extension,
   };
+}
+
+function requestCanvasStreamFrame(stream: MediaStream) {
+  const [track] = stream.getVideoTracks();
+  if (!track || !("requestFrame" in track)) {
+    return;
+  }
+
+  (track as CanvasCaptureMediaStreamTrack).requestFrame();
 }
 
 function getSupportedVideoFormat() {
@@ -891,11 +904,11 @@ function drawOutfitVideoFrame(
   context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
   drawImageCoverWithZoom(context, photo, VIDEO_WIDTH, VIDEO_HEIGHT, zoom);
 
-  if (elapsedSeconds < 1.6) {
+  if (elapsedSeconds < 2.2) {
     return;
   }
 
-  if (elapsedSeconds >= 1.6 && elapsedSeconds < 3) {
+  if (elapsedSeconds >= 2.2 && elapsedSeconds < 4.4) {
     drawVideoShade(context, 0.68);
     drawCenteredVideoText(
       context,
@@ -914,7 +927,7 @@ function drawOutfitVideoFrame(
     return;
   }
 
-  if (elapsedSeconds >= 3 && elapsedSeconds < 4.6) {
+  if (elapsedSeconds >= 4.4 && elapsedSeconds < 6.5) {
     drawVideoShade(context, 0.74);
     context.textAlign = "center";
     context.fillStyle = "#ff6a00";
@@ -927,7 +940,7 @@ function drawOutfitVideoFrame(
     return;
   }
 
-  if (elapsedSeconds >= 4.6 && elapsedSeconds < 6.8) {
+  if (elapsedSeconds >= 6.5 && elapsedSeconds < 9.5) {
     drawVideoShade(context, 0.7);
     drawCenteredVideoText(context, `“${quote}”`, 940, 76, 880, 5, "#ffffff");
     context.textAlign = "center";
