@@ -21,6 +21,9 @@ export type AnalyticsEventName =
 type AnalyticsParameters = Record<string, string | number | boolean | undefined>;
 
 const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const analyticsDebugMode =
+  process.env.NODE_ENV !== "production" ||
+  process.env.NEXT_PUBLIC_GA_DEBUG === "true";
 
 declare global {
   interface Window {
@@ -54,7 +57,10 @@ export function trackAnalyticsEvent(
   sendGoogleAnalyticsCommand(
     "event",
     eventName,
-    removeUndefinedValues(parameters),
+    removeUndefinedValues({
+      ...parameters,
+      debug_mode: analyticsDebugMode,
+    }),
   );
 }
 

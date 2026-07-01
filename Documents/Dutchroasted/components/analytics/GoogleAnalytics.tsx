@@ -7,6 +7,10 @@ type GoogleAnalyticsProps = {
 };
 
 export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
+  const isDebugMode =
+    process.env.NODE_ENV !== "production" ||
+    process.env.NEXT_PUBLIC_GA_DEBUG === "true";
+
   return (
     <>
       <Script
@@ -25,7 +29,10 @@ export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
             ad_personalization: 'denied'
           });
           gtag('js', new Date());
-          gtag('config', ${JSON.stringify(measurementId)}, { send_page_view: false });
+          gtag('config', ${JSON.stringify(measurementId)}, {
+            send_page_view: false,
+            debug_mode: ${JSON.stringify(isDebugMode)}
+          });
         `}
       </Script>
       <Suspense fallback={null}>
