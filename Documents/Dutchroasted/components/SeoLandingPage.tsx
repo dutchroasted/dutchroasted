@@ -1,69 +1,87 @@
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { StructuredData } from "./StructuredData";
-
-type Section = {
-  title: string;
-  paragraphs: string[];
-  bullets?: string[];
-};
-
-type FAQ = {
-  question: string;
-  answer: string;
-};
-
-type RelatedLink = {
-  href: string;
-  label: string;
-  description: string;
-};
+import type { SeoPage } from "@/data/seo-pages";
+import { SITE_URL } from "@/lib/seo";
 
 type SeoLandingPageProps = {
-  eyebrow: string;
-  title: string;
-  intro: string[];
-  sections: Section[];
-  faqs: FAQ[];
-  relatedLinks: RelatedLink[];
+  page: SeoPage;
 };
 
-export function SeoLandingPage({
-  eyebrow,
-  title,
-  intro,
-  sections,
-  faqs,
-  relatedLinks,
-}: SeoLandingPageProps) {
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
+export function SeoLandingPage({ page }: SeoLandingPageProps) {
+  const pageUrl = `${SITE_URL}/${page.slug}`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "OutfitRoaster",
+      url: SITE_URL,
+      inLanguage: "nl-NL",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/outfit-check?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
       },
-    })),
-  };
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "OutfitRoaster",
+      url: `${SITE_URL}/outfit-check`,
+      applicationCategory: "LifestyleApplication",
+      operatingSystem: "Web",
+      inLanguage: "nl-NL",
+      description:
+        "Nederlandse AI-outfitchecker voor outfit roasts en Premium Verdict Beta analyses.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "EUR",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: page.faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: page.h1,
+      description: page.metaDescription,
+      url: pageUrl,
+      mainEntityOfPage: pageUrl,
+      inLanguage: "nl-NL",
+      publisher: {
+        "@type": "Organization",
+        name: "OutfitRoaster",
+        url: SITE_URL,
+      },
+    },
+  ];
 
   return (
     <main className="min-h-screen">
-      <StructuredData data={faqSchema} />
+      <StructuredData data={structuredData} />
       <Header />
 
       <article className="px-4 pb-20 pt-28 sm:px-6 sm:pt-36 lg:px-8">
         <header className="mx-auto max-w-5xl">
           <p className="inline-flex rounded-full border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-orange-300">
-            {eyebrow}
+            {page.eyebrow}
           </p>
           <h1 className="mt-6 text-5xl font-black leading-[0.95] text-white sm:text-7xl">
-            {title}
+            {page.h1}
           </h1>
           <div className="mt-7 max-w-3xl space-y-5 text-lg leading-8 text-zinc-300">
-            {intro.map((paragraph) => (
+            {page.intro.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
@@ -72,7 +90,7 @@ export function SeoLandingPage({
               href="/outfit-check"
               className="dr-primary-button inline-flex min-h-14 items-center justify-center px-6 py-4"
             >
-              Check mijn outfit
+              Upload gratis jouw outfit
             </a>
             <a
               href="/"
@@ -84,7 +102,7 @@ export function SeoLandingPage({
         </header>
 
         <div className="mx-auto mt-16 grid max-w-5xl gap-6">
-          {sections.map((section) => (
+          {page.sections.map((section) => (
             <section
               key={section.title}
               className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8"
@@ -120,7 +138,7 @@ export function SeoLandingPage({
             Goed om te weten
           </h2>
           <div className="mt-8 grid gap-4">
-            {faqs.map((faq) => (
+            {page.faqs.map((faq) => (
               <details
                 key={faq.question}
                 className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 open:border-orange-500/35"
@@ -135,9 +153,9 @@ export function SeoLandingPage({
         </section>
 
         <section className="mx-auto mt-16 max-w-5xl">
-          <h2 className="text-2xl font-black text-white">Lees ook</h2>
+          <h2 className="text-2xl font-black text-white">Gerelateerde pagina&apos;s</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
-            {relatedLinks.map((link) => (
+            {(page.relatedLinks ?? []).map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -160,7 +178,7 @@ export function SeoLandingPage({
             href="/outfit-check"
             className="dr-primary-button mt-7 inline-flex min-h-14 items-center justify-center px-7 py-4"
           >
-            Check mijn outfit
+            Upload gratis jouw outfit
           </a>
         </section>
       </article>
