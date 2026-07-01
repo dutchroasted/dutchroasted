@@ -432,8 +432,13 @@ function normalizeOutfitResult(
   profile: OutfitProfile = "Zeg ik liever niet",
   variationOffset = 0,
   recentQuotes: string[] = [],
+  recentScores: number[] = [],
 ): OutfitResultData {
-  const score = normalizeScore(source.score ?? source.rating);
+  const score = calibrateRoastScore(
+    normalizeScore(source.score ?? source.rating),
+    recentScores,
+    roastLevel,
+  );
   const levelFallback = getScoreAwareFallback(roastLevel, score, variationOffset);
   const isStyleCoach = roastLevel === "Stijlcoach";
   const normalizedRoastText = isStyleCoach
@@ -759,6 +764,18 @@ function toStringArray(value: unknown) {
     .filter(Boolean);
 }
 
+function toScoreArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => (typeof item === "number" ? item : Number(item)))
+    .filter((score) => Number.isFinite(score) && score >= 1 && score <= 10)
+    .map((score) => Math.round(score))
+    .slice(0, 20);
+}
+
 function firstNonEmptyStringArray(...values: unknown[]) {
   for (const value of values) {
     const items = toStringArray(value);
@@ -782,6 +799,26 @@ function normalizeScore(value: unknown) {
         : Number.NaN;
 
   return Number.isFinite(parsed) ? Math.min(10, Math.max(1, Math.round(parsed))) : 5;
+}
+
+function calibrateRoastScore(
+  score: number,
+  recentScores: number[],
+  roastLevel: OutfitRoastLevel,
+) {
+  if (roastLevel === "Stijlcoach" || recentScores.length < 5) {
+    return score;
+  }
+
+  const lowScoreRatio =
+    recentScores.filter((recentScore) => recentScore <= 3).length /
+    recentScores.length;
+
+  if (lowScoreRatio <= 0.4 || score > 3) {
+    return score;
+  }
+
+  return Math.max(score, 4);
 }
 
 function normalizeShoppingSuggestions(
@@ -1443,6 +1480,14 @@ Roastniveau: Genadeloos
 - Gebruik nooit de woorden: misschien, beetje, redelijk, best, aardig, lijkt, kan, zou, "niet helemaal", "past niet goed" of "mist samenhang".
 - Goede energie: "Deze outfit heeft drie persoonlijkheden en geen leider.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
 - Slechte energie: "De kleuren passen niet goed.", "Misschien andere schoenen.", "Deze outfit kan beter.", "De combinatie voelt rommelig."
+- Werkvolgorde voor humor: analyseer de outfit zorgvuldig, bepaal de 2 of 3 meest opvallende kenmerken, kies het opvallendste kenmerk en maak dáár de grap over.
+- Iedere grap moet voortkomen uit een echte zichtbare observatie van de outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie of gelegenheid.
+- Gebruik nooit een willekeurige metafoor die niet logisch uit de outfit volgt.
+- Controleer intern: als de grap ook op een totaal andere outfit zou passen, herschrijf hem specifieker op basis van de zichtbare outfit.
+- Een roast hoeft geen lage score te hebben. Ook een sterke 8/10 of 9/10 krijgt een grappige roast.
+- Gebruik de volledige scoreschaal: 0-1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect.
+- Als meer dan 40% van de recente scores 0-3 is, herkalibreer automatisch en gebruik de volledige schaal realistischer.
+- De score moet geloofwaardig aansluiten bij wat zichtbaar is, niet bij hoe hard de grap klinkt.
 - Score 0-3: genadeloos grappig. Score 4-6: sarcastisch. Score 7-8: compliment met humor. Score 9-10: alsof de outfit de hoofdrol speelt.
 - Roast uitsluitend outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie en gelegenheid.
 - Roast nooit gezicht, lichaam, gewicht, leeftijd, afkomst, religie, gezondheid, handicap, gender, seksualiteit of andere persoonskenmerken.
@@ -1474,6 +1519,7 @@ export async function POST(request: Request) {
       intensity?: unknown;
       profile?: unknown;
       recentQuotes?: unknown;
+      recentScores?: unknown;
     }>(request, MAX_OUTFIT_REQUEST_BYTES);
     const mode: OutfitCheckMode =
       body.mode === "pro-analysis" ? "pro-analysis" : "roast";
@@ -1487,6 +1533,7 @@ export async function POST(request: Request) {
     const recentQuotes = toStringArray(body.recentQuotes)
       .filter(isSafeRecentOutput)
       .slice(0, 12);
+    const recentScores = toScoreArray(body.recentScores);
     const roastVariation = createRoastVariation();
 
     if (
@@ -1590,6 +1637,7 @@ ${roastVariation.openingPatterns.map((pattern) => `  - ${pattern}`).join("\n")}
 - Vermijd formuleringen uit eerdere antwoorden; schrijf alsof dit de eerste roast in een nieuwe comedyset is.
 - Gebruik geen grap, metafoor of zinsopening die te veel lijkt op deze recente quotes:
 ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `  - ${quote}`).join("\n") : "  - Geen recente quotes beschikbaar."}
+- Recente scores op dit apparaat, nieuw naar oud: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}.
 
 ${getRoastLevelInstructions(roastLevel)}
 
@@ -1616,13 +1664,21 @@ Regels:
 - Schrijf alle feedback altijd in het Nederlands, inclusief shareQuote en alternativeQuotes.
 - Genereer nooit Engelse quotes en mix nooit Nederlands met Engels.
 - Schrijf voor een Nederlands publiek.
-- Score is 1 t/m 10
+- Score is 1 t/m 10 en gebruikt de volledige schaal.
+- Score 1 is alleen voor extreem slechte outfits; 2-3 is slecht; 4-5 gemiddeld; 6-7 goed; 8 sterk; 9 heel stijlvol; 10 bijna perfect.
+- Een grappige roast betekent niet automatisch een lage score. Een 8/10 of 9/10 mag nog steeds hard en grappig worden geroast.
+- Als meer dan 40% van de recente scores 1-3 is, herkalibreer automatisch zodat je niet opnieuw onterecht laag scoort.
+- Laat de score aansluiten bij zichtbare kwaliteit van kleding, kleuren, pasvorm, schoenen, samenhang en gelegenheid.
 - Het veld roast bevat exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
 - Bij Stijlcoach zijn dit positieve confidence-regels over sterke punten en stijlwinsten.
 - Bij Pittig en Genadeloos zijn roastregels toegestaan.
 - Iedere feedbackregel is kort, snel en heeft een duidelijke clou.
 - Schrijf geen lange modeanalyse of stylingles in roast.
 - Humor gaat vóór nuance: gebruik scherpe observaties, onverwachte vergelijkingen en absurde maar logische metaforen.
+- Humor moet altijd voortkomen uit een echte observatie van de outfit.
+- Werkvolgorde voor humor: analyseer zorgvuldig, kies de 2 of 3 meest opvallende kenmerken, pak het opvallendste kenmerk en maak dáár de grap over.
+- Gebruik nooit een willekeurige metafoor die niet logisch uit de outfit volgt.
+- Controleer intern: als een grap op vrijwel elke outfit geplakt kan worden, herschrijf hem op basis van een zichtbaar kledingstuk, kleur, schoen, accessoire, combinatie of gelegenheid.
 - Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief, zelfverzekerd en niet-corrigerend; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
@@ -1678,11 +1734,12 @@ Regels:
 - Geen beoordeling van uiterlijk
 - Alleen outfit beoordelen
 - Noem nooit lichaam, gewicht, gezicht, leeftijd, afkomst, genderidentiteit, seksualiteit, handicap, gezondheid, religie of aantrekkelijkheid.
-- Score 1-3: roast genadeloos grappig.
+- Score 1: alleen extreem slecht. Score 2-3: slecht. Score 4-5: gemiddeld. Score 6-7: goed. Score 8: sterk. Score 9: heel stijlvol. Score 10: bijna perfect.
+- Score 1-3: roast genadeloos grappig, maar gebruik deze range alleen als de outfit zichtbaar echt zwak is.
 - Score 4-6: schrijf scherp en sarcastisch.
 - Score 7-8: geef een compliment met humor.
 - Score 9-10: hype de outfit alsof die de kamer binnenloopt.
-- Scorekalibratie: 7 of hoger betekent goed; 8 of hoger is sterk; 9 of hoger is uitzonderlijk deelbaar; 10 alleen bij een oprecht uitzonderlijke outfit. Geef geen overdreven hoge score.
+- Scorekalibratie: gebruik de volledige schaal. Een roast hoeft geen lage score te hebben. Geef geen overdreven hoge score, maar straf een goede outfit niet omdat de grap hard is.
 - Output altijd als geldige JSON volgens exact dit format:
 {
   "roast": "string",
@@ -1776,7 +1833,9 @@ ${roastLevel === "Genadeloos" ? `Omdat roastniveau Genadeloos is: behandel dit a
 Vermijd ook iedere grap, metafoor en opening die lijkt op deze recente quotes:
 ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n") : "- Geen recente quotes beschikbaar."}
 
-Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
+Recente scores op dit apparaat: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}. Gebruik de volledige schaal: 1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect. Als meer dan 40% recent 1-3 is, herkalibreer realistischer. Een grappige roast hoeft geen lage score te hebben.
+
+Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
@@ -1813,6 +1872,7 @@ Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles.
           profile,
           roastVariation.fallbackOffset,
           recentQuotes,
+          recentScores,
         ),
       );
     }
@@ -1832,6 +1892,7 @@ Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles.
         profile,
         roastVariation.fallbackOffset,
         recentQuotes,
+        recentScores,
       ),
     );
   } catch (error) {

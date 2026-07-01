@@ -28,6 +28,7 @@ const FREE_CHECK_LIMIT = 5;
 const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
 const RECENT_QUOTES_STORAGE_KEY = "outfitroaster_recent_quotes";
+const RECENT_SCORES_STORAGE_KEY = "outfitroaster_recent_scores";
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
 const RETRYABLE_API_STATUSES = new Set([429, 500, 502, 503, 504]);
@@ -111,6 +112,7 @@ export function OutfitCheckForm() {
         profile,
         auth.accessToken,
         readRecentQuotes(),
+        readRecentScores(),
       );
 
       let data: OutfitResultData | { proAnalysis: ProAnalysisResultData };
@@ -142,6 +144,7 @@ export function OutfitCheckForm() {
           ...data.alternativeQuotes,
           ...data.roast.split("\n"),
         ]);
+        rememberRecentScore(data.score);
         setDailyLimit(incrementDailyLimit());
         analytics.roastCompleted({
           score: data.score,
@@ -372,6 +375,7 @@ async function runOutfitCheckWithRetry(
   profile: OutfitProfile,
   accessToken: string | null,
   recentQuotes: string[],
+  recentScores: number[],
 ) {
   let requestImage = selectedPreviewImage;
   let didRetryAfter413 = false;
@@ -387,6 +391,7 @@ async function runOutfitCheckWithRetry(
       profile,
       accessToken,
       recentQuotes,
+      recentScores,
       `poging ${attempt}`,
     );
 
@@ -433,6 +438,7 @@ async function requestOutfitCheck(
   profile: OutfitProfile,
   accessToken: string | null,
   recentQuotes: string[],
+  recentScores: number[],
   attempt: string,
 ) {
   const controller = new AbortController();
@@ -456,6 +462,7 @@ async function requestOutfitCheck(
         roastLevel,
         profile,
         recentQuotes,
+        recentScores,
       }),
       signal: controller.signal,
     });
@@ -484,6 +491,22 @@ function readRecentQuotes() {
   }
 }
 
+function readRecentScores() {
+  try {
+    const parsed = JSON.parse(
+      window.localStorage.getItem(RECENT_SCORES_STORAGE_KEY) ?? "[]",
+    ) as unknown;
+    return Array.isArray(parsed)
+      ? parsed
+          .map((score) => (typeof score === "number" ? score : Number(score)))
+          .filter((score) => Number.isFinite(score) && score >= 1 && score <= 10)
+          .slice(0, 20)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function getProcessingTimeSeconds(startedAt: number) {
   return Number(((performance.now() - startedAt) / 1000).toFixed(2));
 }
@@ -501,6 +524,17 @@ function rememberRecentQuotes(quotes: string[]) {
   window.localStorage.setItem(
     RECENT_QUOTES_STORAGE_KEY,
     JSON.stringify(recentQuotes),
+  );
+}
+
+function rememberRecentScore(score: number) {
+  const recentScores = [score, ...readRecentScores()]
+    .filter((value) => Number.isFinite(value) && value >= 1 && value <= 10)
+    .slice(0, 20);
+
+  window.localStorage.setItem(
+    RECENT_SCORES_STORAGE_KEY,
+    JSON.stringify(recentScores),
   );
 }
 
