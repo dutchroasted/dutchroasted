@@ -441,7 +441,12 @@ function normalizeOutfitResult(
     recentScores,
     roastLevel,
   );
-  const levelFallback = getScoreAwareFallback(roastLevel, score, variationOffset);
+  const levelFallback = getScoreAwareFallback(
+    roastLevel,
+    score,
+    variationOffset,
+    occasion,
+  );
   const isStyleCoach = roastLevel === "Stijlcoach";
   const normalizedRoastText = isStyleCoach
     ? extractRoastSentences(roastText).filter(isPositiveStyleCoachText).join("\n")
@@ -612,28 +617,194 @@ function getRoastSentenceScore(sentence: string) {
   return detailScore + punchlineScore + comedyScore + blandPenalty + unsafePenalty + conciseScore;
 }
 
+function getOccasionFallbacks(
+  occasion: OutfitOccasion,
+  score: number,
+): { quotes: string[]; roastLines: string[] } {
+  const isWeak = score <= 5;
+  const isStrong = score >= 8;
+  const fallbacks: Record<OutfitOccasion, { quotes: string[]; roastLines: string[] }> = {
+    Date: {
+      quotes: isStrong
+        ? [
+            "Deze datefit komt binnen alsof reserveren overbodig was.",
+            "De eerste indruk heeft vandaag duidelijk voorrang gekregen.",
+            "Deze look betaalt de rekening met zelfvertrouwen.",
+          ]
+        : [
+            "Deze datefit vraagt eerst om een herkansing.",
+            "De eerste indruk zoekt nog naar bereik.",
+            "Deze outfit flirt vooral met twijfel.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De date-vibe staat klaar, maar de styling komt te laat.",
+            "De eerste indruk heeft potentie, alleen mist de entree.",
+            "Deze outfit wil romantiek, maar vergeet de openingszin.",
+          ]
+        : [
+            "De date-vibe komt rustig binnen en pakt alsnog aandacht.",
+            "De styling doet niet te hard en dat werkt verrassend goed.",
+            "Deze outfit geeft eerste indruk zonder te gaan schreeuwen.",
+          ],
+    },
+    Werk: {
+      quotes: isStrong
+        ? [
+            "Deze werkfit opent de meeting zonder twijfel.",
+            "LinkedIn zet deze outfit zelf bovenaan.",
+            "Deze look vraagt om promotie zonder te solliciteren.",
+          ]
+        : [
+            "Deze werkfit staat nog in concept bij HR.",
+            "De meeting begint, maar de outfit zoekt agenda.",
+            "LinkedIn heeft deze look nog niet goedgekeurd.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De werkfit wil professioneel zijn, maar mist overtuigingskracht.",
+            "De styling schuift aan bij de meeting zonder agendapunt.",
+            "LinkedIn kijkt mee en vraagt om meer autoriteit.",
+          ]
+        : [
+            "De werkfit houdt het netjes en verliest de geloofwaardigheid niet.",
+            "De styling komt vergaderruimte-proof binnen zonder overwerk.",
+            "LinkedIn hoeft vandaag niet zenuwachtig mee te kijken.",
+          ],
+    },
+    School: {
+      quotes: isStrong
+        ? [
+            "Deze schoolfit haalt aanwezigheid zonder moeite.",
+            "De klas kijkt, maar de outfit blijft rustig.",
+            "Deze look snapt casual zonder huiswerk.",
+          ]
+        : [
+            "Deze schoolfit heeft de lesbrief gemist.",
+            "De klas begint, maar de styling zoekt lokaal.",
+            "Deze outfit kwam te laat en zonder uitleg.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De schoolfit wil relaxed zijn, maar mist richting.",
+            "De styling zit in de klas zonder het hoofdstuk te kennen.",
+            "Deze look probeert casual, maar vergeet de samenvatting.",
+          ]
+        : [
+            "De schoolfit blijft relaxed zonder volledig weg te zakken.",
+            "De styling doet casual en houdt genoeg zelfvertrouwen over.",
+            "Deze look haalt de dag zonder drama of overprestatie.",
+          ],
+    },
+    Gym: {
+      quotes: isStrong
+        ? [
+            "Deze gymfit heeft de warming-up al gewonnen.",
+            "Basic-Fit geeft deze look direct een rondleiding.",
+            "De training begint, maar de outfit is klaar.",
+          ]
+        : [
+            "Deze gymfit heeft cardio met twijfel gedaan.",
+            "Basic-Fit vraagt voorzichtig om uitleg.",
+            "De warming-up ziet de outfit al twijfelen.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De gymfit wil trainen, maar de styling doet cooling-down.",
+            "De schoenen lijken klaar, de rest zoekt motivatie.",
+            "Basic-Fit kijkt mee en mist nog wedstrijdmentaliteit.",
+          ]
+        : [
+            "De gymfit is praktisch zonder meteen sporttas-chaos te worden.",
+            "De styling kan bewegen en houdt toch genoeg lijn.",
+            "Basic-Fit hoeft vandaag geen interventie te plannen.",
+          ],
+    },
+    Feest: {
+      quotes: isStrong
+        ? [
+            "Deze feestfit komt binnen voordat de muziek start.",
+            "De borrel heeft zojuist een dresscode gekregen.",
+            "Deze look pakt de entree zonder toestemming.",
+          ]
+        : [
+            "Deze feestfit staat nog bij de garderobe.",
+            "De borrel wacht, maar de styling twijfelt.",
+            "Deze entree mist nog applaus en richting.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De feestfit wil binnenkomen, maar blijft bij de garderobe hangen.",
+            "De styling zoekt sfeer, maar vergeet de entree.",
+            "De borrel is begonnen en deze look leest nog de uitnodiging.",
+          ]
+        : [
+            "De feestfit heeft entree zonder meteen lawaai te maken.",
+            "De styling pakt sfeer en houdt het draagbaar.",
+            "De borrel krijgt genoeg energie zonder noodverlichting.",
+          ],
+    },
+    Festival: {
+      quotes: isStrong
+        ? [
+            "Deze festivalfit vindt de mainstage zonder plattegrond.",
+            "Lowlands laat deze look direct door.",
+            "Deze fit overleeft modder en groepsfoto’s.",
+          ]
+        : [
+            "Deze festivalfit zoekt nog de mainstage.",
+            "Lowlands vraagt waar de rest van de vibe bleef.",
+            "Deze look verdwaalt al vóór de camping.",
+          ],
+      roastLines: isWeak
+        ? [
+            "De festivalfit wil mainstage, maar komt binnen als dagplanning.",
+            "De styling zoekt vibe, maar staat nog bij de ingang.",
+            "Lowlands kijkt mee en mist nog een reden om te dansen.",
+          ]
+        : [
+            "De festivalfit heeft genoeg vibe zonder campingpaniek te worden.",
+            "De styling kan een lange dag aan zonder de mainstage te missen.",
+            "Lowlands haalt dit niet meteen uit de rij.",
+          ],
+    },
+  };
+
+  return fallbacks[occasion];
+}
+
 function getScoreAwareFallback(
   roastLevel: OutfitRoastLevel,
   score: number,
   variationOffset: number,
+  occasion: OutfitOccasion = "Date",
 ) {
+  const occasionFallback = getOccasionFallbacks(occasion, score);
+
   if (roastLevel === "Stijlcoach") {
-    const quotes = rotateFallbacks([
+    const positiveOccasionFallback = getOccasionFallbacks(occasion, Math.max(score, 8));
+    const quotes = [
+      ...rotateFallbacks(positiveOccasionFallback.quotes, variationOffset),
+      ...rotateFallbacks([
       "Rustig binnenkomen en alsnog de hele kamer winnen.",
       "Alsof zelfvertrouwen vandaag gewoon in de styling zat.",
       "De spiegel heeft dit zonder discussie goedgekeurd.",
       "Iemand heeft eenvoud vandaag onverwacht hoofdrolspeler gemaakt.",
       "Dit heeft de energie van moeiteloos gelijk krijgen.",
       "De styling speelt thuis en het publiek weet dat.",
-    ], variationOffset);
-    const roastLines = rotateFallbacks([
+      ], variationOffset),
+    ];
+    const roastLines = [
+      ...rotateFallbacks(positiveOccasionFallback.roastLines, variationOffset + 2),
+      ...rotateFallbacks([
       "De styling speelt thuis en kent elke hoek van het veld.",
       "Alsof alle kledingstukken vooraf eindelijk dezelfde groepsapp lazen.",
       "De kleuren kwamen rustig binnen en pakten alsnog de hoofdrol.",
       "Iemand heeft eenvoud hier verrassend veel zelfvertrouwen gegeven.",
       "De spiegel hoeft vandaag werkelijk geen second opinion.",
       "Dit heeft de energie van winnen zonder zichtbaar te zweten.",
-    ], variationOffset + 2);
+      ], variationOffset + 2),
+    ];
     return {
       roast: roastLines.slice(0, 3).join("\n"),
       shareQuote: quotes[0],
@@ -642,7 +813,9 @@ function getScoreAwareFallback(
   }
 
   if (score <= 3) {
-    const quotes = rotateFallbacks([
+    const quotes = [
+      ...rotateFallbacks(occasionFallback.quotes, variationOffset),
+      ...rotateFallbacks([
       "Deze outfit is een software-update die niemand wilde.",
       "Ergens huilt een paskamer zachtjes om deze beslissing.",
       "Niet eens Google Maps vindt hier een stijlrichting.",
@@ -651,15 +824,19 @@ function getScoreAwareFallback(
       "Iemand heeft de styling live tijdens de storing afgerond.",
       "Dit heeft de energie van een mislukte seizoensfinale.",
       "De broek en schoenen zitten duidelijk in rivaliserende teams.",
-    ], variationOffset);
-    const roastLines = rotateFallbacks([
+      ], variationOffset),
+    ];
+    const roastLines = [
+      ...rotateFallbacks(occasionFallback.roastLines, variationOffset + 3),
+      ...rotateFallbacks([
       "Ergens huilt een paskamer en niemand durft te vragen waarom.",
       "Alsof drie kledingkasten tegelijk hun nooduitgang zochten.",
       "De kleuren spelen een finale zonder regels of scheidsrechter.",
       "Iemand heeft deze styling tijdens een internetstoring afgerond.",
       "Dit kwam binnen als filmtrailer en eindigde als storing.",
       "De kledingonderdelen zitten samen, maar duidelijk niet vrijwillig.",
-    ], variationOffset + 3);
+      ], variationOffset + 3),
+    ];
     return {
       roast: roastLines.slice(0, 3).join("\n"),
       shareQuote: quotes[0],
@@ -668,7 +845,9 @@ function getScoreAwareFallback(
   }
 
   if (score <= 6) {
-    const quotes = rotateFallbacks([
+    const quotes = [
+      ...rotateFallbacks(occasionFallback.quotes, variationOffset),
+      ...rotateFallbacks([
       "Deze outfit heeft drie persoonlijkheden en geen leider.",
       "De kleuren houden teamoverleg zonder een agenda.",
       "Alsof een moodboard halverwege ontslag heeft genomen.",
@@ -677,15 +856,19 @@ function getScoreAwareFallback(
       "De schoenen en broek spelen duidelijk verschillende competities.",
       "Ergens wacht een stylist nog steeds op uitleg.",
       "Niet eens de groepsapp begrijpt wie hier stuurt.",
-    ], variationOffset);
-    const roastLines = rotateFallbacks([
+      ], variationOffset),
+    ];
+    const roastLines = [
+      ...rotateFallbacks(occasionFallback.roastLines, variationOffset + 4),
+      ...rotateFallbacks([
       "De kleuren houden overleg, maar niemand noteert de besluiten.",
-      "Alsof de styling halverwege naar een ander tabblad vertrok.",
+      "Alsof de styling halverwege zijn eigen briefing vergat.",
       "Iemand heeft twijfel hier verrassend overtuigend aangekleed.",
       "De kleding speelt samen, alleen wel in verschillende competities.",
       "Dit heeft groepsprojectenergie en niemand beheert de deadline.",
       "Ergens wacht een paskamer nog steeds op de plotwending.",
-    ], variationOffset + 4);
+      ], variationOffset + 4),
+    ];
     return {
       roast: roastLines.slice(0, 3).join("\n"),
       shareQuote: quotes[0],
@@ -694,7 +877,9 @@ function getScoreAwareFallback(
   }
 
   if (score <= 8) {
-    const quotes = rotateFallbacks([
+    const quotes = [
+      ...rotateFallbacks(occasionFallback.quotes, variationOffset),
+      ...rotateFallbacks([
       "Deze outfit probeert niks en wint alsnog de groepsapp.",
       "Alsof moeiteloos vandaag gewoon een officiële dresscode werd.",
       "De styling speelt thuis en kent elke publieksfavoriet.",
@@ -703,15 +888,19 @@ function getScoreAwareFallback(
       "Zelfs het teamoverleg stemt unaniem vóór deze styling.",
       "De kleuren doen rustig en pakken alsnog alle aandacht.",
       "Ergens schrijft een moodboard jaloers deze combinatie over.",
-    ], variationOffset);
-    const roastLines = rotateFallbacks([
+      ], variationOffset),
+    ];
+    const roastLines = [
+      ...rotateFallbacks(occasionFallback.roastLines, variationOffset + 1),
+      ...rotateFallbacks([
       "Alsof de outfit niks probeert en precies daarom wint.",
       "De styling speelt thuis en het publiek kent het refrein.",
       "Iemand heeft eenvoud hier onverwacht de hoofdrol gegeven.",
       "Dit kwam binnen als bijrol en stal zonder moeite de film.",
       "De kleuren praten zacht en krijgen alsnog alle aandacht.",
       "Ergens maakt een moodboard haastig aantekeningen van deze combinatie.",
-    ], variationOffset + 1);
+      ], variationOffset + 1),
+    ];
     return {
       roast: roastLines.slice(0, 3).join("\n"),
       shareQuote: quotes[0],
@@ -719,7 +908,9 @@ function getScoreAwareFallback(
     };
   }
 
-  const quotes = rotateFallbacks([
+  const quotes = [
+    ...rotateFallbacks(occasionFallback.quotes, variationOffset),
+    ...rotateFallbacks([
     "Deze outfit loopt binnen alsof hij huur betaalt.",
     "Alsof de rode loper vandaag persoonlijk werd uitgenodigd.",
     "De styling heeft hoofdrolenergie en weigert auditie te doen.",
@@ -728,15 +919,19 @@ function getScoreAwareFallback(
     "Zelfs de spiegel vraagt vandaag om een handtekening.",
     "De kleuren spelen Champions League zonder zichtbaar te zweten.",
     "Ergens annuleert een stylist de concurrentie uit respect.",
-  ], variationOffset);
-  const roastLines = rotateFallbacks([
+    ], variationOffset),
+  ];
+  const roastLines = [
+    ...rotateFallbacks(occasionFallback.roastLines, variationOffset + 5),
+    ...rotateFallbacks([
     "Alsof de outfit de locatie bezit en iedereen huur vraagt.",
     "De styling heeft hoofdrolenergie zonder auditie of toestemming.",
     "Iemand heeft zelfvertrouwen hier akelig precies op maat geleverd.",
     "Dit kwam binnen en degradeerde de rest direct tot figurant.",
     "De kleuren spelen Champions League en vieren al de finale.",
     "Ergens sluit een stylist de laptop uit pure tevredenheid.",
-  ], variationOffset + 5);
+    ], variationOffset + 5),
+  ];
   return {
     roast: roastLines.slice(0, 3).join("\n"),
     shareQuote: quotes[0],
@@ -2014,6 +2209,7 @@ Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles.
             roastLevel,
             fallbackScore,
             roastVariation.fallbackOffset,
+            occasion,
           ).roast;
         }
         roastText = getRoastText(parsed);
