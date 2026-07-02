@@ -978,6 +978,156 @@ export const seoPages = [
       },
     ],
   }),
+  page({
+    slug: "zomer-outfit-check",
+    title: "Zomer Outfit Checker",
+    metaTitle: "Zomer Outfit Checker – Check je zomeroutfit",
+    metaDescription:
+      "Laat je zomeroutfit beoordelen op kleur, pasvorm, schoenen, comfort en vibe. Gratis AI outfit checker voor warme dagen.",
+    h1: "Zomer Outfit Checker",
+    eyebrow: "Voor zon, terras en twijfel voor de spiegel",
+    intro: [
+      "Een zomeroutfit lijkt makkelijk tot je ineens moet kiezen tussen luchtig, stijlvol en niet alsof je rechtstreeks van het strand een afspraak binnenloopt. De Zomer Outfit Checker van OutfitRoaster kijkt of je look werkt voor warme dagen, vakantie, terras, festival, date of gewoon een normale dag waarop de zon eindelijk meedoet.",
+      "Upload je outfitfoto en krijg feedback over kleuren, pasvorm, schoenen, lagen en zomer-vibe. De analyse gaat alleen over zichtbare kleding en styling. Geen oordeel over lichaam, gezicht of uiterlijk; alleen een eerlijk verdict over de outfit.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een goede zomeroutfit?",
+        paragraphs: [
+          "Een sterke zomeroutfit voelt licht, fris en bewust. Dat betekent niet dat alles fel of strandachtig moet zijn. Een rustige basis met goede schoenen kan net zo sterk werken als een outfit met kleur en print. Het belangrijkste is dat de kleding past bij de temperatuur én bij de gelegenheid.",
+          "OutfitRoaster kijkt of de outfit niet te zwaar oogt voor de zomer. Donkere lagen, dikke materialen of schoenen met winterenergie kunnen een look snel uit balans trekken. Andersom kan een outfit ook te vrijblijvend voelen, alsof de kledingkast alvast vakantie nam terwijl jij nog plannen had.",
+        ],
+      },
+      {
+        title: "Kleuren die zomers werken",
+        paragraphs: [
+          "In de zomer krijgen kleuren meer ruimte. Wit, beige, lichtblauw, denim, groen, pasteltinten en aardse kleuren kunnen allemaal goed werken. Een felle accentkleur kan energie geven, maar moet wel logisch meedoen. Als één kleur volledig losstaat van de rest, lijkt het soms alsof hij later aan de groepsapp is toegevoegd.",
+          "De checker beoordeelt of kleuren fris, rustig, opvallend of chaotisch ogen. Een outfit hoeft niet perfect te matchen, maar hij moet wel intentie hebben. Premium Verdict Beta kan dieper ingaan op welke kleuren elkaar versterken en waar het geheel te druk wordt.",
+        ],
+      },
+      {
+        title: "Pasvorm en comfort bij warm weer",
+        paragraphs: [
+          "Zomeroutfits vragen vaak om meer lucht en beweging. Een ruim overhemd, losse broek, korte broek, jurk, rok, T-shirt of lichte bovenlaag kan goed werken wanneer de verhoudingen kloppen. Te veel oversized tegelijk kan vormloos worden; te strak kan juist minder ontspannen ogen.",
+          "OutfitRoaster kijkt naar hoe kleding zichtbaar valt. Het gaat niet om je lichaam, maar om het kledingstuk. Een luchtige pasvorm kan stijlvol zijn als schoenen en accessoires de look afmaken. Zonder die afwerking kan dezelfde outfit ineens klinken als ‘ik moest alleen even naar de supermarkt’.",
+        ],
+      },
+      {
+        title: "Schoenen maken de zomerlook af",
+        paragraphs: [
+          "Schoenen bepalen vaak of een zomeroutfit fris, sportief, netjes of rommelig voelt. Clean sneakers werken bijna altijd, sandalen kunnen sterk zijn wanneer ze bewust ogen, en nette schoenen kunnen een simpele zomerlook direct meer richting geven. Te zware schoenen kunnen de outfit naar een ander seizoen trekken.",
+          "De Zomer Outfit Checker kijkt of schoenen passen bij de rest. Een lichte outfit met donkere lompe schoenen kan uit balans raken. Een rustige outfit met goede sneakers kan juist precies genoeg stijl krijgen zonder dat het ingewikkeld wordt.",
+        ],
+      },
+      {
+        title: "Voor vakantie, date, feest of festival",
+        paragraphs: [
+          "Zomer is geen vaste gelegenheid. Een outfit voor vakantie hoeft niet te werken voor een date. Een terraslook is anders dan een festivalfit. Een zomerse werkdag vraagt weer meer verzorgdheid. Daarom blijft context belangrijk: kies in OutfitRoaster Date, Werk, School, Gym, Feest of Festival en laat de feedback daarop aansluiten.",
+          "Voor een snelle check kies je de Outfit Roast. Die geeft score, drie punchy regels en een deelbare quote. Wil je meer diepte, gebruik Premium Verdict Beta. Dan krijg je een uitgebreidere analyse van kleur, pasvorm, stijlidentiteit, context en trends.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "bruiloft-outfit-check",
+    title: "Bruiloft Outfit Checker",
+    metaTitle: "Bruiloft Outfit Checker – Check je outfit als gast",
+    metaDescription:
+      "Laat je bruiloft outfit beoordelen op netheid, kleur, pasvorm, schoenen en dresscode-vibe. AI outfit checker voor bruiloftsgasten.",
+    h1: "Bruiloft Outfit Checker",
+    eyebrow: "Voor gasten die niet de verkeerde hoofdrol willen pakken",
+    intro: [
+      "Een bruiloft outfit moet netjes zijn, maar niet klinken alsof jij de ceremonie hebt geboekt. Je wilt verzorgd, feestelijk en passend verschijnen zonder de aandacht van het bruidspaar te stelen. De Bruiloft Outfit Checker van OutfitRoaster helpt je bepalen of je look die balans raakt.",
+      "De feedback gaat over kleding, kleur, pasvorm, schoenen, accessoires en gelegenheid. Geen oordeel over uiterlijk of lichaam. Alleen de vraag: werkt deze outfit voor een bruiloft, diner, receptie of feestelijke ceremonie?",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een outfit geschikt voor een bruiloft?",
+        paragraphs: [
+          "Een goede bruiloft outfit voelt feestelijk en verzorgd. De exacte richting hangt af van locatie, seizoen en dresscode. Een tuinbruiloft vraagt iets anders dan een avondfeest in een hotel. Toch wil je meestal dat de outfit netter voelt dan een normale feestlook en minder zakelijk dan een sollicitatiegesprek.",
+          "OutfitRoaster kijkt of de kledingstukken samen een passende uitstraling hebben. Een blazer, jurk, overhemd, nette broek, jumpsuit, rok, schoen of accessoire kan de outfit richting geven. Als één onderdeel te casual of te luid is, trekt dat meteen de hele look mee.",
+        ],
+      },
+      {
+        title: "Kleurkeuze zonder dresscode-drama",
+        paragraphs: [
+          "Kleur is bij bruiloften extra gevoelig. Je wilt feestelijk zijn, maar niet schreeuwerig. Rustige tinten, pastels, donkerblauw, groen, beige of zachte aardetinten kunnen goed werken. Felle kleuren kunnen ook, maar vragen meer balans in schoenen en accessoires.",
+          "De checker beoordeelt hoe kleuren overkomen. Is de combinatie elegant, fris, te casual of te druk? Premium Verdict Beta kan uitgebreider uitleggen welke kleuren elkaar versterken en welke keuze de outfit minder ceremonieproof maakt.",
+        ],
+      },
+      {
+        title: "Pasvorm en netheid",
+        paragraphs: [
+          "Bij een bruiloft valt pasvorm sneller op dan op een normale dag. Een goed vallende broek, jurk, blazer of bovenlaag maakt de outfit direct verzorgder. Een te losse of te sportieve combinatie kan juist lijken alsof je de dresscode pas in de auto hebt gelezen.",
+          "OutfitRoaster beoordeelt zichtbare kledingstukken, niet het lichaam. Als een kledingstuk sterker kan vallen of de verhouding niet klopt, wordt dat als kledingfeedback benoemd. Het doel is dat de outfit passend voelt voor de gelegenheid.",
+        ],
+      },
+      {
+        title: "Schoenen en accessoires",
+        paragraphs: [
+          "Schoenen zijn bij een bruiloft vaak doorslaggevend. Ze bepalen of een outfit echt feestelijk wordt of halverwege casual blijft hangen. Nette schoenen, loafers, hakken, sandalen of clean sneakers kunnen afhankelijk van de dresscode werken. Het gaat om samenhang met de rest.",
+          "Accessoires kunnen een bruiloft outfit afmaken. Een tas, horloge, riem of sierlijk detail kan kleur en netheid verbinden. Te veel accessoires kunnen de look onrustig maken. De checker kijkt of details ondersteunen of zelf de microfoon pakken.",
+        ],
+      },
+      {
+        title: "Snelle check voordat je gaat",
+        paragraphs: [
+          "Twijfel je tussen twee outfits, upload ze allebei en vergelijk het verdict. Kies Feest wanneer het vooral om de avond of receptie gaat, of Werk wanneer je een formelere ceremoniecontext wilt benaderen. De tool geeft een score, korte feedback en eventueel een deelbare roast.",
+          "Wil je serieus weten waarom je outfit wel of niet werkt, gebruik Premium Verdict Beta. Die geeft kleur-, pasvorm-, stijl- en contextanalyse zonder roast. Handig wanneer je niet alleen wilt horen dat iets werkt, maar ook waarom.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "kleurcombinatie-outfit-check",
+    title: "Kleurcombinatie Outfit Checker",
+    metaTitle: "Kleurcombinatie Outfit Checker – Passen je kleuren bij elkaar?",
+    metaDescription:
+      "Check of de kleuren in je outfit bij elkaar passen. AI-feedback over contrast, harmonie, accenten en kleurcombinaties.",
+    h1: "Kleurcombinatie Outfit Checker",
+    eyebrow: "Voor kleuren die niet allemaal tegelijk willen praten",
+    intro: [
+      "Kleuren kunnen een outfit meteen sterker maken, maar ook volledig laten ontsporen. Soms klopt elk kledingstuk los, maar wordt de combinatie te druk, te vlak of net niet logisch. De Kleurcombinatie Outfit Checker van OutfitRoaster kijkt of je kleuren samenwerken of elkaar onderbreken.",
+      "Upload een duidelijke foto en krijg feedback over kleurharmonie, contrast, accenten, schoenen en accessoires. De beoordeling blijft bij de outfit. Geen oordeel over huid, lichaam of uiterlijk; alleen over de zichtbare kleuren in je kleding.",
+    ],
+    sections: [
+      {
+        title: "Waarom kleurcombinaties zo belangrijk zijn",
+        paragraphs: [
+          "Kleur is vaak het eerste wat iemand ziet. Nog voordat pasvorm of details opvallen, bepaalt kleur de sfeer van je outfit. Donkere tinten kunnen krachtig zijn, lichte tinten fris, aardetinten rustig en felle kleuren energiek. Maar zodra kleuren zonder plan naast elkaar staan, wordt de outfit snel onrustig.",
+          "OutfitRoaster kijkt of kleuren herhaling, contrast of balans hebben. Een accentkleur werkt sterker wanneer hij ergens terugkomt. Een neutrale basis kan juist meer karakter krijgen door één duidelijke kleur. Te veel losse accenten voelen sneller als een groepsproject zonder eindredacteur.",
+        ],
+      },
+      {
+        title: "Harmonie, contrast en accenten",
+        paragraphs: [
+          "Een harmonieuze outfit gebruikt kleuren die rustig naast elkaar staan. Ton-sur-ton combinaties, neutrale paletten en zachte contrasten vallen daar vaak onder. Contrast kan ook sterk zijn: zwart-wit, donkerblauw-wit, denim met een warme tint of rustige basics met opvallende sneakers.",
+          "Het verschil tussen sterk contrast en chaos zit in intentie. Als één kleur duidelijk de hoofdrol heeft en de rest ondersteunt, voelt het bewust. Als drie kleuren tegelijk de leiding willen, klinkt de outfit alsof er geen voorzitter bij het overleg zat.",
+        ],
+      },
+      {
+        title: "Schoenen en accessoires als kleuranker",
+        paragraphs: [
+          "Schoenen en accessoires kunnen kleuren verbinden. Witte sneakers kunnen een lichte bovenlaag terughalen. Een tas kan een accentkleur logisch maken. Een horloge, riem of jas kan het geheel rustiger of netter laten voelen. Kleine details doen vaak meer dan je denkt.",
+          "De checker kijkt of die details helpen. Als de schoenen qua kleur volledig uit een andere outfit lijken te komen, wordt dat benoemd. Als een accessoire precies de juiste kleurherhaling geeft, telt dat juist als sterk punt.",
+        ],
+      },
+      {
+        title: "Veelgemaakte kleurproblemen",
+        paragraphs: [
+          "Een veelvoorkomend probleem is te veel bijna-neutraal zonder duidelijk contrast. Dan oogt een outfit vlak. Het tegenovergestelde gebeurt ook: te veel felle kleuren waardoor niets meer focus heeft. Soms botst een warme kleur met een koele kleur, soms trekt één schoen of jas alle aandacht weg.",
+          "OutfitRoaster vertaalt zulke problemen naar gewone taal. Geen ingewikkelde kleurenleer, maar concrete feedback: welke kleur draagt de outfit, welke kleur valt uit de toon en waar mist herhaling of rust. In Genadeloos-modus kan dat natuurlijk met een stevige grap.",
+        ],
+      },
+      {
+        title: "Van kleurcheck naar betere outfit",
+        paragraphs: [
+          "Een kleurcheck helpt vooral wanneer je twijfelt tussen twee combinaties. Upload beide looks en vergelijk de score. Soms wint de rustigere outfit. Soms maakt een onverwachte kleur juist alles sterker. Het gaat niet om regels, maar om het effect van de combinatie.",
+          "Voor snelle feedback gebruik je de Outfit Roast. Voor een diepere kleur- en pasvormanalyse gebruik je Premium Verdict Beta. Die analyse benoemt welke kleuren gedragen worden, welke samenwerken, welke botsen en welke shoprichting de outfit sterker kan maken.",
+        ],
+      },
+    ],
+  }),
 ] satisfies SeoPage[];
 
 export const seoPageSlugs = seoPages.map((seoPage) => seoPage.slug);
