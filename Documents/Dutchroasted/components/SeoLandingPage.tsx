@@ -65,6 +65,30 @@ export function SeoLandingPage({ page }: SeoLandingPageProps) {
         url: SITE_URL,
       },
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Outfit checks",
+          item: `${SITE_URL}/outfit-checks`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: page.h1,
+          item: pageUrl,
+        },
+      ],
+    },
   ];
 
   return (
@@ -74,6 +98,20 @@ export function SeoLandingPage({ page }: SeoLandingPageProps) {
 
       <article className="px-4 pb-20 pt-28 sm:px-6 sm:pt-36 lg:px-8">
         <header className="mx-auto max-w-5xl">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-zinc-500"
+          >
+            <a href="/" className="transition hover:text-white">
+              Home
+            </a>
+            <span>/</span>
+            <a href="/outfit-checks" className="transition hover:text-white">
+              Outfit checks
+            </a>
+            <span>/</span>
+            <span className="text-zinc-300">{page.h1}</span>
+          </nav>
           <p className="inline-flex rounded-full border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-orange-300">
             {page.eyebrow}
           </p>

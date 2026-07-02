@@ -77,6 +77,11 @@ const relatedLinks: SeoRelatedLink[] = [
     label: "Premium analyse",
     description: "Ontdek Premium Verdict Beta voor diepe analyse van kleur, fit en trends.",
   },
+  {
+    href: "/outfit-checks",
+    label: "Alle outfit checks",
+    description: "Bekijk alle OutfitRoaster landingspagina’s en kies de juiste check.",
+  },
 ];
 
 function page(

@@ -5,6 +5,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
+import { PopularOutfitChecks } from "@/components/PopularOutfitChecks";
 import { PricingTeaser } from "@/components/PricingTeaser";
 import { RoastCategories } from "@/components/RoastCategories";
 import { WhyOutfitRoaster } from "@/components/WhyOutfitRoaster";
@@ -24,6 +25,7 @@ export default function Home() {
       <Hero />
       <ExampleRoast />
       <RoastCategories />
+      <PopularOutfitChecks />
       <HowItWorks />
       <WhyOutfitRoaster />
       <FAQSection />

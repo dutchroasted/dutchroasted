@@ -3,6 +3,10 @@ import { CookiePreferencesButton } from "./analytics/CookiePreferencesButton";
 
 const footerLinks = [
   { label: "Alle outfit checks", href: "/outfit-checks" },
+  { label: "AI Outfit Checker", href: "/ai-outfit-checker" },
+  { label: "Outfit Roast", href: "/outfit-roast" },
+  { label: "Date outfit check", href: "/date-outfit-check" },
+  { label: "Festival outfit check", href: "/festival-outfit-check" },
   { label: "Privacy", href: "/privacy" },
   { label: "Voorwaarden", href: "/voorwaarden" },
   { label: "Contact", href: "/contact" },

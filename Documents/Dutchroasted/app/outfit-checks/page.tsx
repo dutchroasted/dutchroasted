@@ -3,6 +3,42 @@ import { Header } from "@/components/Header";
 import { seoPages } from "@/data/seo-pages";
 import { createPageMetadata } from "@/lib/seo";
 
+const groups = [
+  {
+    title: "Populaire checks",
+    slugs: ["ai-outfit-checker", "outfit-roast", "rate-my-outfit", "outfit-beoordelen"],
+  },
+  {
+    title: "Gelegenheden",
+    slugs: [
+      "date-outfit-check",
+      "eerste-date-outfit",
+      "werk-outfit-check",
+      "school-outfit-check",
+      "gym-outfit-check",
+      "feest-outfit-check",
+      "festival-outfit-check",
+      "sollicitatie-outfit-check",
+      "bruiloft-outfit-check",
+    ],
+  },
+  {
+    title: "Stijl en kleur",
+    slugs: [
+      "streetwear-check",
+      "smart-casual-outfit-check",
+      "zomer-outfit-check",
+      "kleurcombinatie-outfit-check",
+      "outfit-check-man",
+      "outfit-check-vrouw",
+    ],
+  },
+  {
+    title: "Diepere analyse",
+    slugs: ["premium-outfit-analyse"],
+  },
+];
+
 export const metadata = createPageMetadata({
   title: "Alle outfit checks | Outfit Roaster",
   description:
@@ -42,22 +78,37 @@ export default function OutfitChecksPage() {
             </a>
           </div>
 
-          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {seoPages.map((page) => (
-              <a
-                key={page.slug}
-                href={`/${page.slug}`}
-                className="dr-card-hover rounded-3xl border border-white/10 bg-zinc-950/70 p-5 hover:border-orange-500/40 hover:bg-orange-500/[0.06]"
-              >
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
-                  {page.eyebrow}
-                </p>
-                <h2 className="mt-3 text-xl font-black leading-6 text-white">{page.h1}</h2>
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
-                  {page.metaDescription}
-                </p>
-              </a>
-            ))}
+          <div className="mt-14 space-y-12">
+            {groups.map((group) => {
+              const pages = group.slugs
+                .map((slug) => seoPages.find((page) => page.slug === slug))
+                .filter((page): page is (typeof seoPages)[number] => Boolean(page));
+
+              return (
+                <section key={group.title}>
+                  <h2 className="text-2xl font-black text-white">{group.title}</h2>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {pages.map((page) => (
+                      <a
+                        key={page.slug}
+                        href={`/${page.slug}`}
+                        className="dr-card-hover rounded-3xl border border-white/10 bg-zinc-950/70 p-5 hover:border-orange-500/40 hover:bg-orange-500/[0.06]"
+                      >
+                        <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
+                          {page.eyebrow}
+                        </p>
+                        <h3 className="mt-3 text-xl font-black leading-6 text-white">
+                          {page.h1}
+                        </h3>
+                        <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
+                          {page.metaDescription}
+                        </p>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </div>
       </section>
