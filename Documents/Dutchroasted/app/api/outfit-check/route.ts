@@ -1352,6 +1352,7 @@ function generatedResultNeedsCorrection(
     !source ||
     !roast ||
     containsLikelyEnglish(roast) ||
+    containsContradictoryRoastLogic(roast) ||
     !isPunchyRoast(roast, roastLevel)
   ) {
     return true;
@@ -1380,6 +1381,7 @@ function generatedResultNeedsCorrection(
     !shareQuote ||
     !isValidShareQuote(shareQuote) ||
     recentQuotes.some((quote) => areQuotesTooSimilar(shareQuote, quote)) ||
+    containsContradictoryRoastLogic(shareQuote) ||
     (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(shareQuote)) ||
     (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(shareQuote)) ||
     !referencesOnlyDetectedClothing(shareQuote, inventory) ||
@@ -1388,6 +1390,7 @@ function generatedResultNeedsCorrection(
     alternatives.some(
       (quote) =>
         !isValidShareQuote(quote) ||
+        containsContradictoryRoastLogic(quote) ||
         recentQuotes.some((recentQuote) => areQuotesTooSimilar(quote, recentQuote)) ||
         (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(quote)) ||
         (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(quote)) ||
@@ -1395,6 +1398,18 @@ function generatedResultNeedsCorrection(
     ) ||
     analysisText.some((text) => !referencesOnlyDetectedClothing(text, inventory))
   );
+}
+
+function containsContradictoryRoastLogic(text: string) {
+  const normalized = text.toLowerCase();
+  const basicSignals = /\b(saai|basic|rustig|vlak|simpel|stil|weinig|niks|geen spanning|zonder spanning)\b/.test(
+    normalized,
+  );
+  const busySignals = /\b(afleiding|druk|chaos|chaotisch|overprikkeling|schreeuwt|herrie|lawaaierig|te veel)\b/.test(
+    normalized,
+  );
+
+  return basicSignals && busySignals;
 }
 
 function containsLikelyEnglish(text: string, minimumSignals = 2) {
@@ -1514,8 +1529,11 @@ Roastniveau: Genadeloos
 - Slechte energie: "De kleuren passen niet goed.", "Misschien andere schoenen.", "Deze outfit kan beter.", "De combinatie voelt rommelig."
 - Werkvolgorde voor humor: analyseer de outfit zorgvuldig, bepaal de 2 of 3 meest opvallende kenmerken, kies het opvallendste kenmerk en maak dáár de grap over.
 - Iedere grap moet voortkomen uit een echte zichtbare observatie van de outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie of gelegenheid.
+- Iedere grap moet logisch kloppen met die observatie. Zeg niet dat een saaie, rustige of basic outfit "te veel afleiding" geeft; roast dan juist de afwezigheid van spanning, plan, richting of entree.
+- De gekozen gelegenheid moet voelbaar zijn in minimaal één roastregel of quote. Maak duidelijk waarom de outfit wel of niet werkt voor Date, Werk, School, Gym, Feest of Festival.
 - Gebruik nooit een willekeurige metafoor die niet logisch uit de outfit volgt.
 - Controleer intern: als de grap ook op een totaal andere outfit zou passen, herschrijf hem specifieker op basis van de zichtbare outfit.
+- Controleer intern: als de grap het tegenovergestelde zegt van wat zichtbaar is, herschrijf hem. Saai blijft saai, druk blijft druk, sportief blijft sportief, netjes blijft netjes.
 - Een roast hoeft geen lage score te hebben. Ook een sterke 8/10 of 9/10 krijgt een grappige roast.
 - Gebruik de volledige scoreschaal met één decimaal: 2.2, 4.8, 6.7, 8.3 of 9.1. Gebruik geen vaste hele cijfers zoals 2, 3 of 4.
 - Score 0-1 is alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect.
@@ -1688,6 +1706,8 @@ Regels:
 - Bij "Zeg ik liever niet": schrijf volledig genderneutraal. Gebruik nooit gast, kerel, maat, bro, meid, girl of een andere gendergebonden aanspreekvorm.
 - Roast altijd de outfit, kledingcombinatie en styling; nooit de persoon.
 - Beoordeel de outfit specifiek voor de gekozen gelegenheid.
+- Maak de gekozen gelegenheid concreet voelbaar in minimaal één van deze onderdelen: roast, shareQuote of alternativeQuotes.
+- Roasts zonder duidelijke link met de gekozen gelegenheid zijn ongeldig en moeten vóór output worden herschreven.
 - Bij Date: beoordeel eerste indruk, zelfvertrouwen en date-vibe.
 - Bij Werk: beoordeel professionaliteit, geloofwaardigheid en netheid.
 - Bij School: beoordeel comfort, zelfvertrouwen en een casual passende uitstraling.
@@ -1711,8 +1731,11 @@ Regels:
 - Humor gaat vóór nuance: gebruik scherpe observaties, onverwachte vergelijkingen en absurde maar logische metaforen.
 - Humor moet altijd voortkomen uit een echte observatie van de outfit.
 - Werkvolgorde voor humor: analyseer zorgvuldig, kies de 2 of 3 meest opvallende kenmerken, pak het opvallendste kenmerk en maak dáár de grap over.
+- Maak daarna pas de vergelijking. De vergelijking moet de observatie versterken, niet vervangen.
 - Gebruik nooit een willekeurige metafoor die niet logisch uit de outfit volgt.
 - Controleer intern: als een grap op vrijwel elke outfit geplakt kan worden, herschrijf hem op basis van een zichtbaar kledingstuk, kleur, schoen, accessoire, combinatie of gelegenheid.
+- Controleer intern: als de grap niet klopt met het zichtbare probleem, herschrijf hem. Voorbeeld fout: een saaie outfit "meer afleiding dan een Zoom-vergadering" noemen. Beter: de outfit mist spanning, entree, richting of een reden om onthouden te worden.
+- Verwar basic/rustig nooit met druk/chaotisch. Verwar kleurrijk/druk nooit met saai.
 - Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief, zelfverzekerd en niet-corrigerend; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
@@ -1869,7 +1892,7 @@ ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n")
 
 Recente scores op dit apparaat: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}. Gebruik de volledige schaal met één decimaal: 1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect. Vermijd vaste hele cijfers zoals 2, 3 of 4. Als meer dan 40% recent 1-3 is, herkalibreer realistischer. Een grappige roast hoeft geen lage score te hebben.
 
-Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
+Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Maak de gekozen gelegenheid ${occasion} concreet voelbaar in minimaal één roastregel of quote. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Als de grap het zichtbare probleem tegenspreekt, herschrijf hem. Noem een basic/saaie outfit niet druk of afleidend; roast dan juist het gebrek aan spanning, entree, richting of onthoudbaarheid. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
