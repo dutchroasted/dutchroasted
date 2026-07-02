@@ -2,6 +2,7 @@ import { Logo } from "./Logo";
 import { CookiePreferencesButton } from "./analytics/CookiePreferencesButton";
 
 const footerLinks = [
+  { label: "Alle outfit checks", href: "/outfit-checks" },
   { label: "Privacy", href: "/privacy" },
   { label: "Voorwaarden", href: "/voorwaarden" },
   { label: "Contact", href: "/contact" },
