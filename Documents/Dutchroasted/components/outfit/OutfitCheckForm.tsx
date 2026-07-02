@@ -105,6 +105,13 @@ export function OutfitCheckForm() {
     });
 
     try {
+      const currentResultQuotes = result
+        ? extractResultQuotes(result)
+        : [];
+      const recentQuotes = mergeRecentQuotes([
+        ...currentResultQuotes,
+        ...readRecentQuotes(),
+      ]);
       const response = await runOutfitCheckWithRetry(
         selectedPreviewImage,
         mode,
@@ -112,7 +119,7 @@ export function OutfitCheckForm() {
         roastLevel,
         profile,
         auth.accessToken,
-        readRecentQuotes(),
+        recentQuotes,
         readRecentScores(),
       );
 
@@ -140,11 +147,7 @@ export function OutfitCheckForm() {
         }
         setResult(data);
         setProAnalysis(null);
-        rememberRecentQuotes([
-          data.shareQuote,
-          ...data.alternativeQuotes,
-          ...data.roast.split("\n"),
-        ]);
+        rememberRecentQuotes(extractResultQuotes(data));
         rememberRecentScore(data.score);
         setDailyLimit(incrementDailyLimit());
         analytics.roastCompleted({
@@ -485,13 +488,32 @@ function readRecentQuotes() {
       window.localStorage.getItem(RECENT_QUOTES_STORAGE_KEY) ?? "[]",
     ) as unknown;
     return Array.isArray(parsed)
-      ? parsed
-          .filter((quote): quote is string => typeof quote === "string")
-          .slice(0, RECENT_QUOTES_LIMIT)
+      ? mergeRecentQuotes(parsed.filter((quote): quote is string => typeof quote === "string"))
       : [];
   } catch {
     return [];
   }
+}
+
+function extractResultQuotes(result: OutfitResultData) {
+  return [
+    result.shareQuote,
+    ...result.alternativeQuotes,
+    ...result.roast.split("\n"),
+  ];
+}
+
+function mergeRecentQuotes(quotes: string[]) {
+  return quotes
+    .map((quote) => quote.trim())
+    .filter(Boolean)
+    .filter(
+      (quote, index, allQuotes) =>
+        allQuotes.findIndex(
+          (candidate) => candidate.toLowerCase() === quote.toLowerCase(),
+        ) === index,
+    )
+    .slice(0, RECENT_QUOTES_LIMIT);
 }
 
 function readRecentScores() {
@@ -515,14 +537,7 @@ function getProcessingTimeSeconds(startedAt: number) {
 }
 
 function rememberRecentQuotes(quotes: string[]) {
-  const recentQuotes = [...quotes, ...readRecentQuotes()]
-    .filter(
-      (quote, index, allQuotes) =>
-        allQuotes.findIndex(
-          (candidate) => candidate.toLowerCase() === quote.toLowerCase(),
-        ) === index,
-    )
-    .slice(0, RECENT_QUOTES_LIMIT);
+  const recentQuotes = mergeRecentQuotes([...quotes, ...readRecentQuotes()]);
 
   window.localStorage.setItem(
     RECENT_QUOTES_STORAGE_KEY,

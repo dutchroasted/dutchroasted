@@ -48,6 +48,20 @@ const FALLBACK_ALTERNATIVE_QUOTES = [
   "Deze kleurencombinatie is een diplomatieke crisis.",
   "Zelfs de paskamer dacht: succes ermee.",
 ];
+const RECOVERY_SHARE_QUOTES = [
+  "Deze fit is een PowerPoint zonder spreker.",
+  "Hier is een projectleider te vroeg vertrokken.",
+  "Deze look staat nog in de conceptfase.",
+  "De groepsapp heeft dit niet unaniem besloten.",
+  "Deze outfit kwam binnen zonder agenda.",
+  "De paskamer heeft hier nog vragen over.",
+  "Dit plan is onderweg ergens verdwaald.",
+  "Deze styling heeft een teamoverleg nodig.",
+  "Ergens knippert een moodboard heel nerveus.",
+  "Deze fit zoekt nog naar de hoofdrol.",
+  "De spiegel wacht nog op de uitleg.",
+  "Deze outfit heeft toestemming genegeerd.",
+];
 const FALLBACK_ROAST = [
   "Deze outfit kwam binnen zonder plan en bleef uit koppigheid.",
   "De kleuren voeren overleg, maar niemand heeft de agenda gelezen.",
@@ -469,7 +483,7 @@ function normalizeOutfitResult(
       ...extractRoastSentences(roast),
     ],
     inventory,
-    [levelFallback.shareQuote, ...FALLBACK_SHARE_QUOTES],
+    [levelFallback.shareQuote, ...FALLBACK_SHARE_QUOTES, ...RECOVERY_SHARE_QUOTES],
     isStyleCoach,
     recentQuotes,
     occasion,
@@ -485,7 +499,7 @@ function normalizeOutfitResult(
       providedQuotes,
       shareQuote,
       inventory,
-      levelFallback.alternativeQuotes,
+      [...levelFallback.alternativeQuotes, ...RECOVERY_SHARE_QUOTES],
       isStyleCoach,
       recentQuotes,
       occasion,
