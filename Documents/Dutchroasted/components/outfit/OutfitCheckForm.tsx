@@ -29,6 +29,7 @@ const PREMIUM_BETA_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_BETA !== "false";
 const FREE_LIMIT_STORAGE_KEY = "dutchroasted_outfit_daily_limit";
 const RECENT_QUOTES_STORAGE_KEY = "outfitroaster_recent_quotes";
 const RECENT_SCORES_STORAGE_KEY = "outfitroaster_recent_scores";
+const RECENT_QUOTES_LIMIT = 40;
 const API_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 1_000;
 const RETRYABLE_API_STATUSES = new Set([429, 500, 502, 503, 504]);
@@ -484,7 +485,9 @@ function readRecentQuotes() {
       window.localStorage.getItem(RECENT_QUOTES_STORAGE_KEY) ?? "[]",
     ) as unknown;
     return Array.isArray(parsed)
-      ? parsed.filter((quote): quote is string => typeof quote === "string").slice(0, 12)
+      ? parsed
+          .filter((quote): quote is string => typeof quote === "string")
+          .slice(0, RECENT_QUOTES_LIMIT)
       : [];
   } catch {
     return [];
@@ -519,7 +522,7 @@ function rememberRecentQuotes(quotes: string[]) {
           (candidate) => candidate.toLowerCase() === quote.toLowerCase(),
         ) === index,
     )
-    .slice(0, 12);
+    .slice(0, RECENT_QUOTES_LIMIT);
 
   window.localStorage.setItem(
     RECENT_QUOTES_STORAGE_KEY,
