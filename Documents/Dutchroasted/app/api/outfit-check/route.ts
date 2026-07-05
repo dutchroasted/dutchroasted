@@ -104,9 +104,10 @@ const ROAST_LEVEL_FALLBACKS: Record<
     ],
   },
 };
-const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|aardig|lijkt|lijken|kan|kunnen|zou|zouden|probeer|advies|verbeter|meer samenhang|mist samenhang|kan beter|past niet helemaal|leuke look|simpele look|interessante keuze|goede balans)\b/i;
+const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|aardig|lijkt|lijken|kan|kunnen|zou|zouden|probeer|advies|verbeter|meer samenhang|mist samenhang|kan beter|past niet helemaal|leuke look|simpele look|interessante keuze|goede balans|oogt netjes|komt goed over|prima basis|goede basis|past bij|werkt goed)\b/i;
 const FORBIDDEN_PERSON_TERMS = /\b(lichaam|gewicht|dik|dun|mager|gezicht|leeftijd|oud|jong|afkomst|etniciteit|ras|genderidentiteit|seksualiteit|homoseksueel|handicap|beperking|gezondheid|ziek|religie|geloof|aantrekkelijk|lelijk|knap)\b/i;
-const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop|scheidsrechter|wedstrijd|competitie|champions league|finale|film|filmtrailer|hoofdrol|figurant|reality|seizoen|storing|internetstoring|moodboard|dresscode|publiek|applaus|deadline|laptop|handtekening|huur)\b/i;
+const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop|scheidsrechter|wedstrijd|competitie|champions league|finale|film|filmtrailer|hoofdrol|figurant|reality|seizoen|storing|internetstoring|moodboard|dresscode|publiek|applaus|deadline|laptop|handtekening|huur|mainstage|camping|garderobe|borrel|sollicitatie|linkedin|teams|basic-fit|warming-up|klas|huiswerk|reserveren|rekening|entree|uitnodiging|briefing|manager|directeur|hoofdkantoor|rij|plattegrond)\b/i;
+const PUNCHLINE_STRUCTURES = /\b(alsof|zelfs|niet eens|maar|zonder|terwijl|en niemand|kwam binnen|vraagt om|heeft.*nodig|zoekt nog|mist nog|vergat|verdwaalt|huilt|ontslaat|kijkt mee|geen leider|conceptfase|crisis|ontslag|toestemming|vragen over|PowerPoint|software-update)\b/i;
 const HUMOR_ANGLES = [
   "droog sarcasme",
   "absurde metafoor",
@@ -271,6 +272,11 @@ Belangrijke grenzen:
 - Schrijf het veld roast als exact 3 korte Nederlandse feedbackzinnen, elk op een eigen regel.
 - Bij Pittig en Genadeloos zijn dit roastregels; bij Stijlcoach zijn dit eerlijke coachingsregels.
 - Iedere feedbackzin is kort, punchy en heeft een duidelijke clou.
+- Iedere roastregel moet werken als losse TikTok-comment: observatie, botsing en punchline in één zin.
+- Als een regel alleen beschrijft wat er mis is, is hij mislukt. Herschrijf hem naar een grap.
+- Gebruik vaker concrete situaties als punchline: iemand die binnenkomt, een meeting die ontspoort, een campingrij, een groepsapp, een manager die ontbreekt, een paskamer die vragen stelt.
+- Eindig roastregels niet met advies of conclusie, maar met de grap.
+- Voor Pittig en Genadeloos geldt: geen enkele roastregel mag klinken als normale stijlanalyse.
 - Pas de toon strikt aan het gekozen roastniveau aan; Stijlcoach blijft positief, eerlijk en praktisch.
 - Maak de roast sneller, harder en grappiger dan normale modefeedback.
 - Gebruik nooit de AI-achtige formuleringen "interessante keuze", "stijlvolle uitstraling", "modieuze look", "leuke combinatie", "persoonlijk vind ik", "esthetisch", "fashion-forward", "trendy uitstraling", "uitgebalanceerd" of "harmonisch".
@@ -292,7 +298,7 @@ Belangrijke grenzen:
 - Alle quotes dupliceren elkaar niet.
 - De shareQuote is belangrijker dan de volledige roast: schrijf de sterkste meme-waardige zin als shareQuote.
 - De shareQuote bevat geen uitleg en moet direct begrijpelijk zijn in een screenshot.
-- Bedenk intern eerst minimaal 10 verschillende kandidaat-shareQuotes vanuit minstens 5 verschillende humorhoeken. Rangschik ze op scherpte, verrassing, humor, originaliteit en deelbaarheid. Zet uitsluitend de beste kandidaat in shareQuote en gebruik twee duidelijk anders opgebouwde kandidaten als alternativeQuotes. Toon de overige kandidaten nergens.
+- Bedenk intern eerst minimaal 30 verschillende kandidaat-shareQuotes vanuit minstens 5 verschillende humorhoeken. Rangschik ze op scherpte, verrassing, humor, originaliteit en deelbaarheid. Zet uitsluitend de beste kandidaat in shareQuote en gebruik twee duidelijk anders opgebouwde kandidaten als alternativeQuotes. Toon de overige kandidaten nergens.
 - De drie teruggegeven quotes mogen niet met hetzelfde zinsformat beginnen en mogen niet dezelfde metafoor herhalen.
 - Vermijd dominante vaste openingen. Gebruik niet automatisch steeds "Deze outfit", "Je kledingkast" of "Zelfs de spiegel".
 - Gebruik in quotes nooit verzachtende woorden zoals misschien, beetje, redelijk, best, kan of zou.
@@ -588,7 +594,8 @@ function normalizeRoast(
       isSafeOutfitOnlyText(sentence) &&
       sentence.split(/\s+/).length <= 22 &&
       !SOFT_FEEDBACK_TERMS.test(sentence) &&
-      (roastLevel === "Stijlcoach" || COMEDY_SIGNALS.test(sentence)),
+      (roastLevel === "Stijlcoach" ||
+        (COMEDY_SIGNALS.test(sentence) && PUNCHLINE_STRUCTURES.test(sentence))),
   );
   const rankedCandidates = candidates
     .map((sentence, index) => ({
@@ -1417,6 +1424,7 @@ function isValidShareQuote(value: string) {
 function isTikTokWorthyQuote(value: string) {
   return isValidShareQuote(value) &&
     COMEDY_SIGNALS.test(value) &&
+    PUNCHLINE_STRUCTURES.test(value) &&
     !SOFT_FEEDBACK_TERMS.test(value);
 }
 
@@ -1454,7 +1462,11 @@ function isPunchyRoast(value: string, roastLevel: OutfitRoastLevel) {
     return sentences.every(isPositiveStyleCoachText);
   }
 
-  return sentences.filter((sentence) => COMEDY_SIGNALS.test(sentence)).length >= 2;
+  return sentences.every(
+    (sentence) =>
+      COMEDY_SIGNALS.test(sentence) &&
+      PUNCHLINE_STRUCTURES.test(sentence),
+  );
 }
 
 function filterInventoryConsistentText(
@@ -1773,6 +1785,10 @@ Roastniveau: Genadeloos
 - shareQuote is het belangrijkste onderdeel van de response: maximaal 12 woorden, één harde one-liner, geen uitleg, geen advies, geen emoji en geen modeanalyse.
 - alternativeQuotes zijn ook harde, deelbare one-liners en gebruiken een andere graphoek dan shareQuote.
 - Het veld roast bevat maximaal 3 korte zinnen. Iedere zin is een punchline. Geen uitleg, geen tips, geen stylingles.
+- Iedere roastzin moet klinken als een comment die iemand los onder een TikTok kan plaatsen.
+- Formule per regel: zichtbaar detail + botsing met gelegenheid/stijl + onverwachte clou.
+- Als de zin geen lachmoment heeft, is hij ongeldig. Maak hem harder, korter en specifieker.
+- Geef geen samenvatting zoals "mist samenhang"; schrijf de grap die dat laat voelen.
 - worksWell, canImprove en stylingTips blijven bestaan voor het JSON-schema, maar schrijf ze kort, direct en entertainment-first. Geen lange modeanalyse.
 - Gebruik nooit de woorden: misschien, beetje, redelijk, best, aardig, lijkt, kan, zou, "niet helemaal", "past niet goed" of "mist samenhang".
 - Goede energie: "Deze outfit heeft drie persoonlijkheden en geen leider.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
@@ -1798,9 +1814,10 @@ Roastniveau: Genadeloos
 Roastniveau: Pittig
 - Gebruik scherpe, grappige en directe Nederlandse humor.
 - Gebruik Nederlandse humor en plaag direct, maar nooit hatelijk.
-- Balanceer de roast met bruikbaar stijladvies.
+- Balanceer de roast met bruikbare observatie, maar roastregels blijven punchlines, geen stijladvies.
 - Wees scherper dan Stijlcoach, maar minder extreem dan Genadeloos.
-- Iedere regel heeft een duidelijke punchline.
+- Iedere regel heeft een duidelijke punchline en eindigt met de grap.
+- Een zin zonder verrassende vergelijking, botsing of clou is ongeldig.
 - Roast uitsluitend de outfit en nooit de persoon.
 `;
   }
@@ -1811,31 +1828,45 @@ function getOccasionRoastGuardrails(occasion: OutfitOccasion) {
 - Gebruik geen metafoor uit een andere gelegenheid als die niet logisch uit de zichtbare outfit volgt.
 - Als de outfit rustig, basic of saai oogt, roast het gebrek aan spanning, entree, richting of onthoudbaarheid; noem het niet druk, chaotisch of afleidend.
 - Als de outfit juist druk of kleurrijk oogt, roast dan de drukte of botsing; noem het niet saai.
+- Maak de categorie voelbaar als punchline, niet als label. Dus niet "past niet bij Werk", maar een grap over meeting, LinkedIn, agenda of sollicitatie.
+- Iedere categorie-grap moet een concrete scène oproepen die bij die gelegenheid hoort.
 `;
 
   const byOccasion: Record<OutfitOccasion, string> = {
     Date: `
 - Date-context: eerste indruk, spanning, zelfvertrouwen en date-vibe.
+- Punchline-hoeken: reservering, eerste indruk, ongemakkelijke stilte, rekening, openingszin, Tinder zonder dat je Tinder letterlijk hoeft te noemen.
+- Voorbeeldenergie: "De bovenlaag wil romantiek, maar de schoenen hebben de reservering geannuleerd."
 - Vermijd kantoor-, gym-, school-, feest- of festivalgrappen tenzij een zichtbaar kledingstuk die vergelijking logisch maakt.
 `,
     Werk: `
 - Werk-context: professionaliteit, geloofwaardigheid, netheid, kantoor, meeting, presentatie, LinkedIn, Teams of sollicitatie.
+- Punchline-hoeken: agenda zonder besluit, LinkedIn-profiel, sollicitatiegesprek, Teams-call, manager die ontbreekt, promotie die wegloopt.
+- Voorbeeldenergie: "De bovenlaag komt naar de meeting, maar de schoenen hebben ontslag genomen."
 - Vermijd feest-, festival-, date-, school- en gymmetaforen. Bij een saaie werkfit: roast dat de outfit weinig autoriteit, entree of promotie-energie heeft.
 `,
     School: `
 - School-context: college, klas, comfort, casual fit, zelfvertrouwen en niet te hard proberen.
+- Punchline-hoeken: eerste uur, huiswerk vergeten, mentor, groepsproject, toetsweek, lokaal zoeken.
+- Voorbeeldenergie: "De broek doet college, maar de schoenen zoeken nog het juiste lokaal."
 - Vermijd werk-, date-, feest-, festival- en gymmetaforen tenzij het zichtbaar logisch is.
 `,
     Gym: `
 - Gym-context: sportiviteit, praktische pasvorm, schoenen, training en Basic-Fit-energie.
+- Punchline-hoeken: warming-up, leg day overslaan, bidon vergeten, Basic-Fit-tour, cooling-down, sporttas zonder plan.
+- Voorbeeldenergie: "De schoenen doen warming-up, maar de bovenlaag heeft rustdag aangevraagd."
 - Vermijd kantoor-, date-, school-, feest- en festivalmetaforen tenzij het zichtbaar logisch is.
 `,
     Feest: `
 - Feest-context: verjaardag, borrel, uitgaan, diner, sociale energie, comfort en entree.
+- Punchline-hoeken: garderobe, borrel, verjaardagscirkel, eerste drankje, entree, dansvloer die nog twijfelt.
+- Voorbeeldenergie: "De outfit wil naar binnen, maar de vibe staat nog bij de garderobe."
 - Vermijd kantoor-, school-, gym-, date- en festivalmetaforen tenzij het zichtbaar logisch is.
 `,
     Festival: `
 - Festival-context: Lowlands/Pinkpop-vibe, comfort, expressie, statementstukken, modderbestendigheid en lange dag.
+- Punchline-hoeken: mainstage, camping, modder, polsbandje, plattegrond kwijt, groepsfoto, rij bij de munten.
+- Voorbeeldenergie: "De outfit zoekt de mainstage, maar de vibe staat nog in de muntenrij."
 - Vermijd kantoor-, school-, gym-, date- en gewone feestmetaforen tenzij het zichtbaar logisch is.
 `,
   };
@@ -2017,6 +2048,10 @@ Regels:
 - Bij Stijlcoach zijn dit positieve confidence-regels over sterke punten en stijlwinsten.
 - Bij Pittig en Genadeloos zijn roastregels toegestaan.
 - Iedere feedbackregel is kort, snel en heeft een duidelijke clou.
+- Bij Pittig en Genadeloos moet elke regel een echte punchline zijn: geen beschrijving, geen advies, geen samenvatting.
+- Gebruik voor elke roastregel één van deze vormen: "X wil Y, maar Z", "X doet alsof Y", "X kwam binnen als Y en eindigde als Z", "Zelfs X vraagt om Y", "X zoekt nog Y".
+- De laatste 3 tot 5 woorden van elke roastregel moeten de grap afmaken.
+- Als een regel niet grappig klinkt wanneer je hem hardop voorleest, herschrijf hem intern.
 - Schrijf geen lange modeanalyse of stylingles in roast.
 - Humor gaat vóór nuance: gebruik scherpe observaties, onverwachte vergelijkingen en absurde maar logische metaforen.
 - Humor moet altijd voortkomen uit een echte observatie van de outfit.
@@ -2186,7 +2221,7 @@ ${recentQuotes.length > 0 ? recentQuotes.map((quote) => `- ${quote}`).join("\n")
 
 Recente scores op dit apparaat: ${recentScores.length > 0 ? recentScores.join(", ") : "geen"}. Gebruik de volledige schaal met één decimaal: 1 alleen extreem slecht, 2-3 slecht, 4-5 gemiddeld, 6-7 goed, 8 sterk, 9 heel stijlvol, 10 bijna perfect. Vermijd vaste hele cijfers zoals 2, 3 of 4. Als meer dan 40% recent 1-3 is, herkalibreer realistischer. Een grappige roast hoeft geen lage score te hebben.
 
-Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Maak de gekozen gelegenheid ${occasion} concreet voelbaar in minimaal één roastregel of quote. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Als de grap het zichtbare probleem tegenspreekt, herschrijf hem. Noem een basic/saaie outfit niet druk of afleidend; roast dan juist het gebrek aan spanning, entree, richting of onthoudbaarheid. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
+Maak roast exact 3 korte punchy zinnen, elk op een eigen regel. Geen stylingles. Iedere regel moet een losse punchline zijn met zichtbaar detail + botsing + clou. Gebruik vormen zoals "X wil Y, maar Z", "X kwam binnen als Y en eindigde als Z", "Zelfs X vraagt om Y" of "X zoekt nog Y". Iedere grap moet voortkomen uit een echte zichtbare observatie: kies intern de 2 of 3 meest opvallende kenmerken en maak de grap over het opvallendste kenmerk. Maak de gekozen gelegenheid ${occasion} concreet voelbaar in minimaal één roastregel of quote. Als de grap op een totaal andere outfit zou passen, herschrijf hem. Als de grap het zichtbare probleem tegenspreekt, herschrijf hem. Noem een basic/saaie outfit niet druk of afleidend; roast dan juist het gebrek aan spanning, entree, richting of onthoudbaarheid. Gebruik bij score 1-3 maximale roastenergie, bij 4-6 scherpe sarcasme, bij 7-8 complimenten met humor en bij 9-10 zelfverzekerde hype. Bij Stijlcoach blijven alle regels en quotes positief, zelfverzekerd en niet-corrigerend; laat canImprove en stylingTips dan leeg. Pas de overige velden aan op de inventaris.`,
         },
       ];
 
