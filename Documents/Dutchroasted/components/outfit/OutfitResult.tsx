@@ -781,7 +781,9 @@ async function createShareImage(
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const VIDEO_DURATION_MS = 12_500;
+const VIDEO_DURATION_MS = 13_500;
+const VIDEO_TEXT_SAFE_WIDTH = 740;
+const VIDEO_QUOTE_SAFE_WIDTH = 700;
 
 async function createOutfitVideo(
   originalImage: string,
@@ -908,18 +910,30 @@ function drawOutfitVideoFrame(
   context.fillRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
   drawImageCoverWithZoom(context, photo, VIDEO_WIDTH, VIDEO_HEIGHT, zoom);
 
-  if (elapsedSeconds < 2.2) {
+  if (elapsedSeconds < 2.8) {
+    drawVideoShade(context, 0.76);
+    context.textAlign = "center";
+    context.fillStyle = "#ff9a4f";
+    context.font = "900 34px Arial, sans-serif";
+    context.fillText("JOUW SCORE", VIDEO_WIDTH / 2, 775);
+    context.fillStyle = "#ffffff";
+    context.font = "900 236px Arial, sans-serif";
+    context.fillText(`${formatScore(score)}/10`, VIDEO_WIDTH / 2, 990);
+    context.fillStyle = "rgba(255,255,255,0.88)";
+    context.font = "900 30px Arial, sans-serif";
+    context.fillText("OutfitRoaster verdict", VIDEO_WIDTH / 2, 1080);
+    context.textAlign = "left";
     return;
   }
 
-  if (elapsedSeconds >= 2.2 && elapsedSeconds < 4.4) {
+  if (elapsedSeconds >= 2.8 && elapsedSeconds < 4.7) {
     drawVideoShade(context, 0.68);
     drawCenteredVideoText(
       context,
       "OutfitRoaster checkt…",
       960,
       78,
-      880,
+      VIDEO_TEXT_SAFE_WIDTH,
       2,
       "#ffffff",
     );
@@ -931,46 +945,41 @@ function drawOutfitVideoFrame(
     return;
   }
 
-  if (elapsedSeconds >= 4.4 && elapsedSeconds < 6.5) {
-    drawVideoShade(context, 0.74);
-    context.textAlign = "center";
-    context.fillStyle = "#ff6a00";
-    context.font = "900 220px Arial, sans-serif";
-    context.fillText(`${formatScore(score)}/10`, VIDEO_WIDTH / 2, 1000);
-    context.fillStyle = "#ffffff";
-    context.font = "900 30px Arial, sans-serif";
-    context.fillText("JOUW OUTFIT VERDICT", VIDEO_WIDTH / 2, 1070);
-    context.textAlign = "left";
-    return;
-  }
-
-  if (elapsedSeconds >= 6.5 && elapsedSeconds < 9.5) {
+  if (elapsedSeconds >= 4.7 && elapsedSeconds < 9.3) {
     drawVideoShade(context, 0.7);
-    drawCenteredVideoText(context, `“${quote}”`, 940, 76, 880, 5, "#ffffff");
+    drawCenteredVideoText(
+      context,
+      `“${quote}”`,
+      930,
+      68,
+      VIDEO_QUOTE_SAFE_WIDTH,
+      5,
+      "#ffffff",
+    );
     context.textAlign = "center";
     context.fillStyle = "#ff9a4f";
     context.font = "900 27px Arial, sans-serif";
-    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1238);
+    context.fillText("#outfitroaster", VIDEO_WIDTH / 2, 1228);
     context.textAlign = "left";
     return;
   }
 
-  const bottomShade = context.createLinearGradient(0, 1360, 0, VIDEO_HEIGHT);
+  const bottomShade = context.createLinearGradient(0, 1220, 0, VIDEO_HEIGHT);
   bottomShade.addColorStop(0, "rgba(0,0,0,0)");
   bottomShade.addColorStop(1, "rgba(0,0,0,0.78)");
   context.fillStyle = bottomShade;
-  context.fillRect(0, 1360, VIDEO_WIDTH, 560);
+  context.fillRect(0, 1220, VIDEO_WIDTH, 700);
 
   context.fillStyle = "rgba(0,0,0,0.58)";
-  roundRect(context, 60, 1712, 960, 112, 32);
+  roundRect(context, 110, 1488, 860, 150, 36);
   context.fill();
   context.textAlign = "center";
   context.fillStyle = "#ffffff";
-  context.font = "900 44px Arial, sans-serif";
-  context.fillText("Roast jouw outfit", VIDEO_WIDTH / 2, 1758);
+  context.font = "900 42px Arial, sans-serif";
+  context.fillText("Roast jouw outfit", VIDEO_WIDTH / 2, 1548);
   context.fillStyle = "#ff9a4f";
-  context.font = "900 34px Arial, sans-serif";
-  context.fillText("🔥 OutfitRoaster.com", VIDEO_WIDTH / 2, 1812);
+  context.font = "900 32px Arial, sans-serif";
+  context.fillText("🔥 OutfitRoaster.com", VIDEO_WIDTH / 2, 1602);
   context.textAlign = "left";
 }
 
