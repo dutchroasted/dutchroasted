@@ -44,8 +44,8 @@ const FALLBACK_SHARE_QUOTES = [
   "Deze styling mist een volwassen besluit.",
 ];
 const FALLBACK_ALTERNATIVE_QUOTES = [
-  "Zelfs Google Maps weet niet waar deze outfit heen wil.",
-  "Deze kleurencombinatie is een diplomatieke crisis.",
+  "Zelfs de paskamer vraagt om uitleg.",
+  "De outfit zoekt nog een duidelijke eindbaas.",
   "Zelfs de paskamer dacht: succes ermee.",
 ];
 const RECOVERY_SHARE_QUOTES = [
@@ -64,7 +64,7 @@ const RECOVERY_SHARE_QUOTES = [
 ];
 const FALLBACK_ROAST = [
   "Deze outfit kwam binnen zonder plan en bleef uit koppigheid.",
-  "De kleuren voeren overleg, maar niemand heeft de agenda gelezen.",
+  "De styling voert overleg, maar niemand heeft de agenda gelezen.",
   "De styling is een groepsproject waar iedereen zichzelf een tien gaf.",
 ].join("\n");
 const ROAST_LEVEL_FALLBACKS: Record<
@@ -94,7 +94,7 @@ const ROAST_LEVEL_FALLBACKS: Record<
   Genadeloos: {
     roast: [
       "Deze outfit is gevonden in de map concepten.",
-      "De kleuren hebben ruzie en de styling filmt het gevecht.",
+      "De styling heeft ruzie met zichzelf en filmt het gevecht.",
       "Zelfs de paskamer keek weg uit plaatsvervangende schaamte.",
     ].join("\n"),
     shareQuote: "Je spiegel heeft vandaag officieel ontslag genomen.",
@@ -108,7 +108,7 @@ const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|aardig|lijkt|lijk
 const FORBIDDEN_PERSON_TERMS = /\b(lichaam|gewicht|dik|dun|mager|gezicht|leeftijd|oud|jong|afkomst|etniciteit|ras|genderidentiteit|seksualiteit|homoseksueel|handicap|beperking|gezondheid|ziek|religie|geloof|aantrekkelijk|lelijk|knap)\b/i;
 const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop|scheidsrechter|wedstrijd|competitie|champions league|finale|film|filmtrailer|hoofdrol|figurant|reality|seizoen|storing|internetstoring|moodboard|dresscode|publiek|applaus|deadline|laptop|handtekening|huur|mainstage|camping|garderobe|borrel|sollicitatie|linkedin|teams|basic-fit|warming-up|klas|huiswerk|reserveren|rekening|entree|uitnodiging|briefing|manager|directeur|hoofdkantoor|rij|plattegrond)\b/i;
 const PUNCHLINE_STRUCTURES = /\b(alsof|zelfs|niet eens|maar|zonder|terwijl|en niemand|kwam binnen|vraagt om|heeft.*nodig|zoekt nog|mist nog|vergat|verdwaalt|huilt|ontslaat|kijkt mee|geen leider|conceptfase|crisis|ontslag|toestemming|vragen over|PowerPoint|software-update)\b/i;
-const OVERUSED_ROAST_TEMPLATES = /\b(drie persoonlijkheden|geen leider|willekeurig gedrukt|powerpoint zonder inhoud|powerpoint zonder spreker)\b/i;
+const OVERUSED_ROAST_TEMPLATES = /\b(drie persoonlijkheden|geen leider|willekeurig gedrukt|powerpoint zonder inhoud|powerpoint zonder spreker|google maps|diplomatieke crisis|software-update die niemand wilde)\b/i;
 const HUMOR_ANGLES = [
   "droog sarcasme",
   "absurde metafoor",
@@ -171,6 +171,7 @@ const CLOTHING_ITEMS = [
   "Vest",
   "Trui",
   "Hoodie",
+  "Jurk",
   "Jas",
   "Blazer",
   "Jeans",
@@ -198,6 +199,7 @@ const CLOTHING_REFERENCE_TERMS: Record<ClothingItem, string[]> = {
   Vest: ["vest", "cardigan"],
   Trui: ["trui"],
   Hoodie: ["hoodie"],
+  Jurk: ["jurk", "dress"],
   Jas: ["jas"],
   Blazer: ["blazer"],
   Jeans: ["jeans", "spijkerbroek"],
@@ -304,7 +306,7 @@ Belangrijke grenzen:
 - Vermijd dominante vaste openingen. Gebruik niet automatisch steeds "Deze outfit", "Je kledingkast" of "Zelfs de spiegel".
 - Gebruik in quotes nooit verzachtende woorden zoals misschien, beetje, redelijk, best, kan of zou.
 - Een quote die klinkt als normale modefeedback is ongeldig.
-- Schrijf quotes in de sfeer van: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De styling zoekt nog een volwassen besluit.", "Deze kleurencombinatie heeft crisisoverleg nodig." Gebruik deze voorbeelden nooit letterlijk.
+- Schrijf quotes in de sfeer van: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De styling zoekt nog een volwassen besluit.", "De outfit vraagt om crisisoverleg." Gebruik deze voorbeelden nooit letterlijk.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
@@ -839,11 +841,11 @@ function getScoreAwareFallback(
     const quotes = [
       ...rotateFallbacks(occasionFallback.quotes, variationOffset),
       ...rotateFallbacks([
-      "Deze outfit is een software-update die niemand wilde.",
+      "Deze fit kwam binnen zonder eindredactie.",
       "Ergens huilt een paskamer zachtjes om deze beslissing.",
-      "Niet eens Google Maps vindt hier een stijlrichting.",
+      "Zelfs de routeplanner zoekt hier een stijlrichting.",
       "Alsof drie kledingkasten tegelijk op verzenden drukten.",
-      "De kleuren spelen vandaag een wedstrijd zonder scheidsrechter.",
+      "De styling speelt vandaag een wedstrijd zonder scheidsrechter.",
       "Iemand heeft de styling live tijdens de storing afgerond.",
       "Dit heeft de energie van een mislukte seizoensfinale.",
       "De broek en schoenen zitten duidelijk in rivaliserende teams.",
@@ -854,7 +856,7 @@ function getScoreAwareFallback(
       ...rotateFallbacks([
       "Ergens huilt een paskamer en niemand durft te vragen waarom.",
       "Alsof drie kledingkasten tegelijk hun nooduitgang zochten.",
-      "De kleuren spelen een finale zonder regels of scheidsrechter.",
+      "De styling speelt een finale zonder regels of scheidsrechter.",
       "Iemand heeft deze styling tijdens een internetstoring afgerond.",
       "Dit kwam binnen als filmtrailer en eindigde als storing.",
       "De kledingonderdelen zitten samen, maar duidelijk niet vrijwillig.",
@@ -872,7 +874,7 @@ function getScoreAwareFallback(
       ...rotateFallbacks(occasionFallback.quotes, variationOffset),
       ...rotateFallbacks([
       "De styling kwam binnen zonder eindredacteur.",
-      "De kleuren houden teamoverleg zonder een agenda.",
+      "De styling houdt teamoverleg zonder een agenda.",
       "Alsof een moodboard halverwege ontslag heeft genomen.",
       "Iemand heeft twijfel hier tot dresscode gepromoveerd.",
       "Dit heeft de energie van een groepsproject zonder manager.",
@@ -884,7 +886,7 @@ function getScoreAwareFallback(
     const roastLines = [
       ...rotateFallbacks(occasionFallback.roastLines, variationOffset + 4),
       ...rotateFallbacks([
-      "De kleuren houden overleg, maar niemand noteert de besluiten.",
+      "De styling houdt overleg, maar niemand noteert de besluiten.",
       "Alsof de styling halverwege zijn eigen briefing vergat.",
       "Iemand heeft twijfel hier verrassend overtuigend aangekleed.",
       "De kleding speelt samen, alleen wel in verschillende competities.",
@@ -909,7 +911,7 @@ function getScoreAwareFallback(
       "Iemand heeft eenvoud hier een verrassend sterke finale gegeven.",
       "Dit kwam binnen als bijrol en stal de film.",
       "Zelfs het teamoverleg stemt unaniem vóór deze styling.",
-      "De kleuren doen rustig en pakken alsnog alle aandacht.",
+      "De styling doet rustig en pakt alsnog alle aandacht.",
       "Ergens schrijft een moodboard jaloers deze combinatie over.",
       ], variationOffset),
     ];
@@ -920,7 +922,7 @@ function getScoreAwareFallback(
       "De styling speelt thuis en het publiek kent het refrein.",
       "Iemand heeft eenvoud hier onverwacht de hoofdrol gegeven.",
       "Dit kwam binnen als bijrol en stal zonder moeite de film.",
-      "De kleuren praten zacht en krijgen alsnog alle aandacht.",
+      "De styling praat zacht en krijgt alsnog alle aandacht.",
       "Ergens maakt een moodboard haastig aantekeningen van deze combinatie.",
       ], variationOffset + 1),
     ];
@@ -940,7 +942,7 @@ function getScoreAwareFallback(
     "Iemand heeft zelfvertrouwen hier perfect op maat geleverd.",
     "Dit kwam binnen en maakte de rest figurant.",
     "Zelfs de spiegel vraagt vandaag om een handtekening.",
-    "De kleuren spelen Champions League zonder zichtbaar te zweten.",
+    "De styling speelt Champions League zonder zichtbaar te zweten.",
     "Ergens annuleert een stylist de concurrentie uit respect.",
     ], variationOffset),
   ];
@@ -951,7 +953,7 @@ function getScoreAwareFallback(
     "De styling heeft hoofdrolenergie zonder auditie of toestemming.",
     "Iemand heeft zelfvertrouwen hier akelig precies op maat geleverd.",
     "Dit kwam binnen en degradeerde de rest direct tot figurant.",
-    "De kleuren spelen Champions League en vieren al de finale.",
+    "De styling speelt Champions League en viert al de finale.",
     "Ergens sluit een stylist de laptop uit pure tevredenheid.",
     ], variationOffset + 5),
   ];
@@ -1283,6 +1285,7 @@ function fillAlternativeQuotes(
     (quote) =>
       isValidShareQuote(quote) &&
       !containsMismatchedOccasionMetaphor(quote, occasion) &&
+      !containsUnsupportedColorCombinationClaim(quote, inventory) &&
       referencesOnlyDetectedClothing(quote, inventory) &&
       (positiveOnly
         ? isPositiveStyleCoachText(quote)
@@ -1296,6 +1299,7 @@ function fillAlternativeQuotes(
     (quote) =>
       !OVERUSED_ROAST_TEMPLATES.test(quote) &&
       isValidShareQuote(quote) &&
+      !containsUnsupportedColorCombinationClaim(quote, inventory) &&
       (positiveOnly
         ? isPositiveStyleCoachText(quote)
         : isTikTokWorthyQuote(quote)) &&
@@ -1401,6 +1405,7 @@ function selectValidQuote(
       typeof quote === "string" &&
       isValidShareQuote(quote) &&
       !containsMismatchedOccasionMetaphor(quote, occasion) &&
+      !containsUnsupportedColorCombinationClaim(quote, inventory) &&
       (positiveOnly
         ? isPositiveStyleCoachText(quote)
         : isTikTokWorthyQuote(quote)) &&
@@ -1505,6 +1510,9 @@ function referencesOnlyDetectedClothing(
   if (inventory.some((item) => ["Vest", "Jas", "Blazer", "bovenlaag"].includes(item.item))) {
     allowedItems.add("bovenlaag");
   }
+  if (inventory.some((item) => item.item === "Jurk")) {
+    allowedItems.add("bovenlaag");
+  }
   if (inventory.some((item) => ["Tas", "Horloge", "accessoire"].includes(item.item))) {
     allowedItems.add("accessoire");
   }
@@ -1596,6 +1604,7 @@ function generatedResultNeedsCorrection(
     !roast ||
     containsLikelyEnglish(roast) ||
     containsContradictoryRoastLogic(roast) ||
+    containsUnsupportedColorCombinationClaim(roast, inventory) ||
     containsMismatchedOccasionMetaphor(roast, occasion) ||
     !isPunchyRoast(roast, roastLevel)
   ) {
@@ -1626,6 +1635,7 @@ function generatedResultNeedsCorrection(
     !isValidShareQuote(shareQuote) ||
     recentQuotes.some((quote) => areQuotesTooSimilar(shareQuote, quote)) ||
     containsContradictoryRoastLogic(shareQuote) ||
+    containsUnsupportedColorCombinationClaim(shareQuote, inventory) ||
     containsMismatchedOccasionMetaphor(shareQuote, occasion) ||
     (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(shareQuote)) ||
     (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(shareQuote)) ||
@@ -1636,13 +1646,18 @@ function generatedResultNeedsCorrection(
       (quote) =>
         !isValidShareQuote(quote) ||
         containsContradictoryRoastLogic(quote) ||
+        containsUnsupportedColorCombinationClaim(quote, inventory) ||
         containsMismatchedOccasionMetaphor(quote, occasion) ||
         recentQuotes.some((recentQuote) => areQuotesTooSimilar(quote, recentQuote)) ||
         (roastLevel !== "Stijlcoach" && !isTikTokWorthyQuote(quote)) ||
         (roastLevel === "Stijlcoach" && !isPositiveStyleCoachText(quote)) ||
         !referencesOnlyDetectedClothing(quote, inventory),
     ) ||
-    analysisText.some((text) => !referencesOnlyDetectedClothing(text, inventory))
+    analysisText.some(
+      (text) =>
+        !referencesOnlyDetectedClothing(text, inventory) ||
+        containsUnsupportedColorCombinationClaim(text, inventory),
+    )
   );
 }
 
@@ -1686,6 +1701,72 @@ function containsContradictoryRoastLogic(text: string) {
   return basicSignals && busySignals;
 }
 
+function containsUnsupportedColorCombinationClaim(
+  text: string,
+  inventory: ClothingInventoryItem[],
+) {
+  const normalized = text.toLowerCase();
+  const claimsColorConflict = /\b(kleurencombinatie|kleurcombinatie|kleurcrisis|kleurconflict|botsende kleuren|kleuren.*(ruzie|crisis|bots|botsen|vechten|wedstrijd|scheidsrechter)|kleur.*(ruzie|crisis|bots|botsen|vechten))\b/i.test(
+    normalized,
+  );
+
+  if (!claimsColorConflict) {
+    return false;
+  }
+
+  return getDistinctDetectedColors(inventory).length < 2;
+}
+
+function getDistinctDetectedColors(inventory: ClothingInventoryItem[]) {
+  return Array.from(
+    new Set(
+      inventory
+        .map((item) => normalizeDetectedColor(item.color))
+        .filter((color): color is string => Boolean(color)),
+    ),
+  );
+}
+
+function normalizeDetectedColor(color: string) {
+  const normalized = color.toLowerCase().trim();
+  if (!normalized || normalized.includes("onbekend")) {
+    return null;
+  }
+
+  if (/\b(wit|witte|crème|creme|ivoor|ivory)\b/.test(normalized)) {
+    return "wit";
+  }
+  if (/\b(zwart|zwarte)\b/.test(normalized)) {
+    return "zwart";
+  }
+  if (/\b(blauw|blauwe|donkerblauw|lichtblauw)\b/.test(normalized)) {
+    return "blauw";
+  }
+  if (/\b(grijs|grijze)\b/.test(normalized)) {
+    return "grijs";
+  }
+  if (/\b(beige|camel|zand)\b/.test(normalized)) {
+    return "beige";
+  }
+  if (/\b(bruin|bruine)\b/.test(normalized)) {
+    return "bruin";
+  }
+  if (/\b(rood|rode)\b/.test(normalized)) {
+    return "rood";
+  }
+  if (/\b(groen|groene)\b/.test(normalized)) {
+    return "groen";
+  }
+  if (/\b(geel|gele)\b/.test(normalized)) {
+    return "geel";
+  }
+  if (/\b(roze|pink)\b/.test(normalized)) {
+    return "roze";
+  }
+
+  return normalized;
+}
+
 function containsLikelyEnglish(text: string, minimumSignals = 2) {
   const normalized = ` ${text.toLowerCase().replace(/[^a-zà-ÿ]+/g, " ")} `;
   const englishSignals = [
@@ -1715,7 +1796,7 @@ async function detectClothingInventory(openai: OpenAI, image: string) {
         {
           role: "system",
           content:
-            "Je bent een nauwkeurige kledingherkenner. Identificeer uitsluitend duidelijk zichtbare kleding en accessoires. Leid nooit gender, lichaamstype, leeftijd of identiteit af. Bij twijfel tussen specifieke typen kies je de veilige generieke term bovenlaag, schoenen, broek of accessoire. Verzin niets.",
+            "Je bent een nauwkeurige kledingherkenner. Identificeer uitsluitend kleding en accessoires die zichtbaar op het lichaam worden gedragen. Negeer auto's, deuren, stoelen, gebouwen, schaduwen, tassen op de achtergrond en andere omgeving. Leid nooit gender, lichaamstype, leeftijd of identiteit af. Bij twijfel tussen specifieke typen kies je de veilige generieke term bovenlaag, schoenen, broek of accessoire. Een witte jurk of avondjurk classificeer je als Jurk, nooit als Jas. Een jas detecteer je alleen als die zichtbaar gedragen wordt. Verzin niets.",
         },
         {
           role: "user",
@@ -1725,7 +1806,7 @@ async function detectClothingInventory(openai: OpenAI, image: string) {
               text: `Maak eerst een interne kledinginventaris voor latere stylingfeedback.
 
 Toegestane items, in herkenningsprioriteit:
-T-shirt, Polo, Overhemd, Vest, Trui, Hoodie, Jas, Blazer, Jeans, Chino, Sneakers, Nette schoenen, Boots, Tas, Horloge.
+T-shirt, Polo, Overhemd, Vest, Trui, Hoodie, Jurk, Jas, Blazer, Jeans, Chino, Sneakers, Nette schoenen, Boots, Tas, Horloge.
 
 Bij lage zekerheid gebruik je alleen:
 bovenlaag, schoenen, broek, accessoire.
@@ -1736,7 +1817,9 @@ Regels:
 - Humor zonder zichtbare observatie is verboden.
 - Laat het klinken als een snelle scherpe vriend, nooit als een AI-analyse.
 - Neem alleen items op die werkelijk zichtbaar zijn.
-- Onderscheid Polo, Overhemd, Vest, Jas en Blazer zorgvuldig.
+- Onderscheid Polo, Overhemd, Vest, Jurk, Jas en Blazer zorgvuldig.
+- Negeer de omgeving volledig. Een zwarte auto, autodeur of donkere achtergrond is nooit een Jas.
+- Als één wit kledingstuk als jurk/avondjurk zichtbaar is, detecteer "Jurk" met kleur "wit".
 - Noem per item een korte zichtbare kleur.
 - Gebruik uitsluitend zekerheid "hoog" of "middel".
 - Output alleen geldige JSON:
@@ -1803,7 +1886,7 @@ Roastniveau: Genadeloos
 - Geef geen samenvatting zoals "mist samenhang"; schrijf de grap die dat laat voelen.
 - worksWell, canImprove en stylingTips blijven bestaan voor het JSON-schema, maar schrijf ze kort, direct en entertainment-first. Geen lange modeanalyse.
 - Gebruik nooit de woorden: misschien, beetje, redelijk, best, aardig, lijkt, kan, zou, "niet helemaal", "past niet goed" of "mist samenhang".
-- Goede energie: "De schoenen hebben de briefing gemist.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
+- Goede energie: "De schoenen hebben de briefing gemist.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "De outfit vraagt om crisisoverleg.", "Alles klopt. Alleen niet tegelijk."
 - Slechte energie: "De kleuren passen niet goed.", "Misschien andere schoenen.", "Deze outfit kan beter.", "De combinatie voelt rommelig."
 - Werkvolgorde voor humor: analyseer de outfit zorgvuldig, bepaal de 2 of 3 meest opvallende kenmerken, kies het opvallendste kenmerk en maak dáár de grap over.
 - Iedere grap moet voortkomen uit een echte zichtbare observatie van de outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie of gelegenheid.
@@ -2073,6 +2156,7 @@ Regels:
 - Controleer intern: als een grap op vrijwel elke outfit geplakt kan worden, herschrijf hem op basis van een zichtbaar kledingstuk, kleur, schoen, accessoire, combinatie of gelegenheid.
 - Controleer intern: als de grap niet klopt met het zichtbare probleem, herschrijf hem. Voorbeeld fout: een saaie outfit "meer afleiding dan een Zoom-vergadering" noemen. Beter: de outfit mist spanning, entree, richting of een reden om onthouden te worden.
 - Verwar basic/rustig nooit met druk/chaotisch. Verwar kleurrijk/druk nooit met saai.
+- Als de inventaris één duidelijke kleur bevat, maak nooit een grap over kleurencombinatie, botsende kleuren, kleurcrisis of kleurconflict. Roast dan stof, silhouet, snit, gelegenheid, schoenen, accessoire of entree.
 - Pas de toon strikt aan het gekozen roastniveau aan. Stijlcoach is positief, zelfverzekerd en niet-corrigerend; Pittig en Genadeloos zijn directer.
 - Noem waar mogelijk zichtbare details die letterlijk in de kledinginventaris staan.
 - Vermijd algemene feedback zoals "je outfit is leuk" of "dit past niet goed".
@@ -2108,7 +2192,7 @@ Regels:
 - Bij Stijlcoach mogen shareQuote en alternativeQuotes nooit kritiek, correcties of roasttaal bevatten.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - shareQuote is meme-waardig, direct begrijpelijk en belangrijker dan de volledige roast.
-- Voorbeelden shareQuote, alleen als stijlrichting: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De broek en schoenen hebben elkaar net ontmoet.", "Deze kleurencombinatie heeft crisisoverleg nodig.", "De styling zoekt nog een volwassen besluit.", "Deze fit kwam binnen zonder toestemming.", "Je spiegel heeft vandaag ontslag genomen."
+- Voorbeelden shareQuote, alleen als stijlrichting: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De broek en schoenen hebben elkaar net ontmoet.", "De outfit vraagt om crisisoverleg.", "De styling zoekt nog een volwassen besluit.", "Deze fit kwam binnen zonder toestemming.", "Je spiegel heeft vandaag ontslag genomen."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
