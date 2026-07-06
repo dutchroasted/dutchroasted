@@ -39,9 +39,9 @@ const LEGACY_OCCASION_MAP: Record<string, (typeof OUTFIT_OCCASIONS)[number]> = {
   Sportschool: "Gym",
 };
 const FALLBACK_SHARE_QUOTES = [
-  "Deze outfit heeft drie persoonlijkheden en geen leider.",
-  "Je kledingkast heeft vandaag op willekeurig gedrukt.",
-  "Deze outfit is een software-update die niemand wilde.",
+  "Deze fit kwam binnen als plan B.",
+  "De spiegel vraagt om een teamoverleg.",
+  "Deze styling mist een volwassen besluit.",
 ];
 const FALLBACK_ALTERNATIVE_QUOTES = [
   "Zelfs Google Maps weet niet waar deze outfit heen wil.",
@@ -49,18 +49,18 @@ const FALLBACK_ALTERNATIVE_QUOTES = [
   "Zelfs de paskamer dacht: succes ermee.",
 ];
 const RECOVERY_SHARE_QUOTES = [
-  "Deze fit is een PowerPoint zonder spreker.",
-  "Hier is een projectleider te vroeg vertrokken.",
-  "Deze look staat nog in de conceptfase.",
-  "De groepsapp heeft dit niet unaniem besloten.",
-  "Deze outfit kwam binnen zonder agenda.",
-  "De paskamer heeft hier nog vragen over.",
-  "Dit plan is onderweg ergens verdwaald.",
-  "Deze styling heeft een teamoverleg nodig.",
-  "Ergens knippert een moodboard heel nerveus.",
-  "Deze fit zoekt nog naar de hoofdrol.",
-  "De spiegel wacht nog op de uitleg.",
-  "Deze outfit heeft toestemming genegeerd.",
+  "De paskamer vraagt hier om een tweede lezing.",
+  "Deze fit heeft de briefing hard genegeerd.",
+  "De styling kwam binnen zonder eindredacteur.",
+  "Dit plan verloor onderweg zijn manager.",
+  "De outfit zoekt nog een volwassen besluit.",
+  "Ergens knippert een moodboard in paniek.",
+  "De spiegel wacht nog op de ondertiteling.",
+  "Deze look heeft de vergadering gemist.",
+  "De kledingstukken voeren elk hun eigen campagne.",
+  "Dit begon als plan en eindigde als bijlage.",
+  "De styling heeft de afslag zelfvertrouwen gemist.",
+  "Deze outfit vraagt om crisisoverleg.",
 ];
 const FALLBACK_ROAST = [
   "Deze outfit kwam binnen zonder plan en bleef uit koppigheid.",
@@ -85,10 +85,10 @@ const ROAST_LEVEL_FALLBACKS: Record<
   },
   Pittig: {
     roast: FALLBACK_ROAST,
-    shareQuote: "Deze outfit heeft drie persoonlijkheden en geen leider.",
+    shareQuote: "De styling kwam binnen zonder eindredacteur.",
     alternativeQuotes: [
-      "Je kledingkast heeft vandaag op willekeurig gedrukt.",
-      "Deze kleurencombinatie is een diplomatieke crisis.",
+      "Deze fit heeft de briefing hard genegeerd.",
+      "De spiegel vraagt om een teamoverleg.",
     ],
   },
   Genadeloos: {
@@ -99,7 +99,7 @@ const ROAST_LEVEL_FALLBACKS: Record<
     ].join("\n"),
     shareQuote: "Je spiegel heeft vandaag officieel ontslag genomen.",
     alternativeQuotes: [
-      "Deze outfit is een PowerPoint zonder inhoud.",
+      "De paskamer vraagt hier om een tweede lezing.",
       "Deze fit kwam binnen zonder toestemming.",
     ],
   },
@@ -108,6 +108,7 @@ const SOFT_FEEDBACK_TERMS = /\b(misschien|beetje|redelijk|best|aardig|lijkt|lijk
 const FORBIDDEN_PERSON_TERMS = /\b(lichaam|gewicht|dik|dun|mager|gezicht|leeftijd|oud|jong|afkomst|etniciteit|ras|genderidentiteit|seksualiteit|homoseksueel|handicap|beperking|gezondheid|ziek|religie|geloof|aantrekkelijk|lelijk|knap)\b/i;
 const COMEDY_SIGNALS = /\b(alsof|zelfs|willekeurig|crisis|groepsapp|powerpoint|software-update|google maps|paskamer|spiegel|vergadering|projectleider|groepsproject|ontslag|conceptfase|persoonlijkheden|leider|toestemming|agenda|ruzie|plan|verdwaald|auditie|stage|teamoverleg|kringloop|action|hema|ikea|marktplaats|vrijmibo|lowlands|pinkpop|scheidsrechter|wedstrijd|competitie|champions league|finale|film|filmtrailer|hoofdrol|figurant|reality|seizoen|storing|internetstoring|moodboard|dresscode|publiek|applaus|deadline|laptop|handtekening|huur|mainstage|camping|garderobe|borrel|sollicitatie|linkedin|teams|basic-fit|warming-up|klas|huiswerk|reserveren|rekening|entree|uitnodiging|briefing|manager|directeur|hoofdkantoor|rij|plattegrond)\b/i;
 const PUNCHLINE_STRUCTURES = /\b(alsof|zelfs|niet eens|maar|zonder|terwijl|en niemand|kwam binnen|vraagt om|heeft.*nodig|zoekt nog|mist nog|vergat|verdwaalt|huilt|ontslaat|kijkt mee|geen leider|conceptfase|crisis|ontslag|toestemming|vragen over|PowerPoint|software-update)\b/i;
+const OVERUSED_ROAST_TEMPLATES = /\b(drie persoonlijkheden|geen leider|willekeurig gedrukt|powerpoint zonder inhoud|powerpoint zonder spreker)\b/i;
 const HUMOR_ANGLES = [
   "droog sarcasme",
   "absurde metafoor",
@@ -303,7 +304,7 @@ Belangrijke grenzen:
 - Vermijd dominante vaste openingen. Gebruik niet automatisch steeds "Deze outfit", "Je kledingkast" of "Zelfs de spiegel".
 - Gebruik in quotes nooit verzachtende woorden zoals misschien, beetje, redelijk, best, kan of zou.
 - Een quote die klinkt als normale modefeedback is ongeldig.
-- Schrijf quotes in de sfeer van: "Deze outfit heeft drie persoonlijkheden en geen leider.", "Je kledingkast heeft vandaag op willekeurig gedrukt.", "Deze fit is een PowerPoint zonder inhoud.", "Zelfs de paskamer dacht: succes ermee.", "Deze kleurencombinatie is een diplomatieke crisis." Gebruik deze voorbeelden nooit letterlijk.
+- Schrijf quotes in de sfeer van: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De styling zoekt nog een volwassen besluit.", "Deze kleurencombinatie heeft crisisoverleg nodig." Gebruik deze voorbeelden nooit letterlijk.
 - Schrijf direct en modegericht. Vermijd generieke AI-taal zoals "goede balans" zonder concreet kledingstuk of effect.
 - Benoem wat een kledingstuk doet voor de outfit: silhouet, laagjes, contrast, materiaal, proportie, kleur, schoenen of accessoires.
 - Formuleer analysepunten als duidelijke mode-observaties, bijvoorbeeld: "De jas draagt de outfit en geeft hem een luxe uitstraling" of "De broek breekt het silhouet; een slankere pasvorm tilt dit meteen op."
@@ -594,6 +595,7 @@ function normalizeRoast(
       isSafeOutfitOnlyText(sentence) &&
       sentence.split(/\s+/).length <= 22 &&
       !SOFT_FEEDBACK_TERMS.test(sentence) &&
+      !OVERUSED_ROAST_TEMPLATES.test(sentence) &&
       (roastLevel === "Stijlcoach" ||
         (COMEDY_SIGNALS.test(sentence) && PUNCHLINE_STRUCTURES.test(sentence))),
   );
@@ -653,7 +655,7 @@ function getOccasionFallbacks(
             "Deze look betaalt de rekening met zelfvertrouwen.",
           ]
         : [
-            "Deze datefit vraagt eerst om een herkansing.",
+            "Deze datefit kwam binnen zonder openingszin.",
             "De eerste indruk zoekt nog naar bereik.",
             "Deze outfit flirt vooral met twijfel.",
           ],
@@ -869,7 +871,7 @@ function getScoreAwareFallback(
     const quotes = [
       ...rotateFallbacks(occasionFallback.quotes, variationOffset),
       ...rotateFallbacks([
-      "Deze outfit heeft drie persoonlijkheden en geen leider.",
+      "De styling kwam binnen zonder eindredacteur.",
       "De kleuren houden teamoverleg zonder een agenda.",
       "Alsof een moodboard halverwege ontslag heeft genomen.",
       "Iemand heeft twijfel hier tot dresscode gepromoveerd.",
@@ -1290,7 +1292,15 @@ function fillAlternativeQuotes(
     ...validQuotes,
     ...styleFallbacks,
     ...FALLBACK_ALTERNATIVE_QUOTES,
-  ].filter((quote) => !containsMismatchedOccasionMetaphor(quote, occasion))
+  ].filter(
+    (quote) =>
+      !OVERUSED_ROAST_TEMPLATES.test(quote) &&
+      isValidShareQuote(quote) &&
+      (positiveOnly
+        ? isPositiveStyleCoachText(quote)
+        : isTikTokWorthyQuote(quote)) &&
+      !containsMismatchedOccasionMetaphor(quote, occasion),
+  )
     .filter(
     (quote, index, allQuotes) =>
       quote.toLowerCase() !== shareQuote.toLowerCase() &&
@@ -1416,6 +1426,7 @@ function isValidShareQuote(value: string) {
     !/(?:\.\.\.|…|:|;)$/.test(quote) &&
     !DANGLING_QUOTE_ENDINGS.has(lastWord) &&
     !SOFT_FEEDBACK_TERMS.test(quote) &&
+    !OVERUSED_ROAST_TEMPLATES.test(quote) &&
     isSafeOutfitOnlyText(quote) &&
     !containsLikelyEnglish(quote, 1)
   );
@@ -1452,6 +1463,7 @@ function isPunchyRoast(value: string, roastLevel: OutfitRoastLevel) {
       (sentence) =>
         sentence.split(/\s+/).length > 22 ||
         !isSafeOutfitOnlyText(sentence) ||
+        OVERUSED_ROAST_TEMPLATES.test(sentence) ||
         SOFT_FEEDBACK_TERMS.test(sentence),
     )
   ) {
@@ -1791,7 +1803,7 @@ Roastniveau: Genadeloos
 - Geef geen samenvatting zoals "mist samenhang"; schrijf de grap die dat laat voelen.
 - worksWell, canImprove en stylingTips blijven bestaan voor het JSON-schema, maar schrijf ze kort, direct en entertainment-first. Geen lange modeanalyse.
 - Gebruik nooit de woorden: misschien, beetje, redelijk, best, aardig, lijkt, kan, zou, "niet helemaal", "past niet goed" of "mist samenhang".
-- Goede energie: "Deze outfit heeft drie persoonlijkheden en geen leider.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
+- Goede energie: "De schoenen hebben de briefing gemist.", "De schoenen en broek hebben elkaar vandaag ontmoet.", "Code geel voor deze kleurencombinatie.", "Alles klopt. Alleen niet tegelijk."
 - Slechte energie: "De kleuren passen niet goed.", "Misschien andere schoenen.", "Deze outfit kan beter.", "De combinatie voelt rommelig."
 - Werkvolgorde voor humor: analyseer de outfit zorgvuldig, bepaal de 2 of 3 meest opvallende kenmerken, kies het opvallendste kenmerk en maak dáár de grap over.
 - Iedere grap moet voortkomen uit een echte zichtbare observatie van de outfit, kleding, schoenen, accessoires, kleuren, stijl, combinatie of gelegenheid.
@@ -2096,7 +2108,7 @@ Regels:
 - Bij Stijlcoach mogen shareQuote en alternativeQuotes nooit kritiek, correcties of roasttaal bevatten.
 - shareQuote roast alleen outfit/stijlkeuzes, nooit iemands identiteit, lichaam of beschermde kenmerken.
 - shareQuote is meme-waardig, direct begrijpelijk en belangrijker dan de volledige roast.
-- Voorbeelden shareQuote, alleen als stijlrichting: "Deze outfit heeft drie persoonlijkheden en geen leider.", "Je kledingkast heeft vandaag op willekeurig gedrukt.", "Deze fit is een PowerPoint zonder inhoud.", "Zelfs de paskamer dacht: succes ermee.", "Deze outfit is een software-update die niemand wilde.", "De broek en schoenen hebben elkaar net ontmoet.", "Deze kleurencombinatie is een diplomatieke crisis.", "Zelfs Google Maps weet niet waar deze outfit heen wil.", "Deze fit kwam binnen zonder toestemming.", "Je spiegel heeft vandaag ontslag genomen."
+- Voorbeelden shareQuote, alleen als stijlrichting: "De schoenen hebben de briefing gemist.", "Deze fit kwam binnen als plan B.", "Zelfs de paskamer vraagt om uitleg.", "De broek en schoenen hebben elkaar net ontmoet.", "Deze kleurencombinatie heeft crisisoverleg nodig.", "De styling zoekt nog een volwassen besluit.", "Deze fit kwam binnen zonder toestemming.", "Je spiegel heeft vandaag ontslag genomen."
 - Analyse en stylingtips zijn direct, uitgesproken en modegericht.
 - Vermijd zachte algemene zinnen zoals "past goed bij de outfit" of "goede combinatie"; schrijf concreet welk item wat doet.
 - Voorbeeld goed: "De witte sneakers houden de outfit fris en eigentijds. Sterke keuze."
