@@ -1133,6 +1133,156 @@ export const seoPages = [
       },
     ],
   }),
+  page({
+    slug: "vakantie-outfit-check",
+    title: "Vakantie Outfit Checker",
+    metaTitle: "Vakantie Outfit Checker – Check je vakantielook",
+    metaDescription:
+      "Laat je vakantie outfit beoordelen op kleur, pasvorm, schoenen, comfort en vibe. Gratis AI outfit checker voor reis, strand en avond.",
+    h1: "Vakantie Outfit Checker",
+    eyebrow: "Voor koffers met minder twijfel",
+    intro: [
+      "Een vakantie outfit moet meer kunnen dan leuk zijn op één foto. Je wilt kleding die werkt voor warmte, wandelen, terras, strand, diner en onverwachte plannen. De Vakantie Outfit Checker van OutfitRoaster kijkt of je look praktisch genoeg is en tegelijk niet voelt alsof je koffer op willekeurig heeft gekozen.",
+      "Upload een duidelijke outfitfoto en krijg feedback over zichtbare kleding, schoenen, kleuren, pasvorm en vakantie-vibe. De beoordeling gaat alleen over de outfit, niet over lichaam, gezicht of uiterlijk. Je krijgt een snelle roast of een uitgebreidere Premium Verdict Beta analyse.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een goede vakantie outfit?",
+        paragraphs: [
+          "Een goede vakantie outfit voelt licht, makkelijk en bewust. Dat betekent niet dat alles strandachtig moet zijn. Een simpele witte top met goede broek, een luchtige jurk, een linnen overhemd of nette sandalen kunnen sterker zijn dan een outfit vol vakantiedrukte. Het gaat om kleding die bij het moment past.",
+          "De valkuil is dat vakantie outfits snel te casual worden. Slippers, sportieve shorts, felle prints en losse lagen kunnen prima werken, maar samen ook voelen alsof de hotelkamer nog niet heeft uitgecheckt. OutfitRoaster kijkt of de outfit een duidelijke richting heeft.",
+        ],
+      },
+      {
+        title: "Comfort zonder rommelig te worden",
+        paragraphs: [
+          "Op vakantie telt comfort zwaarder dan normaal. Je loopt meer, zit langer buiten en wisselt vaker tussen activiteiten. Toch hoeft comfortabel niet slordig te zijn. Een goede pasvorm, nette schoenen of één sterke accessoire kan een simpele look meteen bewuster maken.",
+          "De checker beoordeelt hoe kleding zichtbaar valt en of de onderdelen bij elkaar passen. Een ruime bovenlaag kan relaxed zijn, maar als de schoenen en broek geen rol pakken, wordt de look snel vakantiewas met ambitie. De feedback maakt dat verschil concreet.",
+        ],
+      },
+      {
+        title: "Van strand naar diner",
+        paragraphs: [
+          "Veel mensen willen één outfit die overdag en 's avonds werkt. Dat kan, maar vraagt balans. Een te sportieve look valt bij diner sneller uit de toon. Een te nette look voelt overdag weer alsof je ruzie hebt met de temperatuur. Schoenen en laagjes bepalen vaak waar de outfit eindigt.",
+          "OutfitRoaster kijkt of je outfit flexibel oogt. Een luchtige jurk met goede sandalen kan makkelijk schakelen. Een overhemd met nette short kan sterk zijn als de pasvorm klopt. Een outfit die strand, taxi en restaurant tegelijk probeert te zijn, krijgt dat eerlijk terug.",
+        ],
+      },
+      {
+        title: "Kleuren op vakantie",
+        paragraphs: [
+          "Vakantie geeft meer ruimte aan lichte kleuren, wit, beige, denim, groen, blauw en zonnige accenten. Toch is meer kleur niet automatisch beter. Soms werkt één rustige kleur juist sterker dan drie tinten die allemaal de routebeschrijving willen bepalen.",
+          "De checker kijkt naar zichtbare kleurkeuzes. Als je outfit vooral wit of neutraal is, hoort de feedback niet te doen alsof er een kleurenconflict is. Dan gaat het eerder over stof, silhouet, schoenen, accessoire of gelegenheid. Dat maakt de beoordeling specifieker en eerlijker.",
+        ],
+      },
+      {
+        title: "Snel checken voor vertrek",
+        paragraphs: [
+          "De Vakantie Outfit Checker is handig wanneer je koffer bijna dicht moet en je nog twijfelt. Upload je look, kies de gelegenheid die het dichtstbij komt en laat OutfitRoaster de outfit beoordelen. Voor terras of diner kies je Date of Feest, voor een festivaldag Festival en voor een casual dag School.",
+          "Wil je vooral lachen, kies Genadeloos. Wil je bruikbare feedback zonder harde roast, kies Stijlcoach of Premium Verdict Beta. Zo voorkom je dat je pas op foto drie ontdekt dat je outfit onderweg z’n manager is kwijtgeraakt.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "witte-outfit-check",
+    title: "Witte Outfit Checker",
+    metaTitle: "Witte Outfit Checker – Check je witte outfit",
+    metaDescription:
+      "Laat je witte outfit beoordelen op pasvorm, stof, schoenen, accessoires en gelegenheid. AI outfit checker voor witte looks.",
+    h1: "Witte Outfit Checker",
+    eyebrow: "Voor wit dat bewust moet ogen",
+    intro: [
+      "Een witte outfit kan heel sterk zijn, maar ook genadeloos eerlijk. Omdat de kleur rustig is, vallen pasvorm, stof, schoenen en accessoires extra op. De Witte Outfit Checker van OutfitRoaster kijkt of je witte look strak, chic, zomers of juist te leeg voelt.",
+      "De feedback gaat over zichtbare kledingdetails. Bij een outfit die vrijwel helemaal wit is, hoort de beoordeling niet te doen alsof er een ingewikkelde kleurencombinatie is. De focus ligt dan op silhouet, materiaalgevoel, styling, gelegenheid en afwerking.",
+    ],
+    sections: [
+      {
+        title: "Waarom wit zo sterk kan werken",
+        paragraphs: [
+          "Wit geeft een outfit direct rust en helderheid. Een witte jurk, witte blouse, wit overhemd, witte broek of witte sneakers kan fris en luxe ogen. Zeker in de zomer, op vakantie, bij een feest of bij een diner kan wit veel doen zonder hard te schreeuwen.",
+          "Maar juist omdat wit rustig is, moet de rest kloppen. Een witte look zonder goede pasvorm of duidelijke afwerking kan leeg voelen. Dan is het niet de kleur die faalt, maar de styling eromheen. OutfitRoaster beoordeelt dat verschil.",
+        ],
+      },
+      {
+        title: "Pasvorm en silhouet",
+        paragraphs: [
+          "Bij witte kleding is silhouet belangrijk. Een goed vallende jurk, broek of bovenlaag ziet er snel verzorgd uit. Een vormloze of onrustige pasvorm valt juist sneller op, omdat er minder kleur of print is die afleidt. De kleding zelf moet dus meer werk doen.",
+          "De checker kijkt naar hoe de outfit als geheel valt. Niet naar het lichaam, maar naar het kledingstuk. Zit er een duidelijke lijn in de look? Heeft de outfit een sterke entree? Of staat alles klaar, maar is niemand verantwoordelijk voor de eindredactie?",
+        ],
+      },
+      {
+        title: "Schoenen en accessoires bij wit",
+        paragraphs: [
+          "Schoenen bepalen bij een witte outfit veel. Witte of lichte schoenen houden de look rustig. Metallic, zwart, beige of opvallende schoenen kunnen contrast geven. Accessoires zoals een tas, horloge, sierlijk detail of riem kunnen wit meer richting geven.",
+          "Zonder accessoire of sterk schoenmoment kan een witte outfit soms te leeg worden. Met te veel opvallende details kan hij juist zijn rust verliezen. OutfitRoaster kijkt of de details ondersteunen of de microfoon overnemen.",
+        ],
+      },
+      {
+        title: "Voor welke gelegenheid werkt wit?",
+        paragraphs: [
+          "Wit kan werken voor Date, Feest, Festival, vakantie, zomeravond of zelfs Werk wanneer de styling klopt. De context bepaalt hoe formeel, luchtig of opvallend het mag zijn. Een witte jurk bij een feest vraagt iets anders dan een witte blouse op kantoor.",
+          "Kies daarom de juiste gelegenheid in de outfitcheck. Dezelfde witte look kan voor Date sterk zijn, voor Gym onpraktisch en voor Festival alleen slim als schoenen en materiaal de lange dag aankunnen. De feedback wordt daarop aangepast.",
+        ],
+      },
+      {
+        title: "Roast of serieuze analyse",
+        paragraphs: [
+          "Wil je snel weten of de witte outfit werkt, gebruik de gewone Outfit Roast. Je krijgt een score, drie korte regels en een deelbare quote. De roast blijft gericht op kleding en styling, nooit op lichaam of uiterlijk.",
+          "Wil je weten waarom de look werkt of mist, kies Premium Verdict Beta. Die analyse kijkt dieper naar stofindruk, pasvorm, silhouet, accessoirekeuze, context en trendgevoel. Vooral bij minimalistische outfits is die nuance nuttig.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "avondjurk-outfit-check",
+    title: "Avondjurk Outfit Checker",
+    metaTitle: "Avondjurk Outfit Checker – Laat je avondjurk beoordelen",
+    metaDescription:
+      "Check je avondjurk met AI-feedback over pasvorm, schoenen, accessoires, kleur en gelegenheid. Voor feest, gala en diner.",
+    h1: "Avondjurk Outfit Checker",
+    eyebrow: "Voor jurken die de entree moeten dragen",
+    intro: [
+      "Een avondjurk heeft meestal één taak: binnenkomen zonder uitleg. Toch hangt alles af van pasvorm, stof, schoenen, accessoires en gelegenheid. De Avondjurk Outfit Checker van OutfitRoaster beoordeelt of je jurk sterk, chic, feestelijk of net niet af voelt.",
+      "De tool kijkt naar zichtbare kleding en styling. Een jurk wordt als jurk behandeld, niet verward met een jas of achtergrond. De feedback gaat over de outfit, nooit over lichaam, gezicht of aantrekkelijkheid.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een avondjurk sterk?",
+        paragraphs: [
+          "Een sterke avondjurk heeft richting. Dat kan minimalistisch, glamoureus, klassiek, modern of opvallend zijn. De jurk hoeft niet ingewikkeld te zijn, maar moet wel bewust voelen. Een simpele witte of zwarte avondjurk kan meer impact hebben dan een drukke look zonder eindbesluit.",
+          "OutfitRoaster kijkt of de jurk de gelegenheid draagt. Voor een diner mag het elegant en rustig. Voor een feest mag er meer entree zijn. Voor een gala telt afwerking nog zwaarder. De analyse bekijkt of de styling die rol ondersteunt.",
+        ],
+      },
+      {
+        title: "Pasvorm, stof en beweging",
+        paragraphs: [
+          "Bij een avondjurk zijn pasvorm en stofindruk belangrijk. Een jurk kan luxe ogen door hoe hij valt, hoe hij beweegt en hoe rustig de lijnen zijn. Als de stof kreukt, trekt of te los oogt, verandert de hele vibe. Dat is kledingfeedback, geen oordeel over degene die de jurk draagt.",
+          "De checker benoemt zichtbare effecten. Heeft de jurk een duidelijke lijn? Draagt de stof de look? Is het geheel chic of net iets te chaotisch? Zulke feedback helpt vooral wanneer je tussen twee jurken twijfelt.",
+        ],
+      },
+      {
+        title: "Schoenen maken de jurk af",
+        paragraphs: [
+          "Schoenen kunnen een avondjurk naar gala, feest, diner of vakantie trekken. Hakken, sandalen, nette schoenen of subtiele metallic details geven elk een andere indruk. Verkeerde schoenen kunnen een sterke jurk laten voelen alsof de styling onderweg is uitgestapt.",
+          "OutfitRoaster checkt of schoenen en jurk hetzelfde verhaal vertellen. Een jurk met sterke entree vraagt schoenen die niet verdwijnen, maar ook niet ineens de hele presentatie overnemen.",
+        ],
+      },
+      {
+        title: "Accessoires en clutch",
+        paragraphs: [
+          "Bij een avondjurk doen accessoires veel. Een clutch, tas, sieraden, horloge of subtiel detail kan de look afmaken. Te weinig accessoire kan minimalistisch en sterk zijn, maar ook kaal voelen. Te veel accessoire kan de jurk juist laten vechten om aandacht.",
+          "De checker kijkt of accessoires de jurk ondersteunen. Een rustige jurk kan één sterk detail gebruiken. Een opvallende jurk heeft vaak juist minder nodig. De beste styling voelt alsof iemand de vergadering op tijd heeft afgerond.",
+        ],
+      },
+      {
+        title: "Voor feest, gala of diner",
+        paragraphs: [
+          "Niet elke avondjurk is geschikt voor elke avond. Een gala vraagt meer formele afwerking. Een diner mag rustiger. Een feest mag meer persoonlijkheid en beweging hebben. Daarom is de gekozen gelegenheid belangrijk in OutfitRoaster.",
+          "Gebruik Feest voor sociale avonden, Date voor diner of eerste indruk en Festival alleen wanneer de jurk echt bij die setting past. Voor een snelle, grappige check kies je Outfit Roast. Voor een serieuze beoordeling kies je Premium Verdict Beta.",
+        ],
+      },
+    ],
+  }),
 ] satisfies SeoPage[];
 
 export const seoPageSlugs = seoPages.map((seoPage) => seoPage.slug);
