@@ -1283,6 +1283,156 @@ export const seoPages = [
       },
     ],
   }),
+  page({
+    slug: "diner-outfit-check",
+    title: "Diner Outfit Checker",
+    metaTitle: "Diner Outfit Checker – Check je outfit voor een diner",
+    metaDescription:
+      "Laat je diner outfit beoordelen op stijl, pasvorm, kleur, schoenen en uitstraling. Voor date night, familiediner of avond uit.",
+    h1: "Diner Outfit Checker",
+    eyebrow: "Voor outfits die aan tafel overeind blijven",
+    intro: [
+      "Een diner outfit moet meer doen dan er op een foto aardig uitzien. Je zit, loopt binnen, begroet mensen en probeert niet alsof je rechtstreeks uit kantoor, de sportschool of een festival bent verdwaald. De Diner Outfit Checker van OutfitRoaster beoordeelt of je look klopt voor een avond aan tafel.",
+      "De check kijkt naar wat zichtbaar is: bovenlaag, broek, jurk, schoenen, kleuren, accessoires en totale vibe. Je krijgt feedback op de outfit, niet op je gezicht, lichaam of aantrekkelijkheid. Voor een snelle, grappige beoordeling gebruik je de roast. Voor een diepere analyse is er Premium Verdict Beta.",
+    ],
+    sections: [
+      {
+        title: "Wat maakt een goede diner outfit?",
+        paragraphs: [
+          "Een goede diner outfit voelt bewust zonder verkleed te zijn. Voor een restaurant mag het netter dan casual, maar het hoeft geen gala te worden. De beste looks hebben precies genoeg moeite: schoon, passend, rustig gecombineerd en met één detail dat laat zien dat je niet blind uit de kast hebt gegrepen.",
+          "OutfitRoaster kijkt of de outfit het juiste niveau raakt. Een overhemd met nette schoenen kan sterk zijn, maar valt door de mand als de broek totaal een andere avond heeft gepland. Een jurk of top kan heel goed werken, zolang schoenen en accessoires dezelfde richting kiezen.",
+        ],
+      },
+      {
+        title: "Date night, vrienden of familiediner",
+        paragraphs: [
+          "Niet elk diner vraagt dezelfde outfit. Een date night vraagt meer eerste indruk en zelfvertrouwen. Een familiediner mag toegankelijker en rustiger zijn. Een diner met vrienden kan iets losser, zolang het niet voelt alsof je onderweg naar de bank bent gestopt bij een restaurant.",
+          "Daarom helpt het om de gelegenheid bewust te kiezen. Selecteer Date wanneer de romantische eerste indruk telt. Kies Feest wanneer het diner onderdeel is van een verjaardag, borrel of sociale avond. Kies Werk als het om een zakelijk diner gaat waar geloofwaardigheid belangrijker is dan entree maken.",
+        ],
+      },
+      {
+        title: "Kleur en contrast aan tafel",
+        paragraphs: [
+          "Kleuren bepalen veel bij avondlicht. Donkere kleuren kunnen chic en rustig ogen, maar ook zwaar worden als er geen contrast is. Lichte kleuren kunnen fris en luxe voelen, maar vragen vaak om nette afwerking. Een sterke diner outfit gebruikt kleur als ondersteuning, niet als noodsignaal.",
+          "De checker benoemt wat zichtbaar is. Draag je vooral zwart, wit, beige, denim of één opvallende kleur? Dan wordt de feedback daarop gebaseerd. Als er nauwelijks kleurcontrast is, gaat de beoordeling niet doen alsof er een kleurencombinatie-conflict is. Het moet kloppen met de foto.",
+        ],
+      },
+      {
+        title: "Schoenen en accessoires maken het verschil",
+        paragraphs: [
+          "Bij een diner vallen schoenen sneller op dan je denkt. Sneakers kunnen prima, maar dan moeten ze schoon en bewust ogen. Nette schoenen kunnen de look optillen. Sandalen of hakken kunnen elegant zijn, maar moeten passen bij de rest van de styling. Schoenen die geen overleg hebben gehad met de outfit trekken meteen aandacht.",
+          "Accessoires werken hetzelfde. Een horloge, tas, riem of subtiel sieraad kan een simpele look afmaken. Te veel accessoires laten het diner voelen als een presentatie met te veel slides. Te weinig kan juist kaal zijn als de rest van de outfit ook veilig blijft.",
+        ],
+      },
+      {
+        title: "Laat je diner outfit checken",
+        paragraphs: [
+          "Gebruik de Diner Outfit Checker als je twijfelt tussen te casual, te formeel of precies goed. Upload een duidelijke foto waarop de outfit zichtbaar is van boven tot schoenen. Hoe beter de kleding zichtbaar is, hoe specifieker de feedback wordt.",
+          "De gratis Outfit Roast geeft een korte, deelbare verdict met humor. Premium Verdict Beta gaat dieper in op kleur, pasvorm, samenhang, context en verbeterpunten. Zo weet je niet alleen of de outfit grappig te roasten is, maar ook of hij echt werkt voor de avond.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "herfst-outfit-check",
+    title: "Herfst Outfit Checker",
+    metaTitle: "Herfst Outfit Checker – Laat je herfstoutfit beoordelen",
+    metaDescription:
+      "Check je herfstoutfit met AI-feedback over laagjes, kleuren, jas, schoenen, pasvorm en seizoensvibe.",
+    h1: "Herfst Outfit Checker",
+    eyebrow: "Voor laagjes zonder kledingcrisis",
+    intro: [
+      "Herfstoutfits zijn vaak de moeilijkste outfits van het jaar. Het is te koud voor zomer, te warm voor winter en elke ochtend voelt alsof het weerbericht een groepsapp zonder beheerder is. De Herfst Outfit Checker van OutfitRoaster beoordeelt of je laagjes, jas, schoenen en kleuren samen werken.",
+      "De tool kijkt naar echte zichtbare kledingstukken: jas, trui, vest, hoodie, jeans, chino, schoenen, tas en accessoires. Als iets onzeker is, gebruikt de feedback algemene woorden zoals bovenlaag, broek of schoenen. De roast blijft over de outfit gaan, nooit over de persoon.",
+    ],
+    sections: [
+      {
+        title: "Waarom herfstoutfits snel rommelig worden",
+        paragraphs: [
+          "In de herfst komen laagjes terug. Dat is handig, maar stylingtechnisch ook gevaarlijk. Een T-shirt, trui, jas en schoenen kunnen los allemaal prima zijn, maar samen ogen alsof meerdere weersvoorspellingen tegelijk zijn aangekleed. De checker kijkt of de lagen logisch op elkaar reageren.",
+          "Een goede herfstoutfit heeft ritme. De bovenlaag moet passen bij de broek, de schoenen moeten het seizoen aankunnen en de kleuren moeten niet doen alsof ze uit drie verschillende maanden komen. Bruin, zwart, denim, beige, grijs, donkergroen en bordeaux kunnen sterk zijn als ze bewust gecombineerd zijn.",
+        ],
+      },
+      {
+        title: "Jas, vest of trui als hoofdrol",
+        paragraphs: [
+          "In de herfst is de bovenlaag vaak het belangrijkste onderdeel. Een jas kan de hele outfit chic, sportief, casual of chaotisch maken. Een vest kan relaxed en slim zijn, maar ook snel opa-op-zaterdag worden als de rest niet meewerkt. Een hoodie kan sterk streetwear zijn, of voelen als een studiedag zonder camera.",
+          "OutfitRoaster benoemt de bovenlaag alleen als die zichtbaar is. Geen verzonnen cardigan, geen jas als er duidelijk een shirt staat, geen modewoorden die niets met de foto te maken hebben. De feedback moet uit de outfit komen, anders is het geen goede roast.",
+        ],
+      },
+      {
+        title: "Schoenen voor herfstweer",
+        paragraphs: [
+          "Herfstschoenen moeten twee dingen doen: passen bij de look en overleven buiten. Sneakers kunnen prima, zolang ze niet te zomers of te afgetrapt ogen. Boots geven vaak meer seizoensgevoel. Nette schoenen kunnen werken voor Werk of Date, maar moeten niet botsen met een te sportieve bovenlaag.",
+          "De checker kijkt naar de rol van schoenen in de hele outfit. Soms zijn de schoenen het probleem. Soms zijn ze juist het enige onderdeel dat weet welk seizoen het is. In beide gevallen moet de feedback concreet blijven en niet uitwijken naar willekeurige grappen.",
+        ],
+      },
+      {
+        title: "Herfstkleuren zonder cliché",
+        paragraphs: [
+          "Niet elke herfstoutfit hoeft eruit te zien als een pompoenmarkt. Warme tinten kunnen werken, maar zwart, wit, denim en grijs kunnen net zo goed sterk zijn. Het gaat om balans, contrast en materiaalgevoel. Een look kan herfstig zijn zonder bruin, en saai zijn ondanks drie tinten beige.",
+          "Premium Verdict Beta kan dieper kijken naar kleurgebruik en contrast. De gratis roast gebruikt kleur vooral wanneer het echt zichtbaar en relevant is. Als iemand vooral wit draagt, moet de feedback dus niet doen alsof er een diplomatieke kleurencrisis is.",
+        ],
+      },
+      {
+        title: "Check je herfstfit",
+        paragraphs: [
+          "Gebruik de Herfst Outfit Checker voor school, werk, date, diner, festival of gewone dagelijkse looks. Kies de gelegenheid die het beste past, zodat de feedback niet doet alsof een kantooroutfit naar Lowlands moet of een festivalfit naar teamoverleg.",
+          "Upload een foto waarop je bovenlaag, broek en schoenen duidelijk zichtbaar zijn. De beste output ontstaat wanneer OutfitRoaster echt kan zien waar de outfit om draait: jas, laagjes, silhouet, kleur en schoenen. Dan wordt de verdict scherper en bruikbaarder.",
+        ],
+      },
+    ],
+  }),
+  page({
+    slug: "winter-outfit-check",
+    title: "Winter Outfit Checker",
+    metaTitle: "Winter Outfit Checker – Check je winteroutfit met AI",
+    metaDescription:
+      "Laat je winteroutfit beoordelen op jas, laagjes, schoenen, kleuren, pasvorm en uitstraling. Gratis AI-check van OutfitRoaster.",
+    h1: "Winter Outfit Checker",
+    eyebrow: "Warm blijven zonder stijlverlies",
+    intro: [
+      "Winteroutfits hebben een lastige opdracht: warm blijven en er niet uitzien alsof je door een dekbed bent aangevallen. De Winter Outfit Checker van OutfitRoaster beoordeelt of je jas, laagjes, broek, schoenen en accessoires samen een sterke look maken.",
+      "De beoordeling blijft kledinggericht. Geen opmerkingen over lichaam, gezicht of persoonlijke kenmerken. Alleen outfit, styling, kleur, pasvorm, schoenen, accessoires en context. Voor humor kies je de gratis roast. Voor serieuze feedback gebruik je Premium Verdict Beta.",
+    ],
+    sections: [
+      {
+        title: "De jas bepaalt bijna alles",
+        paragraphs: [
+          "In de winter is de jas vaak tachtig procent van de outfit. Een sterke jas kan een simpele look meteen volwassen maken. Een verkeerde jas kan de rest van de styling begraven voordat iemand je schoenen heeft gezien. Daarom kijkt OutfitRoaster goed naar vorm, lengte, kleur en vibe van de jas.",
+          "Een puffer, mantel, parka, leren jas of wollen jas vertelt allemaal iets anders. De checker probeert alleen te benoemen wat zichtbaar is. Als het type jas niet duidelijk is, wordt er veiliger gesproken over bovenlaag of jas, zodat de feedback niet ontspoort in verzonnen kledingstukken.",
+        ],
+      },
+      {
+        title: "Laagjes die niet vechten",
+        paragraphs: [
+          "Laagjes zijn nodig in de winter, maar ze moeten wel samenwerken. Een hoodie onder een jas kan sterk streetwear zijn. Een trui onder een mantel kan slim en rustig ogen. Maar zodra kleuren, volumes en stijlen allemaal een eigen vergadering houden, raakt de outfit de controle kwijt.",
+          "De Winter Outfit Checker kijkt of de laagjes logisch vallen. Wordt de bovenkant te zwaar? Is de broek te licht voor de jas? Verdwijnt de vorm volledig? Zulke feedback is belangrijker dan algemene zinnen als ‘het kan wat meer samenhang gebruiken’.",
+        ],
+      },
+      {
+        title: "Winterse schoenen en proportie",
+        paragraphs: [
+          "Schoenen hebben in de winter meer gewicht nodig. Boots, nette schoenen of stevige sneakers kunnen goed werken, afhankelijk van gelegenheid en outfit. Te lichte of te zomerse schoenen kunnen de look uit balans trekken. Dan lijkt het alsof je bovenlichaam december heeft en je voeten nog in augustus staan.",
+          "De checker beoordeelt schoenen in verhouding tot de rest. Bij Werk telt netheid. Bij Date telt eerste indruk. Bij School telt comfort. Bij Festival of Feest mag het expressiever zijn, zolang het niet totaal losstaat van jas en broek.",
+        ],
+      },
+      {
+        title: "Kleur in donkere maanden",
+        paragraphs: [
+          "Veel winteroutfits worden zwart, donkerblauw of grijs. Dat kan sterk zijn, maar ook vlak. Contrast, materiaal en één bewust detail maken dan het verschil. Een sjaal, tas, schoen of trui kan genoeg zijn om de look uit de parkeerstand te halen.",
+          "Tegelijk hoeft kleur niet geforceerd. Een volledig donkere winterlook kan juist krachtig zijn wanneer pasvorm en materialen kloppen. OutfitRoaster kijkt naar wat de foto laat zien en geeft geen standaard kleuradvies dat op elke outfit geplakt kan worden.",
+        ],
+      },
+      {
+        title: "Laat je winteroutfit beoordelen",
+        paragraphs: [
+          "Gebruik de Winter Outfit Checker wanneer je wilt weten of je look warm, netjes, modern of juist te zwaar oogt. Een duidelijke full-body foto helpt het meest, vooral als jas, broek en schoenen zichtbaar zijn.",
+          "De gratis roast geeft een korte verdict die je kunt delen. Premium Verdict Beta geeft een uitgebreidere analyse van kleurgebruik, pasvorm, context, trendgevoel en verbeterpunten. Zo zie je snel of je winterfit werkt of dat de jas de hele directie heeft overgenomen.",
+        ],
+      },
+    ],
+  }),
 ] satisfies SeoPage[];
 
 export const seoPageSlugs = seoPages.map((seoPage) => seoPage.slug);
