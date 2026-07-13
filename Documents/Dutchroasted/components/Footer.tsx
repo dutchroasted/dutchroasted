@@ -3,6 +3,7 @@ import { CookiePreferencesButton } from "./analytics/CookiePreferencesButton";
 
 const footerLinks = [
   { label: "Alle outfit checks", href: "/outfit-checks" },
+  { label: "Blog", href: "/blog" },
   { label: "AI Outfit Checker", href: "/ai-outfit-checker" },
   { label: "Outfit Roast", href: "/outfit-roast" },
   { label: "Date outfit check", href: "/date-outfit-check" },
