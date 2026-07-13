@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
-import { SeoLandingPage } from "@/components/SeoLandingPage";
-import { getSeoPage, seoPages } from "@/data/seo-pages";
-import { createPageMetadata } from "@/lib/seo";
+import { permanentRedirect } from "next/navigation";
+import { legacySeoSlugRedirects } from "@/data/seo-redirects";
+import { getSeoV2Page, publishedSeoV2Pages } from "@/data/seo-v2-pages";
 
 type SeoPageRouteProps = {
   params: Promise<{
@@ -12,33 +11,17 @@ type SeoPageRouteProps = {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return seoPages.map((page) => ({
-    slug: page.slug,
-  }));
-}
-
-export async function generateMetadata({ params }: SeoPageRouteProps) {
-  const { slug } = await params;
-  const page = getSeoPage(slug);
-
-  if (!page) {
-    return {};
-  }
-
-  return createPageMetadata({
-    title: page.metaTitle,
-    description: page.metaDescription,
-    path: `/${page.slug}`,
-  });
+  return [
+    ...publishedSeoV2Pages.map((page) => ({
+      slug: page.slug,
+    })),
+    ...Object.keys(legacySeoSlugRedirects).map((slug) => ({ slug })),
+  ];
 }
 
 export default async function SeoPageRoute({ params }: SeoPageRouteProps) {
   const { slug } = await params;
-  const page = getSeoPage(slug);
+  const targetSlug = getSeoV2Page(slug)?.slug ?? legacySeoSlugRedirects[slug];
 
-  if (!page) {
-    notFound();
-  }
-
-  return <SeoLandingPage page={page} />;
+  permanentRedirect(targetSlug ? `/outfit-check/${targetSlug}` : "/outfit-check");
 }

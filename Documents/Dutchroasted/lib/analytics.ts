@@ -16,7 +16,9 @@ export type AnalyticsEventName =
   | "login_completed"
   | "signup_completed"
   | "quote_changed"
-  | "shop_item_clicked";
+  | "shop_item_clicked"
+  | "seo_cta_clicked"
+  | "seo_landing_view";
 
 type AnalyticsParameters = Record<string, string | number | boolean | undefined>;
 
@@ -144,6 +146,33 @@ export const analytics = {
     trackAnalyticsEvent("shop_item_clicked", {
       category,
       search_query: searchQuery,
+    });
+  },
+  seoLandingViewed({
+    slug,
+    pageCategory,
+  }: {
+    slug: string;
+    pageCategory: string;
+  }) {
+    trackAnalyticsEventOnce(`seo_landing_view_${slug}`, "seo_landing_view", {
+      slug,
+      page_category: pageCategory,
+    });
+  },
+  seoCtaClicked({
+    slug,
+    ctaPosition,
+    pageCategory,
+  }: {
+    slug: string;
+    ctaPosition: string;
+    pageCategory: string;
+  }) {
+    trackAnalyticsEvent("seo_cta_clicked", {
+      slug,
+      cta_position: ctaPosition,
+      page_category: pageCategory,
     });
   },
 };

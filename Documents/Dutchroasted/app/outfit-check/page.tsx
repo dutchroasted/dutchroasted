@@ -1,5 +1,6 @@
 import { OutfitCheckForm } from "@/components/outfit/OutfitCheckForm";
 import { Logo } from "@/components/Logo";
+import { publishedSeoV2Pages } from "@/data/seo-v2-pages";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
@@ -10,6 +11,21 @@ export const metadata = createPageMetadata({
 });
 
 export default function OutfitCheckPage() {
+  const seoGroups = [
+    {
+      title: "Algemene outfitchecks",
+      pages: publishedSeoV2Pages.filter((page) => page.category === "algemeen"),
+    },
+    {
+      title: "Checks per gelegenheid",
+      pages: publishedSeoV2Pages.filter((page) => page.category === "gelegenheid"),
+    },
+    {
+      title: "Checks per stijl",
+      pages: publishedSeoV2Pages.filter((page) => page.category === "stijl"),
+    },
+  ];
+
   return (
     <main className="relative min-h-screen overflow-hidden px-4 pb-20 pt-4 sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute left-[-12rem] top-24 size-[34rem] rounded-full bg-orange-500/10 blur-[120px]" />
@@ -70,6 +86,45 @@ export default function OutfitCheckPage() {
         </section>
 
         <OutfitCheckForm />
+
+        <section className="dr-glass-card rounded-[2rem] p-5 sm:p-8">
+          <div className="max-w-4xl">
+            <p className="dr-kicker">Outfit check gids</p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-white sm:text-5xl">
+              Vind de juiste AI-outfitcheck.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-zinc-300">
+              Wil je meer context voordat je uploadt? Bekijk de gidsen voor dates, werk,
+              festivals, streetwear, sneakers en meer. Elke pagina heeft een eigen zoekintentie,
+              voorbeelden, veelgemaakte fouten en een praktische checklist.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-8">
+            {seoGroups.map((group) => (
+              <section key={group.title}>
+                <h3 className="text-2xl font-black text-white">{group.title}</h3>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.pages.map((page) => (
+                    <a
+                      key={page.slug}
+                      href={`/outfit-check/${page.slug}`}
+                      className="dr-card-hover rounded-3xl border border-white/10 bg-black/25 p-5 hover:border-orange-500/40 hover:bg-orange-500/[0.06]"
+                    >
+                      <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
+                        {page.category}
+                      </p>
+                      <h4 className="mt-3 text-xl font-black leading-6 text-white">{page.h1}</h4>
+                      <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
+                        {page.description}
+                      </p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </section>
       </div>
     </main>
   );

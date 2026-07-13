@@ -1,41 +1,46 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { seoPages } from "@/data/seo-pages";
+import { publishedSeoV2Pages } from "@/data/seo-v2-pages";
 import { createPageMetadata } from "@/lib/seo";
 
 const groups = [
   {
     title: "Populaire checks",
-    slugs: ["ai-outfit-checker", "outfit-roast", "rate-my-outfit", "outfit-beoordelen"],
+    slugs: ["ai-outfit-checker", "outfit-checker", "rate-my-outfit", "outfit-roast", "outfit-score"],
   },
   {
     title: "Gelegenheden",
     slugs: [
-      "date-outfit-check",
+      "date-outfit",
       "eerste-date-outfit",
-      "werk-outfit-check",
-      "school-outfit-check",
-      "gym-outfit-check",
-      "feest-outfit-check",
-      "festival-outfit-check",
-      "sollicitatie-outfit-check",
-      "bruiloft-outfit-check",
+      "festival-outfit",
+      "sollicitatie-outfit",
+      "werk-outfit",
+      "smart-casual-outfit",
+      "bruiloft-gast-outfit",
+      "feestje-outfit",
+      "vakantie-outfit",
+      "uitgaan-outfit",
     ],
   },
   {
     title: "Stijl en kleur",
     slugs: [
-      "streetwear-check",
-      "smart-casual-outfit-check",
-      "zomer-outfit-check",
-      "kleurcombinatie-outfit-check",
-      "outfit-check-man",
-      "outfit-check-vrouw",
+      "streetwear-outfit",
+      "old-money-outfit",
+      "casual-outfit",
+      "business-casual-outfit",
+      "zomer-outfit",
+      "winter-outfit",
+      "sneaker-outfit",
+      "oversized-outfit",
+      "zwarte-outfit",
+      "heren-outfit-check",
     ],
   },
   {
-    title: "Diepere analyse",
-    slugs: ["premium-outfit-analyse"],
+    title: "AI en stijl",
+    slugs: ["outfit-tester", "outfit-beoordelen", "ai-stylist", "kledingstijl-check", "fashion-ai"],
   },
 ];
 
@@ -81,8 +86,8 @@ export default function OutfitChecksPage() {
           <div className="mt-14 space-y-12">
             {groups.map((group) => {
               const pages = group.slugs
-                .map((slug) => seoPages.find((page) => page.slug === slug))
-                .filter((page): page is (typeof seoPages)[number] => Boolean(page));
+                .map((slug) => publishedSeoV2Pages.find((page) => page.slug === slug))
+                .filter((page): page is (typeof publishedSeoV2Pages)[number] => Boolean(page));
 
               return (
                 <section key={group.title}>
@@ -91,17 +96,17 @@ export default function OutfitChecksPage() {
                     {pages.map((page) => (
                       <a
                         key={page.slug}
-                        href={`/${page.slug}`}
+                        href={`/outfit-check/${page.slug}`}
                         className="dr-card-hover rounded-3xl border border-white/10 bg-zinc-950/70 p-5 hover:border-orange-500/40 hover:bg-orange-500/[0.06]"
                       >
                         <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
-                          {page.eyebrow}
+                          {page.category}
                         </p>
                         <h3 className="mt-3 text-xl font-black leading-6 text-white">
                           {page.h1}
                         </h3>
                         <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
-                          {page.metaDescription}
+                          {page.description}
                         </p>
                       </a>
                     ))}
