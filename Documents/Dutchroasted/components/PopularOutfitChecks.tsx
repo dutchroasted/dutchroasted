@@ -1,26 +1,26 @@
 const popularChecks = [
   {
-    href: "/ai-outfit-checker",
+    href: "/outfit-check/ai-outfit-checker",
     label: "AI Outfit Checker",
     description: "Laat AI je stijl, kleur, pasvorm en vibe beoordelen.",
   },
   {
-    href: "/outfit-roast",
+    href: "/outfit-check/outfit-roast",
     label: "Outfit Roast",
     description: "Krijg een scherpe Nederlandse roast van je outfit.",
   },
   {
-    href: "/date-outfit-check",
+    href: "/outfit-check/date-outfit",
     label: "Date Outfit Checker",
     description: "Check of je outfit datewaardig overkomt.",
   },
   {
-    href: "/festival-outfit-check",
+    href: "/outfit-check/festival-outfit",
     label: "Festival Outfit Checker",
     description: "Test je festivalfit op vibe, comfort en kleur.",
   },
   {
-    href: "/kleurcombinatie-outfit-check",
+    href: "/outfit-check/outfit-checker",
     label: "Kleurcombinatie Checker",
     description: "Ontdek of je kleuren samenwerken of ruzie maken.",
   },

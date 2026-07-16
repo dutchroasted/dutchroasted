@@ -22,6 +22,11 @@ export function generateStaticParams() {
 export default async function SeoPageRoute({ params }: SeoPageRouteProps) {
   const { slug } = await params;
   const targetSlug = getSeoV2Page(slug)?.slug ?? legacySeoSlugRedirects[slug];
+  const targetPath = targetSlug?.startsWith("/")
+    ? targetSlug
+    : targetSlug
+      ? `/outfit-check/${targetSlug}`
+      : "/outfit-check";
 
-  permanentRedirect(targetSlug ? `/outfit-check/${targetSlug}` : "/outfit-check");
+  permanentRedirect(targetPath);
 }

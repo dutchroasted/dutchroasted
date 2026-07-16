@@ -5,7 +5,7 @@ export const legacySeoSlugRedirects: Record<string, string> = {
   "outfit-check-man": "heren-outfit-check",
   "outfit-check-vrouw": "outfit-checker",
   "streetwear-check": "streetwear-outfit",
-  "premium-outfit-analyse": "premium-outfit-analyse",
+  "premium-outfit-analyse": "/pricing",
   "school-outfit-check": "outfit-checker",
   "gym-outfit-check": "outfit-checker",
   "feest-outfit-check": "feestje-outfit",
