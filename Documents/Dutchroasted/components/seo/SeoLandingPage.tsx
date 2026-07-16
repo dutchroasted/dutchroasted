@@ -12,6 +12,23 @@ type SeoLandingPageProps = {
 export function SeoLandingPage({ page }: SeoLandingPageProps) {
   const pageUrl = `${SITE_URL}/outfit-check/${page.slug}`;
   const relatedPages = getRelatedSeoV2Pages(page).slice(0, 6);
+  const relatedBlogLinks: Record<string, { href: string; label: string; description: string }[]> = {
+    "festival-outfit": [
+      {
+        href: "/blog/festival-outfit-2026",
+        label: "Festival outfit 2026",
+        description: "Lees de uitgebreide gids over schoenen, laagjes, accessoires en festivalweer.",
+      },
+    ],
+    "date-outfit": [
+      {
+        href: "/blog/eerste-date-outfit",
+        label: "Eerste date outfit",
+        description: "Lees de uitgebreide gids voor restaurant, café, wandeling en date-schoenen.",
+      },
+    ],
+  };
+  const blogLinks = relatedBlogLinks[page.slug] ?? [];
   const structuredData = [
     {
       "@context": "https://schema.org",
@@ -208,6 +225,16 @@ export function SeoLandingPage({ page }: SeoLandingPageProps) {
         <section className="mx-auto mt-16 max-w-5xl">
           <h2 className="text-2xl font-black text-white">Gerelateerde pagina&apos;s</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {blogLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="dr-card-hover rounded-2xl border border-orange-500/25 bg-orange-500/[0.06] p-5 hover:border-orange-500/50"
+              >
+                <h3 className="font-black text-white">{link.label}</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">{link.description}</p>
+              </a>
+            ))}
             {relatedPages.map((relatedPage) => (
               <a
                 key={relatedPage.slug}

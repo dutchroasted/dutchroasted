@@ -18,7 +18,9 @@ export type AnalyticsEventName =
   | "quote_changed"
   | "shop_item_clicked"
   | "seo_cta_clicked"
-  | "seo_landing_view";
+  | "seo_landing_view"
+  | "blog_view"
+  | "blog_cta_clicked";
 
 type AnalyticsParameters = Record<string, string | number | boolean | undefined>;
 
@@ -173,6 +175,33 @@ export const analytics = {
       slug,
       cta_position: ctaPosition,
       page_category: pageCategory,
+    });
+  },
+  blogViewed({
+    slug,
+    articleCategory,
+  }: {
+    slug: string;
+    articleCategory: string;
+  }) {
+    trackAnalyticsEventOnce(`blog_view_${slug}`, "blog_view", {
+      slug,
+      article_category: articleCategory,
+    });
+  },
+  blogCtaClicked({
+    slug,
+    ctaPosition,
+    target,
+  }: {
+    slug: string;
+    ctaPosition: string;
+    target: string;
+  }) {
+    trackAnalyticsEvent("blog_cta_clicked", {
+      slug,
+      cta_position: ctaPosition,
+      target,
     });
   },
 };

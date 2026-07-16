@@ -50,7 +50,12 @@ export default function BlogIndexPage() {
                 className="dr-card-hover rounded-3xl border border-white/10 bg-zinc-950/70 p-6 hover:border-orange-500/40 hover:bg-orange-500/[0.06]"
               >
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-300">
-                  {post.readingTime}
+                  {post.readingTime} ·{" "}
+                  {new Intl.DateTimeFormat("nl-NL", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }).format(new Date(post.publishedAt))}
                 </p>
                 <h2 className="mt-4 text-2xl font-black leading-8 text-white">{post.title}</h2>
                 <p className="mt-4 leading-7 text-zinc-400">{post.excerpt}</p>
