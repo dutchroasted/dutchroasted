@@ -11,28 +11,28 @@ import {
 import { createPageMetadata, SITE_URL } from "@/lib/seo";
 
 const contactEmail = "info@outfitroaster.nl";
-const contactHref = `mailto:${contactEmail}?subject=Press%20request%20OutfitRoaster`;
+const contactHref = `mailto:${contactEmail}?subject=Persaanvraag%20OutfitRoaster`;
 
 const quickFacts = [
-  ["Company", "OutfitRoaster"],
-  ["Founded", "2026"],
-  ["Country", "The Netherlands"],
-  ["Founder", "Nathan Okkerse"],
-  ["Category", "Artificial Intelligence · Fashion Technology"],
+  ["Bedrijf", "OutfitRoaster"],
+  ["Opgericht", "2026"],
+  ["Land", "Nederland"],
+  ["Oprichter", "Nathan Okkerse"],
+  ["Categorie", "Artificial Intelligence · Fashion Technology"],
   ["Website", "https://outfitroaster.com"],
-  ["Platform", "Web Application"],
-  ["Languages", "Dutch · English future"],
+  ["Platform", "Webapplicatie"],
+  ["Talen", "Nederlands · Engels mogelijk later"],
 ];
 
 const features = [
-  "AI Outfit Score",
-  "Brutal AI Roast",
-  "Professional Style Analysis",
-  "Festival Outfit Checker",
-  "Date Outfit Checker",
-  "Share Cards",
-  "TikTok Video Export",
-  "Instant Feedback",
+  "AI-outfitscore",
+  "Genadeloze AI-roast",
+  "Professionele stijlanalyse",
+  "Festival outfit checker",
+  "Date outfit checker",
+  "Deelbare kaarten",
+  "TikTok-video export",
+  "Directe feedback",
 ];
 
 const techStack = [
@@ -46,76 +46,76 @@ const techStack = [
 ];
 
 const timeline = [
-  ["Idea", "A fast, funny outfit checker that turns fashion feedback into something shareable."],
-  ["First Prototype", "The first upload, AI verdict and roast flow were built as a focused side project."],
-  ["Public Launch", "OutfitRoaster went live as a web application for instant Dutch outfit feedback."],
-  ["SEO Expansion", "Evergreen outfit guides, landing pages and blog articles were added for discoverability."],
-  ["Premium", "Premium Verdict Beta explores deeper analysis for color, fit, cohesion and trends."],
-  ["Future Mobile App", "A mobile-first product experience is a logical next step if demand keeps growing."],
+  ["Idee", "Een snelle, grappige outfitchecker die modefeedback deelbaar maakt."],
+  ["Eerste prototype", "De eerste uploadflow, AI-score en roast werden gebouwd als side project."],
+  ["Publieke lancering", "OutfitRoaster ging live als webapp voor directe Nederlandse outfitfeedback."],
+  ["SEO-uitbreiding", "Evergreen gidsen, landingspagina’s en blogartikelen werden toegevoegd."],
+  ["Premium", "Premium Verdict Beta test diepere analyses voor kleur, pasvorm, samenhang en trends."],
+  ["Mogelijke mobiele app", "Een mobile-first app is een logische volgende stap als de vraag blijft groeien."],
 ];
 
 const screenshots = [
   {
     src: "/opengraph-image",
-    title: "OutfitRoaster social preview",
-    description: "The current OpenGraph image used when OutfitRoaster is shared.",
+    title: "Social preview",
+    description: "De huidige OpenGraph-afbeelding die gebruikt wordt wanneer OutfitRoaster gedeeld wordt.",
   },
   {
     src: "/icons/icon-512.png",
-    title: "App icon",
-    description: "The app icon used for install and press references.",
+    title: "App-icoon",
+    description: "Het app-icoon voor installaties, directories en persvermeldingen.",
   },
   {
     src: "/icons/apple-touch-icon.png",
     title: "Apple touch icon",
-    description: "Mobile icon asset for iOS and app-like previews.",
+    description: "Mobiel icoon voor iOS en app-achtige previews.",
   },
 ];
 
 const assets = [
   ["Logo SVG", "/icons/favicon.svg", "logo-svg"],
-  ["App icon 512 PNG", "/icons/icon-512.png", "app-icon-512"],
-  ["App icon 192 PNG", "/icons/icon-192.png", "app-icon-192"],
+  ["App-icoon 512 PNG", "/icons/icon-512.png", "app-icon-512"],
+  ["App-icoon 192 PNG", "/icons/icon-192.png", "app-icon-192"],
   ["Apple touch icon", "/icons/apple-touch-icon.png", "apple-touch-icon"],
   ["Social preview", "/opengraph-image", "social-preview"],
 ];
 
 const faqs = [
   {
-    question: "What is OutfitRoaster?",
+    question: "Wat is OutfitRoaster?",
     answer:
-      "OutfitRoaster is an AI-powered outfit checker that gives users an instant outfit score, a witty roast or a more detailed style analysis.",
+      "OutfitRoaster is een AI-outfitchecker waarmee gebruikers een outfit uploaden en direct een score, roast of uitgebreidere stijlanalyse krijgen.",
   },
   {
-    question: "How does it work?",
+    question: "Hoe werkt OutfitRoaster?",
     answer:
-      "Users upload an outfit photo, select context such as occasion and feedback level, and receive AI-generated feedback about visible clothing, styling, color and fit.",
+      "Gebruikers uploaden een outfitfoto, kiezen context zoals gelegenheid en feedbackniveau, en ontvangen AI-feedback over zichtbare kleding, styling, kleur en pasvorm.",
   },
   {
-    question: "Is it free?",
+    question: "Is OutfitRoaster gratis?",
     answer:
-      "OutfitRoaster offers a free roast flow. Premium Verdict Beta is currently used for deeper style analysis experiments.",
+      "OutfitRoaster heeft een gratis roastflow. Premium Verdict Beta wordt gebruikt om diepere stijlanalyses te testen.",
   },
   {
-    question: "What AI does it use?",
+    question: "Welke AI gebruikt OutfitRoaster?",
     answer:
-      "OutfitRoaster uses modern AI tooling, including OpenAI technology, to analyze visible outfit details and generate natural-language feedback.",
+      "OutfitRoaster gebruikt moderne AI-tools, waaronder OpenAI-technologie, om zichtbare outfitdetails te analyseren en natuurlijke feedback te genereren.",
   },
   {
-    question: "Can I review it?",
+    question: "Mag ik OutfitRoaster reviewen?",
     answer:
-      "Yes. Journalists, bloggers, AI directories, reviewers and creators can test the public web application and contact OutfitRoaster for questions.",
+      "Ja. Journalisten, bloggers, AI-directories, reviewers en creators kunnen de publieke webapp testen en contact opnemen voor vragen.",
   },
   {
-    question: "How can I contact the founder?",
-    answer: `For media requests, interviews, podcasts or reviews, email ${contactEmail}.`,
+    question: "Hoe neem ik contact op met de oprichter?",
+    answer: `Voor interviews, podcasts, reviews of persvragen kun je mailen naar ${contactEmail}.`,
   },
 ];
 
 export const metadata = createPageMetadata({
-  title: "Press Kit | OutfitRoaster",
+  title: "Perskit | OutfitRoaster",
   description:
-    "Media resources, screenshots, company information and founder story for OutfitRoaster.",
+    "Persinformatie, screenshots, bedrijfsinformatie en het oprichtersverhaal van OutfitRoaster.",
   path: "/press",
 });
 
@@ -134,7 +134,7 @@ export default function PressPage() {
       foundingDate: "2026",
       foundingLocation: {
         "@type": "Country",
-        name: "The Netherlands",
+        name: "Nederland",
       },
       email: contactEmail,
     },
@@ -158,7 +158,7 @@ export default function PressPage() {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Press Kit",
+          name: "Perskit",
           item: `${SITE_URL}/press`,
         },
       ],
@@ -188,38 +188,38 @@ export default function PressPage() {
           <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div>
               <p className="inline-flex rounded-full border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-orange-300">
-                Media resources
+                Persinformatie
               </p>
               <h1 className="mt-6 text-6xl font-black leading-[0.9] tracking-[-0.06em] text-white sm:text-8xl">
-                Press Kit
+                Perskit
               </h1>
               <p className="mt-5 text-2xl font-black text-orange-300">
-                Everything you need to write about OutfitRoaster.
+                Alles wat je nodig hebt om over OutfitRoaster te schrijven.
               </p>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">
-                OutfitRoaster is an AI-powered outfit checker that combines fashion analysis with
-                humor. Upload an outfit, receive an instant AI score, a witty roast or detailed
-                style feedback, and share your results.
+                OutfitRoaster is een AI-outfitchecker die modeanalyse combineert met humor.
+                Upload een outfit, ontvang direct een AI-score, een scherpe roast of uitgebreide
+                stijlanalyse, en deel je resultaat.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <a
                   href="/"
                   className="dr-primary-button inline-flex min-h-14 items-center justify-center px-6 py-4"
                 >
-                  Visit OutfitRoaster
+                  Bekijk OutfitRoaster
                 </a>
                 <PressContactLink
                   href={contactHref}
                   location="hero"
                   className="dr-secondary-button inline-flex min-h-14 items-center justify-center px-6 py-4"
                 >
-                  Contact
+                  Contact opnemen
                 </PressContactLink>
                 <a
                   href="#brand-assets"
                   className="dr-secondary-button inline-flex min-h-14 items-center justify-center px-6 py-4"
                 >
-                  Download Brand Assets
+                  Download merkbestanden
                 </a>
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function PressPage() {
               <div className="rounded-[1.5rem] border border-orange-500/25 bg-gradient-to-br from-orange-500/20 via-zinc-950 to-black p-6">
                 <Image
                   src="/icons/icon-512.png"
-                  alt="OutfitRoaster app icon"
+                  alt="OutfitRoaster app-icoon"
                   width={160}
                   height={160}
                   priority
@@ -238,10 +238,10 @@ export default function PressPage() {
                   AI Styling Verdict
                 </p>
                 <p className="mt-3 text-4xl font-black leading-none text-white">
-                  Fashion feedback with a punchline.
+                  Modefeedback met een punchline.
                 </p>
                 <p className="mt-5 leading-7 text-zinc-300">
-                  Built for fast outfit checks, shareable roasts and deeper style analysis.
+                  Gebouwd voor snelle outfitchecks, deelbare roasts en diepere stijlanalyses.
                 </p>
               </div>
             </div>
@@ -249,67 +249,67 @@ export default function PressPage() {
 
           <section className="mt-20 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8">
-              <h2 className="text-3xl font-black text-white">About OutfitRoaster</h2>
+              <h2 className="text-3xl font-black text-white">Over OutfitRoaster</h2>
               <div className="mt-5 space-y-5 leading-8 text-zinc-300">
                 <p>
-                  OutfitRoaster is a web application that lets people upload an outfit photo and
-                  receive instant AI feedback. The product sits between fashion analysis,
-                  entertainment and social sharing. It can give a fast outfit score, a sharp but
-                  safe roast, or a more detailed verdict about color, fit, cohesion, context and
-                  trends.
+                  OutfitRoaster is een webapplicatie waarmee gebruikers een outfitfoto uploaden en
+                  direct AI-feedback krijgen. Het product zit op het snijvlak van modeanalyse,
+                  entertainment en social sharing. De app kan een snelle outfitscore geven, een
+                  scherpe maar veilige roast schrijven of een uitgebreider verdict maken over kleur,
+                  pasvorm, samenhang, context en trends.
                 </p>
                 <p>
-                  The idea behind OutfitRoaster is simple: most outfit feedback online is either
-                  too vague, too serious or too slow. Traditional outfit checkers often feel like
-                  generic styling advice. OutfitRoaster is designed to be more direct. It looks at
-                  visible clothing details, the occasion and the overall vibe, then turns that into
-                  feedback people can actually understand and share.
+                  Het idee achter OutfitRoaster is simpel: veel online outfitfeedback is te vaag,
+                  te serieus of te traag. Traditionele outfitcheckers voelen vaak als generiek
+                  stijladvies. OutfitRoaster is directer. De tool kijkt naar zichtbare kleding,
+                  gelegenheid en totale vibe, en vertaalt dat naar feedback die mensen begrijpen en
+                  kunnen delen.
                 </p>
                 <p>
-                  Humor is a key part of the product. The free roast mode is built for short,
-                  memorable comments that make people laugh without attacking the person. The
-                  target is always the outfit: clothing, shoes, colors, accessories, styling and
-                  occasion fit. Premium Verdict Beta explores the more serious side of the same
-                  concept, with deeper analysis for users who want practical style feedback rather
-                  than a quick punchline.
+                  Humor is een belangrijk onderdeel van het product. De gratis roastmodus is
+                  gemaakt voor korte, memorabele opmerkingen die mensen laten lachen zonder de
+                  persoon aan te vallen. Het doelwit is altijd de outfit: kleding, schoenen,
+                  kleuren, accessoires, styling en geschiktheid voor de gelegenheid. Premium
+                  Verdict Beta onderzoekt de serieuzere kant van hetzelfde idee, met diepere
+                  analyse voor gebruikers die praktische stijlfeedback willen.
                 </p>
                 <p>
-                  OutfitRoaster was created as a modern AI-native product: fast to use, mobile
-                  first, and built around the way people already share outfit opinions in group
-                  chats, stories and short-form video.
+                  OutfitRoaster is gebouwd als modern AI-native product: snel te gebruiken,
+                  mobile-first en ontworpen rond hoe mensen outfitmeningen al delen in groepsapps,
+                  stories en korte video’s.
                 </p>
               </div>
             </div>
 
             <div className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8">
-              <h2 className="text-3xl font-black text-white">Founder Story</h2>
+              <h2 className="text-3xl font-black text-white">Oprichtersverhaal</h2>
               <div className="mt-5 space-y-5 leading-8 text-zinc-300">
                 <p>
-                  OutfitRoaster was built by Nathan Okkerse as a side project. It started from a
-                  practical question: how quickly can a useful, funny and public-facing AI product
-                  be built with today&apos;s tools? The answer became a working outfit checker that
-                  combines image analysis, Dutch humor, share cards, video export and SEO content.
+                  OutfitRoaster is gebouwd door Nathan Okkerse als side project. Het begon met een
+                  praktische vraag: hoe snel kun je tegenwoordig een bruikbaar, grappig en publiek
+                  AI-product bouwen? Het antwoord werd een werkende outfitchecker met beeldanalyse,
+                  Nederlandse humor, deelkaarten, video-export en SEO-content.
                 </p>
                 <p>
-                  The first version was built in a few evenings and weekends. Instead of spending
-                  months on a large product plan, the focus was on shipping a real flow: upload a
-                  photo, get an instant verdict, and make the result easy to share. Modern AI tools
-                  made it possible to move quickly from idea to prototype and then keep improving
-                  the product based on what users noticed.
+                  De eerste versie werd gebouwd in een paar avonden en weekenden. In plaats van
+                  maanden aan een groot productplan te werken, lag de focus op een echte flow:
+                  upload een foto, krijg direct een verdict en maak het resultaat makkelijk
+                  deelbaar. Moderne AI-tools maakten het mogelijk om snel van idee naar prototype
+                  te gaan en daarna door te bouwen op wat gebruikers merkten.
                 </p>
                 <p>
-                  The goal is not to present OutfitRoaster as a polished corporate fashion brand.
-                  It is intentionally more direct and playful: a product that shows how AI can be
-                  useful, funny and culturally specific at the same time. It is also a small
-                  demonstration of how fast independent builders can now create and launch web
-                  applications when design, development and AI workflows are tightly combined.
+                  OutfitRoaster is bewust geen glad corporate fashionmerk. Het product is direct,
+                  speels en een beetje brutaal. Tegelijk laat het zien hoe AI nuttig, grappig en
+                  cultureel specifiek kan zijn. Het is ook een klein bewijs van hoe snel
+                  onafhankelijke bouwers tegenwoordig webproducten kunnen lanceren wanneer design,
+                  development en AI-workflows goed samenkomen.
                 </p>
               </div>
             </div>
           </section>
 
           <section className="mt-16">
-            <h2 className="text-3xl font-black text-white">Quick Facts</h2>
+            <h2 className="text-3xl font-black text-white">Snelle feiten</h2>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {quickFacts.map(([label, value]) => (
                 <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
@@ -323,7 +323,7 @@ export default function PressPage() {
           </section>
 
           <section className="mt-16">
-            <h2 className="text-3xl font-black text-white">Features</h2>
+            <h2 className="text-3xl font-black text-white">Functies</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {features.map((feature) => (
                 <div
@@ -340,7 +340,7 @@ export default function PressPage() {
           </section>
 
           <section className="mt-16">
-            <h2 className="text-3xl font-black text-white">Tech Stack</h2>
+            <h2 className="text-3xl font-black text-white">Tech stack</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {techStack.map(([logo, label]) => (
                 <div
@@ -357,7 +357,7 @@ export default function PressPage() {
           </section>
 
           <section className="mt-16">
-            <h2 className="text-3xl font-black text-white">Timeline</h2>
+            <h2 className="text-3xl font-black text-white">Tijdlijn</h2>
             <div className="mt-8 grid gap-4">
               {timeline.map(([title, text], index) => (
                 <div
@@ -379,8 +379,8 @@ export default function PressPage() {
           <section className="mt-16">
             <h2 className="text-3xl font-black text-white">Screenshots</h2>
             <p className="mt-3 max-w-3xl leading-7 text-zinc-400">
-              Current available visual assets from the live project. More product screenshots can
-              be added here as the public press kit expands.
+              Huidige visuele assets uit het live project. Extra productscreenshots kunnen later
+              aan deze perskit worden toegevoegd.
             </p>
             <div className="mt-6">
               <PressScreenshotGallery screenshots={screenshots} />
@@ -391,11 +391,10 @@ export default function PressPage() {
             id="brand-assets"
             className="mt-16 rounded-3xl border border-orange-500/30 bg-orange-500/[0.08] p-6 sm:p-8"
           >
-            <h2 className="text-3xl font-black text-white">Brand Assets</h2>
+            <h2 className="text-3xl font-black text-white">Merkbestanden</h2>
             <p className="mt-3 max-w-3xl leading-7 text-zinc-300">
-              Download the currently available logo, icon and social preview assets. These files
-              are suitable for articles, reviews, AI directories and social posts about
-              OutfitRoaster.
+              Download de beschikbare logo-, icoon- en social-previewbestanden. Deze bestanden zijn
+              geschikt voor artikelen, reviews, AI-directories en social posts over OutfitRoaster.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {assets.map(([label, href, assetName]) => (
@@ -413,17 +412,17 @@ export default function PressPage() {
 
           <section className="mt-16 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8">
-              <h2 className="text-3xl font-black text-white">Media Contact</h2>
+              <h2 className="text-3xl font-black text-white">Perscontact</h2>
               <p className="mt-5 leading-8 text-zinc-300">
-                For interviews, reviews, podcasts, AI directories, creator collaborations or press
-                questions, contact OutfitRoaster directly.
+                Voor interviews, reviews, podcasts, AI-directories, creator-samenwerkingen of
+                persvragen kun je direct contact opnemen met OutfitRoaster.
               </p>
               <PressContactLink
                 href={contactHref}
                 location="media_contact"
                 className="dr-primary-button mt-7 inline-flex min-h-14 items-center justify-center px-7 py-4"
               >
-                Email {contactEmail}
+                Mail {contactEmail}
               </PressContactLink>
             </div>
 
@@ -431,7 +430,7 @@ export default function PressPage() {
               <p className="text-sm font-black uppercase tracking-[0.18em] text-orange-300">
                 FAQ
               </p>
-              <h2 className="mt-3 text-3xl font-black text-white">Press questions</h2>
+              <h2 className="mt-3 text-3xl font-black text-white">Veelgestelde persvragen</h2>
               <div className="mt-6 grid gap-3">
                 {faqs.map((faq) => (
                   <details
