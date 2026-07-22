@@ -13,6 +13,8 @@ export const legacySeoSlugRedirects: Record<string, string> = {
   "smart-casual-outfit-check": "smart-casual-outfit",
   "bruiloft-outfit-check": "bruiloft-gast-outfit",
   "kleurcombinatie-outfit-check": "outfit-checker",
+  "zomer-outfit-check": "zomer-outfit",
+  "vakantie-outfit-check": "vakantie-outfit",
   "witte-outfit-check": "zomer-outfit",
   "avondjurk-outfit-check": "feestje-outfit",
   "diner-outfit-check": "date-outfit",
