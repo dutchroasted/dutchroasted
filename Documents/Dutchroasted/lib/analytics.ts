@@ -20,7 +20,10 @@ export type AnalyticsEventName =
   | "seo_cta_clicked"
   | "seo_landing_view"
   | "blog_view"
-  | "blog_cta_clicked";
+  | "blog_cta_clicked"
+  | "press_page_view"
+  | "press_asset_download"
+  | "press_contact_click";
 
 type AnalyticsParameters = Record<string, string | number | boolean | undefined>;
 
@@ -202,6 +205,19 @@ export const analytics = {
       slug,
       cta_position: ctaPosition,
       target,
+    });
+  },
+  pressPageViewed() {
+    trackAnalyticsEventOnce("press_page_view", "press_page_view");
+  },
+  pressAssetDownloaded(assetName: string) {
+    trackAnalyticsEvent("press_asset_download", {
+      asset_name: assetName,
+    });
+  },
+  pressContactClicked(location: string) {
+    trackAnalyticsEvent("press_contact_click", {
+      location,
     });
   },
 };

@@ -8,6 +8,7 @@ const footerLinks = [
   { label: "Outfit Roast", href: "/outfit-check/outfit-roast" },
   { label: "Date outfit check", href: "/outfit-check/date-outfit" },
   { label: "Festival outfit check", href: "/outfit-check/festival-outfit" },
+  { label: "Press", href: "/press" },
   { label: "Privacy", href: "/privacy" },
   { label: "Voorwaarden", href: "/voorwaarden" },
   { label: "Contact", href: "/contact" },
